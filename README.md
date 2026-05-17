@@ -2,10 +2,6 @@
 
 ![SystemSmith engineering operating system](assets/README-hero.png)
 
-![SystemSmith request-to-capability framework](assets/README-alt-1.png)
-
-![SystemSmith reusable capability loop](assets/README-alt-2.png)
-
 Engineering methods for code, agents, and architecture.
 
 SystemSmith turns recurring engineering judgment into reusable agent skills: how to scope work, review your own output, write durable docs, protect secrets, structure technical messages, reason about agentic systems, and build cleaner software and information architectures.
