@@ -1,0 +1,17 @@
+{
+  "name": "arthur-zakirov",
+  "owner": {
+    "name": "Arthur Zakirov"
+  },
+  "description": "Arthur Zakirov's reusable Claude Code plugin bundle.",
+  "plugins": [
+    {
+      "name": "systemsmith",
+      "source": "./",
+      "description": "Engineering methods for code, agents, docs, security, reviews, and architecture.",
+      "author": {
+        "name": "Arthur Zakirov"
+      }
+    }
+  ]
+}

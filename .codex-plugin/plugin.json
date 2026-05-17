@@ -1,0 +1,38 @@
+{
+  "name": "systemsmith",
+  "version": "0.1.0",
+  "description": "SystemSmith turns recurring engineering judgment into reusable agent skills.",
+  "author": {
+    "name": "Arthur Zakirov",
+    "url": "https://github.com/ArthurZakirov"
+  },
+  "homepage": "https://github.com/ArthurZakirov/SystemSmith",
+  "repository": "https://github.com/ArthurZakirov/SystemSmith",
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "codex",
+    "claude-code",
+    "plugin",
+    "workflow"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "SystemSmith",
+    "shortDescription": "Engineering methods for code, agents, and architecture",
+    "longDescription": "Reusable engineering judgment packaged as agent skills for code, agents, docs, review, security, and architecture.",
+    "developerName": "Arthur Zakirov",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/ArthurZakirov/SystemSmith",
+    "defaultPrompt": [
+      "Use the relevant SystemSmith method for this engineering task.",
+      "Review, structure, document, or secure this work using the right method skill.",
+      "Translate this AI-agent engineering request into concrete runtime changes."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Engineer Agentic AI"
+  short_description: "Translate requests into agent mechanics"
+  default_prompt: "Use $engineer-agentic-ai to turn this request into the correct agent-system changes."
