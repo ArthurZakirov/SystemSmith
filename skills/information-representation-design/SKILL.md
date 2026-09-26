@@ -1,6 +1,6 @@
 ---
 name: information-representation-design
-description: Choose or review the representation form for information that will already be shown: table, list, hierarchy, prose, diagram, code abstraction, chart, or another structure. Use when the same content could be organized in multiple ways and readability, comparison, scanning, or structural clarity depends on the representation.
+description: "Choose or review the representation form for information that will already be shown: table, list, hierarchy, prose, diagram, code abstraction, chart, or another structure. Use when the same content could be organized in multiple ways and readability, comparison, scanning, or structural clarity depends on the representation."
 ---
 
 # Information Representation Design
