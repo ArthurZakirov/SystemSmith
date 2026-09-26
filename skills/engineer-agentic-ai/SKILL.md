@@ -20,6 +20,10 @@ Translate user language into implementation language before proposing edits.
 
 ## Model The Runtime
 
+Read `references/agent-runtime-model.md` when runtime mechanics need to be established or checked. That file is descriptive only: it explains how the agent runtime works.
+
+Read `references/agent-engineering-process.md` when translating a desired behavior into a concrete system modification. That file contains the operationalization, mechanism-selection, implementation, and verification procedure.
+
 Reason from how the system actually consumes the artifact.
 
 - Treat the YAML frontmatter as the skill's interface contract for invocation. Treat the markdown body as the implementation that executes after invocation.
@@ -197,6 +201,46 @@ Bad MCP tool description:
 
 Better MCP tool description:
 `Use to fetch the current dataset or record needed to answer a user request when the agent needs live data from this server.`
+
+## Choose The Runtime Surface From Reliability Needs
+
+Do not choose between always-loaded instructions, references, skills, hooks, tools, or other mechanisms from user wording alone. First estimate the operating characteristics of the desired behavior.
+
+Evaluate at least these dimensions:
+
+- **Frequency** — how often is this behavior relevant across ordinary turns or tasks?
+- **Miss cost / risk** — what happens if the behavior is not considered at the relevant moment?
+- **Instruction size** — can the needed guidance remain compact enough for always-loaded context, or would it create persistent context pressure?
+- **Routability** — can the relevant situation be recognized reliably from information available before a conditional artifact is loaded?
+- **Required enforcement** — is probabilistic guidance sufficient, or must the system gate, block, schedule, validate, or otherwise enforce the behavior?
+
+Use these dimensions together rather than a fixed percentage threshold. Typical mappings:
+
+- High-frequency, compact invariants usually belong directly in always-loaded guidance.
+- High-frequency but bulky guidance usually needs a short always-loaded router plus a referenced detail file.
+- Low-frequency, clearly recognizable workflows are good skill candidates.
+- Rare but high-cost-to-miss rules may still need an always-loaded trigger or stronger deterministic mechanism.
+- Requirements that must fire by construction should use hooks, permission gates, validators, schedulers, or another enforcement surface when available.
+
+If frequency, miss cost, routability, or another decision-critical property is unknown and the answer would materially change the implementation surface, obtain that information before committing to a design. Prefer targeted questions such as:
+
+- "How often do you expect this to matter: almost every turn, sometimes, or rarely?"
+- "What is the consequence if the agent misses it once?"
+- "Can the relevant situation be recognized from the current prompt or runtime state before any skill/reference is loaded?"
+- "Does this need to be guaranteed, or is a best-effort reminder acceptable?"
+
+Do not ask for information that can already be inferred confidently from the request or runtime. If uncertainty does not affect the mechanism choice, proceed with the smallest robust design.
+
+### Layering Rule
+
+Use the surfaces as different layers rather than substitutes:
+
+- **Always-loaded instructions**: compact invariants and reliable routing conditions.
+- **References**: substantial guidance that should load after an always-visible condition determines relevance.
+- **Skills**: recognizable task-specific workflows whose full procedure need not be present on every turn.
+- **Deterministic controls**: requirements whose miss cost is too high for probabilistic selection or execution.
+
+A useful test is: if the behavior disappears completely when a skill fails to trigger, decide whether its routing condition or invariant must live on an earlier, more reliable surface.
 
 ## Decide What To Change
 
