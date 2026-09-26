@@ -92,3 +92,17 @@ When the user asks why the agent behaved a certain way, or reports that intended
 9. Only after the cause is identified should the implementation be changed.
 
 For configuration changes, verify the actual propagation path. Refresh or notify already-running sessions only when the target harness exposes a documented mechanism for doing so. Otherwise, explicitly re-read in the current session where possible and use a fresh session as the robust fallback.
+
+## Wishlist-to-Production Lifecycle
+
+Do not treat every newly stated desired behavior as production guidance.
+
+1. **Capture** the desired outcome in the canonical wishlist/backlog when the mechanism is not yet known or validated.
+2. **Investigate** observability, available data sources, triggers, actuators, persistence, existing solutions, reliability needs, and platform constraints.
+3. **Design** the concrete mechanism and verification plan.
+4. **Implement and validate** the mechanism in the narrowest appropriate runtime surface.
+5. **Obtain human review** when the system's production behavior or global guidance changes.
+6. **Promote** only the validated mechanism/rule into production guidance or controls; do not copy the original problem-space prose into production as if it were executable.
+7. **Retire or mark** the wishlist entry after promotion so it does not become a second active source of truth.
+
+A wishlist is therefore a queue of desired system outcomes, not an instruction file. Its contents may inform future engineering work, but they must not be loaded as active runtime guidance merely because they are important.
