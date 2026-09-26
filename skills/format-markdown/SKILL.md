@@ -1,6 +1,6 @@
 ---
 name: format-markdown
-description: Generate properly formatted Markdown from unstructured notes, scratch text, transcripts, or rough drafts. Use when the user wants content rewritten into cleaner Markdown without inventing new information.
+description: Generate or rewrite Markdown from unstructured notes, transcripts, scratch text, or rough drafts while preserving meaning and producing valid Markdown syntax. Use when the requested output is specifically a Markdown artifact.
 argument-hint: "[[--RAW] Raw message here..] [[--PART] Which part to apply guidelines to (default all)] [[--PRINCIPLE] Which specific guideline to apply (default all)] [[--SKIP] Which guidelines to skip (default none)]"
 ---
 
@@ -8,66 +8,37 @@ argument-hint: "[[--RAW] Raw message here..] [[--PART] Which part to apply guide
 
 User request: `$ARGUMENTS`
 
-Also apply the [`living-artifacts`](../living-artifacts/SKILL.md) skill when the output contains current-state values, snapshots, file trees, versions, paths, or any other data likely to drift.
+Apply [`information-representation-design`](../information-representation-design/SKILL.md) for tables vs lists, hierarchy, prose, diagrams, and other representation choices. Apply [`relevance-first-information-design`](../relevance-first-information-design/SKILL.md) for information selection, abstraction layering, routing, and progressive disclosure. Apply [`thoughts-to-artifact`](../thoughts-to-artifact/SKILL.md) when the source is raw notes, dictation, a transcript, or a brainstorm whose conceptual structure should be recovered rather than copied in source order.
+
+Also apply [`living-artifacts`](../living-artifacts/SKILL.md) when the output contains current-state values, snapshots, file trees, versions, paths, or other data likely to drift.
 
 ## Core Task
 
-Take unstructured content and rewrite it into clear Markdown while preserving meaning.
-
-Likely problems in the source:
-
-- Spelling or grammar errors
-- Broken markdown syntax
-- Bad structure
-- Repetition
-- Transcript noise or malformed sentences
+Rewrite the supplied material into valid, readable Markdown while preserving its meaning.
 
 ## Preservation Rules
 
-- Preserve all key information already present.
-- Preserve nuance and examples.
-- Fix obvious errors.
+- Preserve all key information, nuance, and examples already present.
+- Fix obvious spelling, grammar, transcript noise, malformed sentences, and broken Markdown syntax when doing so does not change meaning.
 - Do not invent missing content.
-- If extra guidance is valuable, add it only as an HTML comment.
-- Reorder content when it improves readability.
-
-## DRY Rule
-
-Merge repeated sentences when they say the same thing without adding nuance, but do not collapse examples or erase meaningful distinctions.
-
-## Formatting Techniques
-
-- Use headings, lists, tables, callouts, emphasis, and code spans where helpful.
-- Convert repeated items with shared properties into tables.
-- Keep simple linear flows as lists.
-
-## Code References
-
-When repositories, folders, files, functions, or variables are mentioned:
-
-1. Identify the exact target when possible.
-2. Format names with inline code.
-3. Link real file paths when the output is a maintained markdown artifact.
-
-## Information Architecture
-
-- Add higher-level grouping when the source has several substantial sections.
-- Use a table of contents only when the document is large enough to justify it.
-- Avoid over-structuring short content.
-- Keep heading depth proportional to the material.
-
+- Reorder content only when it improves clarity without changing meaning.
+- If extra guidance must be retained without becoming document content, use an HTML comment when appropriate.
 ## Markdown-Specific Rules
 
 - Preserve literal `$` syntax when it is semantically part of the source.
-- Use valid heading levels.
-- Keep frontmatter valid when the target artifact expects it.
+- Keep YAML/frontmatter valid when the target artifact expects it.
+- Use valid heading levels and do not skip levels merely for visual size.
+- Use inline code for repositories, folders, files, commands, functions, variables, configuration keys, and other literal technical identifiers when appropriate.
+- In maintained Markdown artifacts, make concrete file references clickable with correct relative links when a real target exists.
+- Keep code fences syntactically valid and preserve the intended language identifier when known.
+- Escape or restructure Markdown syntax when literal characters would otherwise be interpreted incorrectly.
 
 ## Self-Check
 
-Review the result for:
-
-- Preserved meaning
-- Improved clarity
-- No invented facts
-- Consistent formatting
-- Appropriate structure for the actual content size
+- Meaning preserved.
+- No invented facts.
+- Markdown parses as intended.
+- Frontmatter and code fences remain valid.
+- Links and technical identifiers are represented correctly.
+- Representation and relevance/disclosure rules come from their dedicated skills rather than being redefined here.
+- When transforming raw thoughts, examples and nuance are preserved according to `thoughts-to-artifact`.
