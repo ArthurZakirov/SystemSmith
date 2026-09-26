@@ -76,3 +76,19 @@ When Codex is the target harness, answer these questions before labeling a behav
 5. Which actuator or gate can produce the required consequence?
 6. What state must persist, and at what scope?
 7. What is the smallest Codex mechanism that closes the complete loop?
+
+## Debugging Unexpected Agent Behavior
+
+When the user asks why the agent behaved a certain way, or reports that intended behavior did not occur, treat the incident as a runtime-debugging problem rather than a politeness problem.
+
+1. Reconstruct the action and the evidence/context that was available when it happened.
+2. Check whether the relevant instruction or mechanism existed at that time and was present in the effective session context.
+3. Check whether the rule's condition actually matched the observable evidence.
+4. Check whether the intended behavior/action was specified correctly.
+5. Check routing: was the relevant skill/reference/tool discovered, selected, and loaded?
+6. Check actuation: did the runtime have the capability and permission to perform the consequence?
+7. Check propagation/freshness: was the source updated but the current or another active session still using earlier context/configuration?
+8. Distinguish an implementation defect from a justified prior decision. If the prior decision had a sound reason, explain it rather than retroactively agreeing that it was wrong.
+9. Only after the cause is identified should the implementation be changed.
+
+For configuration changes, verify the actual propagation path. Refresh or notify already-running sessions only when the target harness exposes a documented mechanism for doing so. Otherwise, explicitly re-read in the current session where possible and use a fresh session as the robust fallback.
