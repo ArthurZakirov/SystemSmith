@@ -74,7 +74,38 @@ flowchart TB
 
     subgraph CONTEXT["2 · Context and durable state"]
         direction TB
-        INPUTS["📚 Context inputs<br/>System / developer / user messages<br/>History or compacted replacement state<br/>Scoped instructions (for example AGENTS.md / CLAUDE.md)<br/>Selected skill metadata/body<br/>Tool schemas · retrieved resources · prior tool results"]
+        subgraph INPUTS["📚 Context inputs"]
+            direction TB
+            subgraph INSTRUCTION_INPUTS["Instructions and request"]
+                direction TB
+                SYSTEM["System instructions"]
+                DEVELOPER["Developer instructions"]
+                REQUEST["User messages / current request"]
+
+                SYSTEM ~~~ DEVELOPER ~~~ REQUEST
+            end
+            subgraph STATE_INPUTS["State and selected guidance"]
+                direction TB
+                HISTORY["Conversation history or<br/>compacted replacement state"]
+                SCOPED["Scoped instruction files<br/>AGENTS.md / CLAUDE.md"]
+                SKILL_CONTEXT["Selected skill<br/>metadata / body"]
+
+                HISTORY ~~~ SCOPED ~~~ SKILL_CONTEXT
+            end
+            subgraph CAPABILITY_INPUTS["Capabilities and evidence"]
+                direction TB
+                TOOL_SCHEMAS["Tool schemas /<br/>capability descriptions"]
+                RESOURCES["Retrieved resources /<br/>references"]
+                PRIOR_RESULTS["Prior tool results /<br/>observations"]
+
+                TOOL_SCHEMAS ~~~ RESOURCES ~~~ PRIOR_RESULTS
+            end
+            ASSEMBLE([Assemble context])
+
+            INSTRUCTION_INPUTS --> ASSEMBLE
+            STATE_INPUTS --> ASSEMBLE
+            CAPABILITY_INPUTS --> ASSEMBLE
+        end
         CURRENT[(🗂️ Current model context)]
         SKILLS["📘 Skills / retrieval"]
         PERSIST[(💾 Persistence<br/>thread / session state)]
@@ -82,7 +113,7 @@ flowchart TB
 
         SKILLS -->|selected content| INPUTS
         PERSIST -->|load state| INPUTS
-        INPUTS -->|assemble| CURRENT
+        ASSEMBLE -->|assembled context| CURRENT
         CURRENT -->|persist state| PERSIST
         GOAL -.->|optional completion contract| CURRENT
     end
@@ -138,7 +169,7 @@ flowchart TB
     class USER actor
     class TYPED,VOICE,SPOKEN,RESULT message
     class SPEECH,BACKEND surface
-    class INPUTS,CURRENT,UPDATE context
+    class SYSTEM,DEVELOPER,REQUEST,HISTORY,SCOPED,SKILL_CONTEXT,TOOL_SCHEMAS,RESOURCES,PRIOR_RESULTS,ASSEMBLE,CURRENT,UPDATE context
     class MODEL decision
     class ACTION action
     class OBS observation
