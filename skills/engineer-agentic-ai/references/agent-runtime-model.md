@@ -117,7 +117,6 @@ flowchart TB
             CAPABILITY_INPUTS --> ASSEMBLE
             EVIDENCE_INPUTS --> ASSEMBLE
         end
-        CACHE_NOTE["Prompt cache<br/>cache hit lowers processing / price<br/>not context-window size"]
         CURRENT[(🗂️ Current model context)]
         SKILLS["📘 Skills / retrieval"]
         PERSIST[(💾 Persistence<br/>thread / session state)]
@@ -128,7 +127,6 @@ flowchart TB
         ASSEMBLE -->|assembled context| CURRENT
         CURRENT -->|persist state| PERSIST
         GOAL -.->|optional completion contract| CURRENT
-        CURRENT -.-> CACHE_NOTE
     end
 
     subgraph LOOP["3 · Agent loop and runtime controls"]
@@ -181,7 +179,7 @@ flowchart TB
     SPOKEN -->|played to| USER
 
     BACKEND -->|starts with| CURRENT
-    CURRENT -->|rendered on every inference<br/>input tokens| MODEL
+    CURRENT -->|rendered context| MODEL
     RESULT -->|delivered to| USER
 
     HOOKS -.->|inject / trigger| UPDATE
@@ -214,40 +212,20 @@ flowchart TB
     class GATE,HOOKS,VALIDATE control
     class PERSIST,GOAL persistence
     class SKILLS,DELEGATE delegation
-    class ENV,INJECT_NOTE,CACHE_NOTE,COMPACT_NOTE note
+    class ENV,INJECT_NOTE,COMPACT_NOTE note
 ```
 
 The diagram uses the general term **agent loop** from OpenAI's [long-horizon Codex explanation](https://developers.openai.com/blog/run-long-horizon-tasks-with-codex). In provider terms, Codex runs a turn within a durable thread, while Anthropic's [Claude Code CLI reference](https://docs.anthropic.com/en/docs/claude-code/cli-usage) uses **agentic turns** within a session. OpenAI's [Goals guide](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex) keeps a Goal separate as an optional thread-scoped completion contract across turns. The realtime-voice branch records one observed Codex macOS architecture, not a universal voice design. Whether a frontend speech model can access backend instructions such as `AGENTS.md` or `CLAUDE.md` must be verified separately for each voice implementation; the diagram does not assume that access.
 
-### Context-window and cost mechanics
+### Context lifecycle
 
 Codex CLI enumerates applicable `AGENTS.md` files and injects each discovered chunk near the top of conversation history as a separate user-role message, before the user prompt, in root-to-leaf order. This describes discovery and injection, not a claim that the file is physically reread before every inference. Once retained in active history, the injected tokens can appear in every later rendered model input until context reconstruction, pruning, or compaction replaces them. See OpenAI's [Codex model guidance](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-5.3-codex#using-agentsmd).
 
 Skills use progressive disclosure. The initial model context contains compact metadata: name and description, plus the path for local Responses API skills. The model selects a matching skill from that metadata and then reads its full `SKILL.md`; supporting references, scripts, templates, and assets remain additional on-demand material. See the official [Skills API guide](https://developers.openai.com/api/docs/guides/tools-skills) and [plugin Skills concepts](https://developers.openai.com/plugins/concepts/skills).
 
-| Mechanic | Context-window effect | Processing and price effect |
-| --- | --- | --- |
-| Repeated inference | Every model call receives a rendered context. Retained content occupies input space on every call in which it remains active. | Input-token usage measures the rendered input, including repeated content. A turn, an individual tool-loop inference, and a stored transcript record are different units. |
-| Prompt caching | Cached prefix tokens still occupy the context window and count as input tokens and toward rate limits. | A cache hit reuses prefix computation, reducing latency and the applicable input-token rate. For GPT-5.6+ API pricing, reads are currently `0.1×` and writes `1.25×`; this is API pricing, not a universal Codex-subscription accounting promise. |
-| Compaction | Older active history is replaced by a smaller opaque compaction item plus retained items, reducing later rendered inputs. | The changed prefix can reduce prompt-cache reuse immediately after compaction. |
-
-Without caching, a stable block of `L` tokens retained across `N` model calls contributes approximately `L × N` input tokens. With one full-price processing followed by cached reads at multiplier `r`, its simplified price-equivalent is approximately `L + (N − 1) × r × L`, while every call still occupies `L` context-window tokens. When the model uses a distinct cache-write rate `w`, replace the first `L` with `w × L`; for current GPT-5.6+ API mechanics, `w = 1.25` and `r = 0.1`. Product subscriptions and internal accounting can differ from API token pricing. See [Prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching) and [Compaction](https://developers.openai.com/api/docs/guides/compaction).
-
-Never infer token cost, context-window occupancy, repeated model exposure, cache reuse, or instruction robustness from stored-record counts alone. Diagnose five separate layers:
-
-| Layer | What it establishes |
-| --- | --- |
-| Stored rollout or transcript records | Append-only persistence and diagnostic evidence; one stored record can participate in many later model calls. |
-| Active conversation/context items | The items retained after pruning, reconstruction, or compaction and available to build the next request. |
-| Rendered input for one inference | The complete model input, including retained items and harness-provided surfaces such as tool schemas that may not recur as transcript messages. OpenAI's [function-calling token-usage guidance](https://developers.openai.com/api/docs/guides/function-calling#token-usage) states that callable definitions count against context and input tokens. |
-| Usage accounting | Per-inference `input_tokens`, `cached_tokens`, output tokens, and reasoning tokens; these fields support conclusions about processed usage and aggregate cache reuse. |
-| Product accounting | The applicable API price, ChatGPT/Codex subscription allowance, credit balance, or other product-specific accounting surface. |
-
-A block can be stored once yet remain in many later rendered inputs, as observed for `AGENTS.md`. Conversely, repeated skill-catalog or runtime records can reflect reinjection or updates without proving full-price processing on every occurrence or stronger instruction following. Prompt caching can make repeated rendered tokens cheaper and faster without removing them from context-window occupancy; only per-inference usage/cache fields plus the applicable product accounting surface support a cost conclusion.
-
-> **Local rollout observation — version/session-specific, not universal.** The analyzer classified one explicit `AGENTS.md` record, five additional skill-catalog/runtime blocks, and 290 token-count snapshots in this rollout. Record count and model-call snapshot count therefore clearly differ. The explicit `AGENTS.md` record was approximately 19,812 characters or 4,953 tokens using the existing four-characters-per-token estimator; the five additional blocks totaled approximately 112,454 characters or 28,113 estimated tokens. The latest measured inference reported 158,680 exact input tokens, including 158,208 cached tokens and 472 non-cached input tokens. These are aggregate observations and do not attribute cached tokens to individual blocks.
-
 Design for progressive disclosure: keep compact, broadly applicable invariants in `AGENTS.md`; put concise trigger conditions in skill metadata; keep detailed procedures in the selected `SKILL.md`; and load deeper references or assets only when the task needs them.
+
+Stored rollout records, retained active items, and the context rendered for a model call are distinct runtime layers. Use [`Token Usage and Cost Model`](token-usage-and-cost-model.md) when the question concerns context-window consumption, token accounting, caching, allowances, credits, billing, or optimization.
 
 The model cannot reason from information that never reaches its context, and it cannot perform an action for which the harness exposes no actuator.
 
@@ -411,11 +389,3 @@ Delegation changes task decomposition and context isolation; it does not by itse
 Local computation is not itself model context. Only the command or tool result returned to the model consumes the active context window. Parse large artifacts locally and return a compact projection: bound matches, select relevant fields, cap lines, and summarize counts.
 
 Avoid broad recursive `rg`, web search, resource-listing, or rollout-log queries when a narrower target will answer the question. In particular, self-referential searches over rollout history can reproduce earlier prompts and nested tool outputs, injecting thousands of duplicate tokens into the very context being diagnosed.
-
-For a token or context diagnosis, use one explicit rollout and proceed in order:
-
-1. Count stored records by category without dumping their full bodies.
-2. Identify the active replacement state after any compaction.
-3. Inspect the per-inference token snapshots rather than treating transcript records as model calls.
-4. Use `cached_tokens` and related usage fields to separate rendered occupancy from uncached processing.
-5. Consult the applicable ChatGPT/Codex allowance, credit, or API pricing view before concluding monetary or quota cost.

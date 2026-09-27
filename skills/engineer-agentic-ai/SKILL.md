@@ -31,6 +31,7 @@ Read only the references needed for the current failure or design question.
 | Need | Read |
 | --- | --- |
 | How context, harnesses, tools, hooks, state, goals, sessions, compaction, or subagents actually behave | [`Agent Runtime Model`](references/agent-runtime-model.md) |
+| Token usage, context-window consumption, cached versus uncached input, cost estimation, subscription allowances, credits, billing, rollout-log usage analysis, or token optimization | [`Token Usage and Cost Model`](references/token-usage-and-cost-model.md) |
 | How Voice/Desktop/Web/product surfaces capture input, stay responsive, render output, gate approvals, run in background, or return delegated results | [`Interaction Runtime Model`](references/interaction-runtime-model.md) |
 | How to turn a desired behavior into an observable, testable mechanism; mechanism selection; debugging; wishlist promotion | [`Agent Engineering Process`](references/agent-engineering-process.md) |
 | Skill/MCP routing, interface-vs-implementation boundaries, trigger metadata, and when prose is being mistaken for control | [`Interface Routing and Control`](references/interface-routing-and-control.md) |
