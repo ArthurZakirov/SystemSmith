@@ -24,3 +24,17 @@ Product-surface behavior changes quickly. Prefer, in order:
 4. community reports as hypotheses to reproduce.
 
 Do not promote a user-observed quirk into a universal rule without reproduction or documentation. Conversely, do not overwrite a reproducible observed limitation merely because public documentation is silent.
+
+## 🗣️ Codex text and realtime voice routing
+
+In ordinary Codex text interaction, a submitted user message starts a Codex model turn using the runtime context assembled for that turn.
+
+In the Codex desktop realtime voice architecture observed on 2026-09-27, the interaction path had two model layers:
+
+1. A frontend realtime speech model handled the live conversation.
+2. It delegated selected work to a backend Codex agent.
+3. The backend result returned through the coordinating voice session.
+
+Simple spoken exchanges could remain at the frontend without starting a backend Codex turn. Backend-only `AGENTS.md` guidance and skills therefore could not reliably govern every spoken response on that surface. This boundary came from current runtime metadata and direct observation; it is not a universal claim about every OpenAI voice product or future desktop version.
+
+When voice behavior must be reliable, first identify which layer produces the response. Put conversational behavior needed on every spoken turn on a frontend-visible surface. Put repository work and tool procedures in the backend Codex runtime. If the product exposes no frontend control surface, record that as a mechanism gap rather than strengthening backend-only prose.

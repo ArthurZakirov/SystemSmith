@@ -1,6 +1,6 @@
 # Agent Runtime Model
 
-Last checked: 2026-09-26
+Last checked: 2026-09-27
 
 This reference describes how agentic runtimes work: how context reaches the model, how capabilities are selected, how actions affect the environment, and how state or events persist across turns.
 
@@ -18,6 +18,12 @@ An agentic system is not just an LLM. Model the runtime as a loop with distinct 
 8. **Event / automation layer** — hooks, triggers, schedules, workflows, and external processes can run without relying on the model to spontaneously remember to act.
 
 The model cannot reason from information that never reaches its context, and it cannot perform an action for which the harness exposes no actuator.
+
+### Context size is rendered input, not transcript length
+
+The harness assembles the input for each inference from the sources relevant to that turn: system and developer guidance, user/assistant history, scoped instruction files, skill routing metadata or selected skill bodies, tool schemas, retrieved resources, tool results, and other runtime state. Context-window usage measures that rendered model input. It is not simply the visible chat length, the size of one source file, or the total persisted session log.
+
+Local computation affects context only through what the harness returns to the model. A command can parse a large file without injecting that entire file when it emits only a compact projection. Conversely, broad searches, page opens, thread listings, and repeated polling can add thousands of tokens even when the underlying operation is read-only.
 ## Mechanism Taxonomy
 
 Different mechanisms control different parts of the runtime.
@@ -92,15 +98,21 @@ These are distinct control surfaces with different loading, triggering, and enfo
 
 ### Hierarchical `AGENTS.md`
 
-Codex CLI discovers instruction files from the user/global level and then from the repository root down to the current working directory. The resulting instruction chunks are injected before the current user prompt in root-to-leaf order; deeper scopes can override earlier guidance. `AGENTS.override.md` can replace the normal file at a scope.
+Codex CLI discovers user-global guidance at `${CODEX_HOME:-$HOME/.codex}/AGENTS.md`, then project guidance from the identified project root down to the current working directory. The default project-root marker is `.git`; configured markers can change that boundary. The resulting instruction chunks are injected in root-to-leaf order, so deeper scopes can specialize earlier guidance. `AGENTS.override.md` can replace the normal file at a scope.
+
+Direct observation on Codex CLI 0.149.0: when no configured project-root marker was present, only the current working directory was checked; a file in a non-Git parent was not inherited. This fallback is an implementation snapshot, not a universal filesystem-scope guarantee. See [`Provider Path Reference`](provider-paths.md) for concrete locations.
 
 ### Skills and progressive disclosure
 
 Skill discovery is staged:
 
-1. Codex initially sees skill metadata, especially `name` and `description`.
+1. Codex initially sees routing metadata such as `name`, `description`, and the location from which the skill can be loaded.
 2. When a skill is selected, its `SKILL.md` instructions become available.
 3. `references/`, `scripts/`, and `assets/` are consumed only when the workflow needs them.
+
+Do not assume the YAML file itself is permanently resident. Model APIs receive assembled input for each inference, and the harness determines which metadata is injected or retained. In one Codex desktop/realtime session, the catalog appeared in developer context at several `task_started` boundaries; that is a surface/version observation, not a promise that every Codex client reinjects it at the same lifecycle event.
+
+A rule that must affect every response cannot depend on a skill that may never be selected. Put it on an always-loaded instruction surface, or use a stronger lifecycle/enforcement mechanism when its miss cost requires one.
 
 ### Hooks
 
@@ -123,7 +135,32 @@ A plugin is a packaging and distribution boundary. OpenAI plugins can bundle ski
 Permissions and approval policies are enforcement surfaces that can determine whether an action may proceed. Hooks are a separate event-driven surface that can perform checks before or after supported tool calls.
 ### Sessions, compaction, goals, and persistent state
 
-Conversation state, global instructions, and memory are separate forms of state. In OpenAI's managed Codex harness, a session is a durable unit of work. Context compaction can replace older detailed history with compacted state while preserving enough information to continue the trajectory.
+Conversation state, global instructions, and memory are separate forms of state. In OpenAI's managed Codex harness, a session is a durable unit of work.
+
+OpenAI's documented server-side compaction behavior is:
+
+1. The rendered input crosses a configured token threshold.
+2. The server emits an encrypted, opaque compaction item.
+3. Older active context is pruned or replaced while key prior state and reasoning carry forward with fewer tokens.
+
+The compacted window can retain explicit messages in addition to the compaction item. The compaction item's contents are not intended for human interpretation. A harness may also keep the full local rollout for persistence or diagnostics even though later model calls use replacement history; persisted transcript size and current model-visible context are therefore different measurements. See OpenAI's [Compaction guide](https://developers.openai.com/api/docs/guides/compaction).
+
+#### Reproducible local snapshot
+
+The following bounded query reproduces the relevant shape and token transition without printing message bodies or encrypted content:
+
+```bash
+rollout=/path/to/rollout.jsonl
+jq -c 'select(.type == "compacted") |
+  {timestamp,
+   replacement_types:(.payload.replacement_history | map(.type) | group_by(.) |
+     map({type:.[0], count:length})),
+   before_input_tokens:.payload.latest_token_usage_record.usage.input_tokens}' "$rollout"
+jq -c 'select(.type == "event_msg" and .payload.type == "token_count") |
+  {timestamp, input_tokens:.payload.info.last_token_usage.input_tokens}' "$rollout"
+```
+
+Observed on 2026-09-27 with Codex CLI 0.149.0 and GPT-5.6-Sol: one `compacted` record stored a `replacement_history` containing 37 explicit messages and one `compaction` item with `encrypted_content`; reported input moved from 226,804 tokens immediately before compaction to 51,433 tokens on the next token-count event. These values and JSONL field names are a reproducible implementation snapshot, not an API contract. Re-run the projection against the session being diagnosed instead of copying the values forward.
 
 Codex Goals are thread-scoped persisted state rather than global memory or project instructions. Thread/session state belongs to one ongoing trajectory, while files or another explicit store can persist state beyond that scope.
 
@@ -138,3 +175,14 @@ Therefore, the existence of an updated file on disk and the presence of that upd
 Subagents are separate model workers started by the harness for delegated work. They may have isolated task context and their own lifecycle events, but they remain bounded by what context, tools, permissions, and environment the harness gives them.
 
 Delegation changes task decomposition and context isolation; it does not by itself create an enforcement mechanism.
+
+## Context-efficiency diagnostics
+
+When context grows unexpectedly:
+
+1. Prefer structured local filtering that emits only the fields needed for the decision.
+2. Bound searches by file, pattern, time, count, and output budget.
+3. Return compact projections instead of full files or raw API responses.
+4. Avoid repeated full-list polling; request deltas or wait on a cursor/event when the harness supports it.
+5. Treat rollout logs as self-referential data. A broad search can match records containing earlier tool outputs, which may themselves contain prior log lines, causing nested and explosive output.
+6. Distinguish cumulative/persisted usage from the rendered input sent on the current inference.

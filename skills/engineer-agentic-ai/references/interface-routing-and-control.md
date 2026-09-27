@@ -15,6 +15,10 @@ Use this reference when the problem is about whether a skill/tool/server is sele
 
 A missed skill invocation is fixed on a pre-selection surface; adding more trigger prose to a body that never loaded cannot fix retrieval.
 
+Skill catalogs are routing interfaces. Codex can expose each available skill's name, description, and load path before selection, then load the full `SKILL.md` only after the skill is selected. Supporting references, scripts, and assets should remain behind explicit routes from that body. A requirement that must govern every response belongs on an always-loaded or lifecycle-enforced surface, not only inside a conditional skill.
+
+Do not infer that a catalog's source YAML is permanently present in model memory. The harness assembles input for each inference and controls reinjection, retention, and compaction. Diagnose the actual lifecycle event and rendered context on the target surface.
+
 ## 🎯 Write routing metadata for retrieval
 
 Name concrete requests, artifacts, mechanisms, and failure modes. Prefer contract-oriented language: what kind of request should route here and what outcome becomes possible. When capabilities overlap, distinguish them by inputs, outputs, and intended use rather than implementation details.
