@@ -76,35 +76,43 @@ flowchart TB
         direction TB
         subgraph INPUTS["📚 Context inputs"]
             direction TB
-            subgraph INSTRUCTION_INPUTS["Instructions and request"]
+            subgraph BASELINE_INPUTS["🔒 Harness-controlled baseline"]
                 direction TB
-                SYSTEM["System instructions"]
-                DEVELOPER["Developer instructions"]
-                REQUEST["User messages / current request"]
+                SYSTEM["🧾 System instructions"]
+                DEVELOPER["🏗️ Developer instructions"]
 
-                SYSTEM ~~~ DEVELOPER ~~~ REQUEST
+                SYSTEM ~~~ DEVELOPER
             end
-            subgraph STATE_INPUTS["State and selected guidance"]
+            subgraph GUIDANCE_INPUTS["👤 User- and project-controlled guidance"]
                 direction TB
-                HISTORY["Conversation history or<br/>compacted replacement state"]
-                SCOPED["Scoped instruction files<br/>AGENTS.md / CLAUDE.md"]
-                SKILL_CONTEXT["Selected skill<br/>metadata / body"]
+                CURRENT_REQUEST["🎯 Current user request"]
+                EARLIER_MESSAGES["💬 Earlier user messages"]
+                SCOPED["📜 Scoped instruction files<br/>AGENTS.md / CLAUDE.md"]
+                SKILL_BODY["📘 Selected skill body /<br/>loaded workflow guidance"]
 
-                HISTORY ~~~ SCOPED ~~~ SKILL_CONTEXT
+                CURRENT_REQUEST ~~~ EARLIER_MESSAGES ~~~ SCOPED ~~~ SKILL_BODY
             end
-            subgraph CAPABILITY_INPUTS["Capabilities and evidence"]
+            subgraph CAPABILITY_INPUTS["🧰 Available capabilities"]
                 direction TB
-                TOOL_SCHEMAS["Tool schemas /<br/>capability descriptions"]
-                RESOURCES["Retrieved resources /<br/>references"]
-                PRIOR_RESULTS["Prior tool results /<br/>observations"]
+                SKILL_CATALOG["🗂️ Skill metadata /<br/>catalog entries"]
+                TOOL_SCHEMAS["🛠️ Tool schemas /<br/>capability descriptions"]
 
-                TOOL_SCHEMAS ~~~ RESOURCES ~~~ PRIOR_RESULTS
+                SKILL_CATALOG ~~~ TOOL_SCHEMAS
+            end
+            subgraph EVIDENCE_INPUTS["🔎 Runtime state and evidence"]
+                direction TB
+                HISTORY["🧠 Conversation history or<br/>compacted replacement state"]
+                RESOURCES["📚 Retrieved resources /<br/>references"]
+                PRIOR_RESULTS["👁️ Prior tool results /<br/>observations"]
+
+                HISTORY ~~~ RESOURCES ~~~ PRIOR_RESULTS
             end
             ASSEMBLE([Assemble context])
 
-            INSTRUCTION_INPUTS --> ASSEMBLE
-            STATE_INPUTS --> ASSEMBLE
+            BASELINE_INPUTS --> ASSEMBLE
+            GUIDANCE_INPUTS --> ASSEMBLE
             CAPABILITY_INPUTS --> ASSEMBLE
+            EVIDENCE_INPUTS --> ASSEMBLE
         end
         CURRENT[(🗂️ Current model context)]
         SKILLS["📘 Skills / retrieval"]
@@ -166,10 +174,15 @@ flowchart TB
     classDef delegation fill:#CCFBF1,stroke:#0F766E,color:#134E4A,stroke-width:2px
     classDef note fill:#F8FAFC,stroke:#94A3B8,color:#334155,stroke-width:1px
 
+    style BASELINE_INPUTS fill:#FFF7ED,stroke:#C2410C,stroke-width:2px,color:#7C2D12
+    style GUIDANCE_INPUTS fill:#EFF6FF,stroke:#2563EB,stroke-width:2px,color:#1E3A8A
+    style CAPABILITY_INPUTS fill:#F0FDFA,stroke:#0F766E,stroke-width:2px,color:#134E4A
+    style EVIDENCE_INPUTS fill:#FAF5FF,stroke:#7E22CE,stroke-width:2px,color:#581C87
+
     class USER actor
     class TYPED,VOICE,SPOKEN,RESULT message
     class SPEECH,BACKEND surface
-    class SYSTEM,DEVELOPER,REQUEST,HISTORY,SCOPED,SKILL_CONTEXT,TOOL_SCHEMAS,RESOURCES,PRIOR_RESULTS,ASSEMBLE,CURRENT,UPDATE context
+    class SYSTEM,DEVELOPER,CURRENT_REQUEST,EARLIER_MESSAGES,SCOPED,SKILL_BODY,SKILL_CATALOG,TOOL_SCHEMAS,HISTORY,RESOURCES,PRIOR_RESULTS,ASSEMBLE,CURRENT,UPDATE context
     class MODEL decision
     class ACTION action
     class OBS observation
