@@ -1,8 +1,20 @@
-# Token Usage and Cost Model
+# 🧮 Token usage and cost model
 
 Use this reference to analyze context-window consumption, token usage, prompt-cache behavior, API cost, or ChatGPT/Codex allowance and credit accounting. Do not infer any of them from stored rollout-record counts alone.
 
-## Five diagnostic layers
+## 🗂️ Contents
+
+- [🧱 Five diagnostic layers](#diagnostic-layers)
+- [📥 What reaches rendered input](#rendered-input)
+- [♻️ Repeated input and prompt caching](#prompt-caching)
+- [🗜️ Compaction](#compaction)
+- [💳 Product accounting](#product-accounting)
+- [🔎 Practical diagnostic sequence](#diagnostic-sequence)
+- [🧪 Local rollout observations](#rollout-observations)
+- [⚙️ Optimization principles](#optimization)
+
+<a id="diagnostic-layers"></a>
+## 🧱 Five diagnostic layers
 
 | Layer | What it establishes |
 | --- | --- |
@@ -14,7 +26,8 @@ Use this reference to analyze context-window consumption, token usage, prompt-ca
 
 Never infer token cost, context-window occupancy, repeated model exposure, cache treatment, or instruction robustness merely from how many times a block appears in stored logs. Repeated skill-catalog or runtime records can reflect reinjection or updates without proving full-price processing on every occurrence or stronger instruction following.
 
-## What reaches rendered input
+<a id="rendered-input"></a>
+## 📥 What reaches rendered input
 
 Codex CLI enumerates applicable `AGENTS.md` files and injects each discovered chunk near the top of conversation history as a separate user-role message, before the user prompt, in root-to-leaf order. This describes discovery and injection, not physical rereading before every inference. Once retained in active history, one stored instruction block can appear in many later rendered inputs. See OpenAI's [Codex model guidance](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-5.3-codex#using-agentsmd).
 
@@ -22,7 +35,8 @@ Skills use progressive disclosure. Initial context contains compact metadata: na
 
 Tool descriptions can arrive through request tool definitions rather than repeated transcript messages. OpenAI's [function-calling token-usage guidance](https://developers.openai.com/api/docs/guides/function-calling#token-usage) states that callable definitions count against the context limit and as input tokens. The [token-counting guide](https://developers.openai.com/api/docs/guides/token-counting) likewise includes tool definitions and request-structure formatting in the exact input count.
 
-## Repeated input and prompt caching
+<a id="prompt-caching"></a>
+## ♻️ Repeated input and prompt caching
 
 Without caching, a stable block of `L` tokens retained across `N` model calls contributes approximately:
 
@@ -53,11 +67,13 @@ Every call still occupies `L` context-window tokens. When a model uses a distinc
 
 > **Live-verification rule:** Before making a cost decision, verify the current factors and their model/API applicability in the official OpenAI prompt-caching and pricing documentation. Rates, supported models, and cache behavior can change; never promote this dated snapshot into a timeless constant or a ChatGPT/Codex subscription formula.
 
-## Compaction
+<a id="compaction"></a>
+## 🗜️ Compaction
 
 Compaction replaces older active history with a smaller opaque compaction item plus retained items. This can reduce later rendered inputs while changing the prompt prefix enough to reduce cache reuse immediately afterward. Treat the returned compacted window as the canonical next context rather than inferring its contents from older stored records. See [Compaction](https://developers.openai.com/api/docs/guides/compaction).
 
-## Product accounting
+<a id="product-accounting"></a>
+## 💳 Product accounting
 
 API token prices, ChatGPT plan allowances, Codex credits, workspace rate cards, and internal product meters are separate accounting surfaces. Signing into Codex with ChatGPT uses the applicable ChatGPT plan's usage and billing, while using an API key uses API pricing. Check the live account surface before concluding cost or remaining capacity:
 
@@ -65,7 +81,8 @@ API token prices, ChatGPT plan allowances, Codex credits, workspace rate cards, 
 - [Using credits for flexible usage](https://help.openai.com/en/articles/12642688-using-credits-for-flexible-usage-in-chatgpt-personal-plans)
 - [ChatGPT Work and Codex](https://help.openai.com/en/articles/20001275-chatgpt-work-and-codex)
 
-## Practical diagnostic sequence
+<a id="diagnostic-sequence"></a>
+## 🔎 Practical diagnostic sequence
 
 Use one explicit rollout and avoid recursively dumping full logs:
 
@@ -75,7 +92,8 @@ Use one explicit rollout and avoid recursively dumping full logs:
 4. Use `input_tokens`, `cached_tokens`, output-token, and reasoning-token fields to characterize usage.
 5. Consult the applicable ChatGPT/Codex allowance, credit, workspace rate card, or API pricing view before concluding monetary or quota cost.
 
-## Local rollout observation
+<a id="rollout-observations"></a>
+## 🧪 Local rollout observations
 
 The following evidence is version- and session-specific, not a universal ratio:
 
@@ -92,7 +110,7 @@ The following evidence is version- and session-specific, not a universal ratio:
 
 Record count and model-call snapshot count clearly differ. The aggregate cache report does not attribute cached tokens to individual blocks, so it cannot establish per-block cache treatment or cost.
 
-### Configuration-refresh cache observation
+### 🔄 Configuration-refresh cache observation
 
 A separate controlled Codex CLI `0.149.0` resume experiment changed a temporary project skill and `AGENTS.md` while retaining one thread. These are first-inference snapshots for the relevant turns; tool-reading turns could contain an additional inference and are excluded from this comparison.
 
@@ -107,7 +125,7 @@ A separate controlled Codex CLI `0.149.0` resume experiment changed a temporary 
 
 The rollout proves aggregate prefix reuse, not token-level attribution to a particular source block. The lower cached share immediately after each early injected-surface change, followed by a much higher share on the unchanged repeat, is consistent with exact-prefix invalidation and later reuse. It is not proof that the changed file alone caused every non-cached token: conversation growth, catalog reinjection, tools, and other rendered-request differences also changed. The unchanged skill-body edit retained high first-inference reuse because the body was loaded later through a tool call rather than changed in the initial metadata prefix.
 
-### Continuously open desktop cache observation
+### 🖥️ Continuously open desktop cache observation
 
 A separate controlled Codex desktop experiment kept one chat and one app process open while changing a project-local skill. The tested app was version `26.924.20706` (build `11431`) with Codex CLI `0.149.0`; refresh those values using the commands in the [desktop lifecycle experiment](agent-runtime-model.md#controlled-codex-desktop-experiment). The rollout reported `cache_write_input_tokens: 0` for every recorded inference.
 
@@ -142,7 +160,8 @@ jq -c '
 
 Treat the field names, counts, and ratios as version- and session-specific rollout evidence, not a stable desktop API or a billing statement. Official OpenAI documentation likewise says session continuity does not guarantee a cache hit and that recorded usage is best-effort.
 
-## Optimization principles
+<a id="optimization"></a>
+## ⚙️ Optimization principles
 
 - Keep compact, broadly applicable invariants in `AGENTS.md`.
 - Put concise trigger conditions in skill metadata.

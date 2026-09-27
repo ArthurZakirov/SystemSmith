@@ -1,10 +1,28 @@
-# Agent Runtime Model
+# ⚙️ Agent runtime model
 
-Last checked: 2026-09-27
+Documentation snapshot: 2026-09-27. Re-verify provider-specific claims from their linked primary sources before relying on them as current behavior.
 
-This reference describes how agentic runtimes work: how context reaches the model, how capabilities are selected, how actions affect the environment, and how state or events persist across turns.
+Use this reference to understand how context reaches a model, capabilities are selected, actions affect the environment, and state or events persist across turns. Start with the compact loop, then follow the document map to the narrowest relevant layer.
 
-## Core Model
+## 🗺️ Document map
+
+| Need | Go to |
+| --- | --- |
+| Understand the basic agent loop and context lifecycle | [🔁 Runtime at a glance](#runtime-at-a-glance) |
+| Compare instructions, skills, tools, hooks, permissions, and other mechanisms | [🧰 Mechanism taxonomy](#mechanism-taxonomy) |
+| Understand conditions inside natural-language rules | [📝 Natural-language rules](#conditional-rules) |
+| Choose the required enforcement strength | [🛡️ Reliability characteristics](#reliability) and the [`Agent engineering process`](agent-engineering-process.md) |
+| Compare provider/harness concepts | [🌐 Provider and harness reality](#provider-reality) and the [`Provider path reference`](provider-paths.md) |
+| Diagnose Codex instructions, skills, hooks, state, or freshness | [⌨️ Codex runtime mechanism map](#codex-runtime) |
+| Inspect context without flooding the model | [🔎 Context-efficient observation](#context-observation) |
+| Analyze tokens, caching, allowances, or cost | [`Token usage and cost model`](token-usage-and-cost-model.md) |
+| Diagnose desktop, web, text, voice, approvals, or result delivery | [`Interaction runtime model`](interaction-runtime-model.md) |
+| Diagnose routing or control-surface selection | [`Interface, routing, and control design`](interface-routing-and-control.md) |
+
+<a id="runtime-at-a-glance"></a>
+## 🔁 Runtime at a glance
+
+### 🧱 Runtime layers
 
 An agentic system is not just an LLM. Model the runtime as a loop with distinct layers:
 
@@ -50,9 +68,12 @@ flowchart TB
 
 This loop aligns with the thought-action-observation trajectories described in Yao et al.'s [ReAct paper](https://arxiv.org/abs/2210.03629): model inference updates the working decision state, actions interact with an environment, and observations ground the next iteration. Here, “reasoning” means model inference and decision state; it does not imply that private chain-of-thought is exposed, human-readable, or persisted.
 
-### Expanded runtime and mechanism map
+### 🗺️ Expanded runtime and mechanism map
 
-The overview above isolates the ReAct cycle. The expanded map adds product-surface routing, active-context assembly, durable state, and the mechanisms that inject, gate, execute, delegate, or validate work.
+The overview above is sufficient for most reasoning. Open the expanded map when you need product-surface routing, active-context assembly, durable state, or the mechanisms that inject, gate, execute, delegate, and validate work.
+
+<details>
+<summary>Show the full runtime and mechanism map</summary>
 
 ```mermaid
 flowchart TB
@@ -215,9 +236,11 @@ flowchart TB
     class ENV,INJECT_NOTE,COMPACT_NOTE note
 ```
 
+</details>
+
 The diagram uses the general term **agent loop** from OpenAI's [long-horizon Codex explanation](https://developers.openai.com/blog/run-long-horizon-tasks-with-codex). In provider terms, Codex runs a turn within a durable thread, while Anthropic's [Claude Code CLI reference](https://docs.anthropic.com/en/docs/claude-code/cli-usage) uses **agentic turns** within a session. OpenAI's [Goals guide](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex) keeps a Goal separate as an optional thread-scoped completion contract across turns. The realtime-voice branch records one observed Codex macOS architecture, not a universal voice design. Whether a frontend speech model can access backend instructions such as `AGENTS.md` or `CLAUDE.md` must be verified separately for each voice implementation; the diagram does not assume that access.
 
-### Context lifecycle
+### ♻️ Context lifecycle
 
 Codex CLI enumerates applicable `AGENTS.md` files and injects each discovered chunk near the top of conversation history as a separate user-role message, before the user prompt, in root-to-leaf order. This describes discovery and injection, not a claim that the file is physically reread before every inference. Once retained in active history, the injected tokens can appear in every later rendered model input until context reconstruction, pruning, or compaction replaces them. See OpenAI's [Codex model guidance](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-5.3-codex#using-agentsmd).
 
@@ -229,7 +252,8 @@ Stored rollout records, retained active items, and the context rendered for a mo
 
 The model cannot reason from information that never reaches its context, and it cannot perform an action for which the harness exposes no actuator.
 
-## Mechanism Taxonomy
+<a id="mechanism-taxonomy"></a>
+## 🧰 Mechanism taxonomy
 
 Different mechanisms control different parts of the runtime.
 
@@ -250,7 +274,8 @@ Different mechanisms control different parts of the runtime.
 
 Stronger wording does not change the underlying mechanism. `Always`, `never`, `critical`, repetition, and all-caps remain prompt-level guidance unless a separate control surface enforces the behavior.
 
-## Natural-Language Rules Are Still Conditional Programs
+<a id="conditional-rules"></a>
+## 📝 Natural-language rules are conditional programs
 
 A Markdown instruction file can contain conditional rules even after the file itself has been loaded. Such a rule has two logical parts:
 
@@ -263,7 +288,8 @@ This is distinct from skill-level progressive disclosure. Skill metadata can det
 
 Because condition and consequence are separate logical roles, instruction text can represent them explicitly rather than embedding both in one prose sentence. For example, Markdown may use visibly separated **When** and **Then** blocks, a two-column condition/action table, or another structure that preserves the same distinction. This formatting does not create a new runtime mechanism; it makes the rule's applicability and consequence easier to distinguish within the context already loaded.
 
-## Reliability Characteristics
+<a id="reliability"></a>
+## 🛡️ Reliability characteristics
 
 Mechanisms provide different levels of enforcement:
 
@@ -277,7 +303,8 @@ Mechanisms provide different levels of enforcement:
 
 The sequence generally moves from probabilistic guidance toward stronger enforcement, while implementation cost and platform coupling also tend to increase.
 
-## Provider / Harness Reality
+<a id="provider-reality"></a>
+## 🌐 Provider and harness reality
 
 Agent harnesses do not have feature parity. The same conceptual mechanism can be exposed through different concrete surfaces, or may be absent on a given runtime.
 
@@ -300,17 +327,20 @@ MCP is a protocol boundary, not an agent by itself. Servers can expose resources
 
 The 2026-07-28 MCP specification uses a stateless protocol core. Cross-call server state therefore requires an explicit state mechanism such as handles or application-managed persistence rather than implicit transport session state.
 
-## Codex Runtime Mechanism Map
+For exact current filesystem conventions, use the [`Provider path reference`](provider-paths.md) instead of expanding this conceptual comparison with path details.
+
+<a id="codex-runtime"></a>
+## ⌨️ Codex runtime mechanism map
 
 These are distinct control surfaces with different loading, triggering, and enforcement behavior.
 
-### Hierarchical `AGENTS.md`
+### 📜 Hierarchical `AGENTS.md`
 
 Codex loads global guidance from `$CODEX_HOME/AGENTS.md` (normally `~/.codex/AGENTS.md`). It then discovers project guidance from the identified project root down to the current working directory. The default project-root marker is `.git`; when no configured project marker is found, Codex checks only the current working directory for project guidance. An `AGENTS.md` in a non-Git parent is therefore not inherited merely because it is an ancestor.
 
 The resulting instruction chunks are injected before the current user prompt in root-to-leaf order; deeper scopes can override earlier guidance. `AGENTS.override.md` can replace the normal file at a scope. Treat the configured `project_root_markers` list as live configuration rather than assuming `.git` when diagnosing a specific installation.
 
-### Skills and progressive disclosure
+### 📘 Skills and progressive disclosure
 
 Skill discovery is staged:
 
@@ -320,7 +350,7 @@ Skill discovery is staged:
 
 The metadata catalog is therefore a pre-selection routing surface, while the body and supporting resources are post-selection execution surfaces. A behavior that must shape every response belongs in always-loaded guidance or a stronger lifecycle/enforcement mechanism, not only in a conditional skill.
 
-### Hooks
+### ⚡ Hooks
 
 Codex currently documents command hooks for lifecycle events including `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PermissionRequest`, `PostToolUse`, `PreCompact`, `PostCompact`, `SubagentStart`, `SubagentStop`, `Stop`, `Interrupt`, and `SessionEnd`.
 
@@ -328,57 +358,45 @@ Hooks can inspect structured runtime input. Depending on the event, they can inj
 
 Current Codex command hooks are not a generic arbitrary-agent callback system. OpenAI documents `prompt` and `agent` hook handlers as parsed but skipped, so only the supported command-hook events and effects are active runtime mechanisms.
 
-### MCP and tools
+### 🛠️ MCP and tools
 
 An MCP server exposes live information and controlled actions; it does not itself guarantee that the model will choose a tool. Tool descriptions and schemas are model-visible selection surfaces, while server-side code determines what happens after invocation.
 
-### Plugins
+### 🧩 Plugins
 
 A plugin is a packaging and distribution boundary. OpenAI plugins can bundle skills, MCP configuration, assets, and Codex lifecycle hooks. Plugins do not by themselves make a capability deterministic: reliability still depends on the contained mechanism and the surface where it runs.
 
-### Permissions and approvals
+### 🔐 Permissions and approvals
 
 Permissions and approval policies are enforcement surfaces that can determine whether an action may proceed. Hooks are a separate event-driven surface that can perform checks before or after supported tool calls.
 
-### Sessions, compaction, goals, and persistent state
+### 💾 Sessions, compaction, goals, and persistent state
 
 Conversation state, global instructions, and memory are separate forms of state. In OpenAI's managed Codex harness, a session is a durable unit of work.
 
 "Context usage" means the currently rendered model input, not the visible chat length or the entire persisted transcript. OpenAI's [compaction guide](https://developers.openai.com/api/docs/guides/compaction) documents that crossing a configured threshold can emit an encrypted, opaque compaction item, prune older active context, and carry forward key prior state and reasoning in fewer tokens. A compacted window can also retain selected earlier items. The full local rollout may remain persisted even though those records are no longer all rendered into the next inference.
 
-**Version-specific local observation (Codex 0.149.0):** one inspected rollout stored a `type: compacted` record with `replacement_history`; the replacement retained explicit messages plus an encrypted compaction item, while reported input fell from roughly 223k to 51k tokens. These field names and counts describe that version and rollout, not a stable public schema.
+**Version-specific local observation (Codex 0.149.0):** one inspected rollout stored a `type: compacted` record with `replacement_history`; the replacement retained explicit messages plus an encrypted compaction item. These field names describe that version and rollout, not a stable public schema. The measured token change and its diagnostic projection live in the [`Token usage and cost model`](token-usage-and-cost-model.md#rollout-observations).
 
 To inspect another rollout safely, choose one explicit rollout JSONL file and return only the compacted-record projection instead of searching the whole rollout tree:
 
 ```bash
 ROLLOUT_FILE=/absolute/path/to/one/rollout.jsonl
 jq -c 'select(.payload.type == "compacted") | .payload | {type, replacement_history_count: (.replacement_history | length)}' "$ROLLOUT_FILE" | head -n 3
-
-jq -c '
-  select(
-    .payload.type == "event_msg"
-    and .payload.payload.type == "token_count"
-  )
-  | .payload.payload.info
-  | {
-      total_token_usage,
-      last_token_usage,
-      model_context_window
-    }
-' "$ROLLOUT_FILE"
 ```
 
-The second projection reproduces the token snapshot without returning prompt or tool content. Rollout files can contain prompts, tool output, and other sensitive context. Keep inspection local, target a known file, and project only the fields needed for the diagnosis. Field names and record shapes may change between Codex versions.
+Rollout files can contain prompts, tool output, and other sensitive context. Keep inspection local, target a known file, and project only the fields needed for the diagnosis. Field names and record shapes may change between Codex versions. Use the [`Token usage and cost model`](token-usage-and-cost-model.md#diagnostic-sequence) for usage and cache projections.
 
 Codex Goals are thread-scoped persisted state rather than global memory or project instructions. Thread/session state belongs to one ongoing trajectory, while files or another explicit store can persist state beyond that scope.
 
-### Session and configuration freshness
+### 🔄 Session and configuration freshness
 
 A running conversation or agent session has its own assembled context and runtime state. Changes to external configuration surfaces such as instruction files, skills, MCP configuration, hooks, or generated installations do not imply that every already-running session has incorporated those changes. Freshness behavior is harness-specific.
 
 Therefore, the existence of an updated file on disk and the presence of that update in a particular session's effective context are separate facts. A new session commonly rebuilds configuration/context from current sources; an existing session may require an explicit refresh, reload, re-read, session update, or restart depending on the harness. Do not assume automatic propagation without a documented mechanism or direct verification.
 
-#### Controlled Codex CLI resume experiment
+<a id="controlled-codex-cli-resume-experiment"></a>
+#### 🧪 Controlled Codex CLI resume experiment
 
 Official OpenAI documentation establishes `AGENTS.md` discovery/injection and skill progressive disclosure, but does not promise hot reload semantics for a continued Codex CLI or desktop session. A controlled local experiment therefore tested those semantics directly.
 
@@ -404,7 +422,8 @@ To reproduce the test without touching canonical or generated user files:
 
 When freshness is in doubt, inspect the smallest safe projection of the current rollout, distinguish injected messages from file-read tool output, and compare a fresh session with the exact continued-session lifecycle being diagnosed. Do not infer refresh from the final prose response alone.
 
-#### Controlled Codex desktop experiment
+<a id="controlled-codex-desktop-experiment"></a>
+#### 🖥️ Controlled Codex desktop experiment
 
 Official documentation describes skill metadata selection, on-demand body loading, and prompt caching; it does not specify whether a continuously open Codex desktop chat hot-reloads local skill metadata or project instructions. A controlled local experiment therefore kept one desktop chat and one running app session open across all measured variants.
 
@@ -429,13 +448,14 @@ The narrow troubleshooting conclusion is lifecycle-specific: for this desktop ve
 
 To recheck a future desktop build, keep the app process and thread identifier constant, pre-provision the workspace before chat creation when possible, change one surface at a time, repeat unchanged variants, and inspect targeted rollout projections for catalog messages, injected instruction records, file-read outputs, and per-inference usage. A final answer alone cannot distinguish remembered content, injection, metadata selection, and a fresh file read.
 
-### Subagents
+### 🤝 Subagents
 
 Subagents are separate model workers started by the harness for delegated work. They may have isolated task context and their own lifecycle events, but they remain bounded by what context, tools, permissions, and environment the harness gives them.
 
 Delegation changes task decomposition and context isolation; it does not by itself create an enforcement mechanism.
 
-## Context-Efficient Observation
+<a id="context-observation"></a>
+## 🔎 Context-efficient observation
 
 Local computation is not itself model context. Only the command or tool result returned to the model consumes the active context window. Parse large artifacts locally and return a compact projection: bound matches, select relevant fields, cap lines, and summarize counts.
 

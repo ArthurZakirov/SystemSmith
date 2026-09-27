@@ -1,6 +1,6 @@
 # 🌐 Portability and provider mapping
 
-Use this reference when reusable agent artifacts risk leaking one person's paths, identity, operating system, or provider terminology into the design. For exact current provider paths, read `provider-paths.md`.
+Use this reference when reusable agent artifacts risk leaking one person's paths, identity, operating system, or provider terminology into the design. For exact current provider paths, read the [`Provider path reference`](provider-paths.md).
 
 ## 🧳 Portability rule
 
@@ -24,4 +24,4 @@ Translate requests like “make Codex do X” into the underlying cross-provider
 
 When a reusable artifact refers to a provider-specific instruction file, skill directory, command, agent/subagent, hook, or plugin, name the shared concept first and then enumerate relevant provider equivalents. Do not imply feature parity; an equivalent may use a different mechanism or may not exist.
 
-Read `provider-paths.md` whenever an exact filename or directory matters. If the target ecosystem is broader than the enumerated providers, end with an explicit fallback such as “or the equivalent surface for the current agentic AI tool.”
+Read the [`Provider path reference`](provider-paths.md) whenever an exact filename or directory matters. If the target ecosystem is broader than the enumerated providers, end with an explicit fallback such as “or the equivalent surface for the current agentic AI tool.”

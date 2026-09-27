@@ -1,10 +1,21 @@
-# Agent Engineering Process
+# 🛠️ Agent engineering process
 
-Last checked: 2026-09-26
+Use this reference when translating a desired behavior into a concrete modification of an agentic system. For runtime facts and available mechanism types, read the [`Agent runtime model`](agent-runtime-model.md).
 
-Use this reference when translating a desired behavior into a concrete modification of an agentic system. For runtime facts and available mechanism types, read `agent-runtime-model.md`.
+## 🗂️ Contents
 
-## Operationalization Test
+- [🔗 Operationalization test](#operationalization-test)
+- [🧭 Translation procedure](#translation-procedure)
+- [✅ Behavior validation and iteration](#behavior-validation)
+- [📝 Natural-language rule design](#rule-design)
+- [⚙️ Mechanism selection](#mechanism-selection)
+- [🧪 Example: protect personal time](#example)
+- [🔎 Codex translation checklist](#codex-checklist)
+- [🩺 Debugging unexpected behavior](#debugging)
+- [🚦 Wishlist-to-production lifecycle](#wishlist-lifecycle)
+
+<a id="operationalization-test"></a>
+## 🔗 Operationalization test
 
 For every desired behavior, establish an explicit chain:
 
@@ -19,7 +30,8 @@ For every desired behavior, establish an explicit chain:
 
 If any required link is missing, classify the behavior as **not operationalized**. Preserve it as problem-space intent rather than copying it into a production instruction and calling it implemented.
 
-## Translation Procedure
+<a id="translation-procedure"></a>
+## 🧭 Translation procedure
 
 When the user states a high-level wish:
 
@@ -33,7 +45,8 @@ When the user states a high-level wish:
 8. Define how the behavior will be tested.
 9. Only then edit the production instruction, skill, hook, tool, permission, script, or automation.
 
-## Behavior Validation and Iteration
+<a id="behavior-validation"></a>
+## ✅ Behavior validation and iteration
 
 Static validation proves that an implementation is well-formed; it does not prove that the agent behaves as intended. Every implemented change to skills, instructions, hooks, tools, routing, automations, prompt rules, persistence, or another agent-system mechanism must pass a behavioral loop before it is considered validated or ready for promotion.
 
@@ -49,7 +62,7 @@ Static validation proves that an implementation is well-formed; it does not prov
 
 The test should exercise the strongest relevant part of the mechanism. A deterministic hook requires evidence that the hook fired and enforced its result; a skill requires evidence that routing and body execution occurred; an automation requires evidence that its event and action path ran; a persistence change requires evidence across the intended boundary.
 
-### When the runtime surface is the subject
+### 🔬 When the runtime surface is the subject
 
 Use a narrower controlled runtime experiment when the question itself concerns surface differences, session lifecycle, hot reload, caching, or propagation. Isolate the test in temporary project-local instructions or skills, establish a baseline, change one variable, repeat the treatment, and use a negative control. Inspect targeted instruction/catalog records, file reads, lifecycle boundaries, and usage/cache fields rather than relying on answer text or loading an entire rollout log.
 
@@ -57,7 +70,8 @@ For Codex CLI, distinguish one persistent thread resumed through separate `codex
 
 Runtime findings apply only to the tested **surface + version + configuration + workspace scope + session lifecycle**. Do not equate CLI resume, an open TUI, an open desktop chat, a new chat, or a voice frontend. See the [`Agent Runtime Model`](agent-runtime-model.md) for loading and lifecycle mechanics and the [`Token Usage and Cost Model`](token-usage-and-cost-model.md) for rollout-log, usage, and prompt-cache interpretation.
 
-## Natural-Language Rule Design
+<a id="rule-design"></a>
+## 📝 Natural-language rule design
 
 Even after a skill or instruction file has loaded, each situational rule inside it should make two parts explicit:
 
@@ -68,13 +82,15 @@ A loaded Markdown body can contain many rules that are irrelevant to the current
 
 If the condition depends on an abstraction such as "when the user is tired" or "when this work is low value," operationalize how that state is inferred from observable evidence before treating the rule as reliable.
 
-## Mechanism Selection
+<a id="mechanism-selection"></a>
+## ⚙️ Mechanism selection
 
 Use the lightest mechanism that can satisfy the required reliability. Escalate from passive prose toward retrieved guidance, tool-assisted checks, deterministic validators, event hooks, permission gates, or external automation as needed. Stronger wording is not stronger enforcement.
 
 For platform-specific choices, verify the actual capabilities of the target harness rather than assuming feature parity.
 
-## Example: Protect Personal Time
+<a id="example"></a>
+## 🧪 Example: protect personal time
 
 Desired behavior: "Do not let work expand into personal time for an unvalidated deadline."
 
@@ -89,7 +105,8 @@ Before implementation, determine:
 
 The resulting implementation may require multiple mechanisms rather than one prompt.
 
-## Codex Translation Checklist
+<a id="codex-checklist"></a>
+## 🔎 Codex translation checklist
 
 When Codex is the target harness, answer these questions before labeling a behavior implemented:
 
@@ -101,7 +118,8 @@ When Codex is the target harness, answer these questions before labeling a behav
 6. What state must persist, and at what scope?
 7. What is the smallest Codex mechanism that closes the complete loop?
 
-## Debugging Unexpected Agent Behavior
+<a id="debugging"></a>
+## 🩺 Debugging unexpected agent behavior
 
 When the user asks why the agent behaved a certain way, or reports that intended behavior did not occur, treat the incident as a runtime-debugging problem rather than a politeness problem.
 
@@ -117,7 +135,8 @@ When the user asks why the agent behaved a certain way, or reports that intended
 
 For configuration changes, verify the actual propagation path. Refresh or notify already-running sessions only when the target harness exposes a documented mechanism for doing so. Otherwise, explicitly re-read in the current session where possible and use a fresh session as the robust fallback.
 
-## Wishlist-to-Production Lifecycle
+<a id="wishlist-lifecycle"></a>
+## 🚦 Wishlist-to-production lifecycle
 
 Do not treat every newly stated desired behavior as production guidance.
 

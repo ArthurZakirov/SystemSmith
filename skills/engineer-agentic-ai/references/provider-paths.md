@@ -1,10 +1,24 @@
-# Provider Path Reference
+# 🗺️ Provider path reference
 
-Last checked: 2026-09-27
+Documentation snapshot: 2026-09-27. Re-verify provider-specific paths from the linked [primary sources](#sources) before changing a live installation.
 
 Use this reference when a skill, prompt, plugin, hook, or instruction file needs to mention provider-specific filenames or directories. Prefer concept-first wording in the main instructions, then enumerate concrete provider equivalents only when the filesystem location matters.
 
-## Core Rule
+## 🗂️ Contents
+
+- [🧭 Core rule](#core-rule)
+- [🧩 Concept map](#concept-map)
+- [📜 Always-loaded instruction files](#instruction-files)
+- [📘 Skills](#skills)
+- [⌨️ Custom commands or prompt files](#commands)
+- [🤝 Agents or subagents](#agents)
+- [⚡ Hooks, plugins, and deterministic controls](#hooks-plugins)
+- [⚙️ Settings and general config](#settings)
+- [✍️ Recommended wording pattern](#wording)
+- [📚 Sources](#sources)
+
+<a id="core-rule"></a>
+## 🧭 Core rule
 
 Do not write reusable instructions that mention only one provider-specific file such as `CLAUDE.md` or only one provider-specific directory such as `.claude/skills/` unless the implementation is truly platform-specific.
 
@@ -12,7 +26,8 @@ When a concrete path matters, enumerate the known equivalents across the current
 
 `or the equivalent instruction/skill/plugin location for your agentic AI tool`
 
-## Concept Map
+<a id="concept-map"></a>
+## 🧩 Concept map
 
 These names often refer to the same underlying idea even when the provider uses different terminology:
 
@@ -23,7 +38,8 @@ These names often refer to the same underlying idea even when the provider uses 
 - event-driven deterministic automation: hook or plugin event handler
 - extension package: plugin
 
-## Always-Loaded Instruction Files
+<a id="instruction-files"></a>
+## 📜 Always-loaded instruction files
 
 ### Claude Code
 
@@ -50,7 +66,8 @@ These names often refer to the same underlying idea even when the provider uses 
 - Common project-level path: `./AGENTS.md`
 - Nested `AGENTS.md` files are used for subprojects in large repos.
 
-## Skills
+<a id="skills"></a>
+## 📘 Skills
 
 ### Claude Code
 
@@ -78,7 +95,8 @@ These names often refer to the same underlying idea even when the provider uses 
 - The standard itself does not mandate one universal discovery path.
 - A common ecosystem path is `.agents/skills/<skill-name>/SKILL.md`.
 
-## Custom Commands Or Prompt Files
+<a id="commands"></a>
+## ⌨️ Custom commands or prompt files
 
 ### Claude Code
 
@@ -102,7 +120,8 @@ These names often refer to the same underlying idea even when the provider uses 
 - FastMCP has a `prompt` concept, but that is not a shared cross-client filesystem path.
 - Treat it as an implementation-specific prompt surface, not as a direct substitute for `CLAUDE.md`, `AGENTS.md`, or a skill directory.
 
-## Agents Or Subagents
+<a id="agents"></a>
+## 🤝 Agents or subagents
 
 ### Claude Code
 
@@ -121,7 +140,8 @@ These names often refer to the same underlying idea even when the provider uses 
 - No public repo-local `agents/` path for Codex itself was found in the sources consulted.
 - In the installed local Codex tooling here, `.agents/plugins/marketplace.json` is plugin marketplace metadata, not an agent-definition directory.
 
-## Hooks, Plugins, And Deterministic Control Surfaces
+<a id="hooks-plugins"></a>
+## ⚡ Hooks, plugins, and deterministic control surfaces
 
 ### Claude Code
 
@@ -152,7 +172,8 @@ These names often refer to the same underlying idea even when the provider uses 
 - The installed local Codex scaffold supports optional companion content such as `skills/`, `hooks/`, `scripts/`, `assets/`, `.mcp.json`, and `.app.json`
 - The same local scaffold also uses a manifest placeholder `hooks: ./hooks.json`, so treat Codex hook wiring as manifest-driven rather than assuming a single universal hook directory convention.
 
-## Settings And General Config
+<a id="settings"></a>
+## ⚙️ Settings and general config
 
 ### Claude Code
 
@@ -170,7 +191,8 @@ These names often refer to the same underlying idea even when the provider uses 
 - The sources consulted here do not provide one public cross-surface settings-file path equivalent to Claude Code `settings.json` or OpenCode `opencode.json`.
 - Do not invent one. If you need a Codex-specific settings path, verify it from the actual product surface or local installed tooling first.
 
-## Recommended Wording Pattern
+<a id="wording"></a>
+## ✍️ Recommended wording pattern
 
 Prefer concept-first wording:
 
@@ -184,34 +206,34 @@ If the plugin manifest matters:
 
 `Update the provider’s plugin manifest, for example .claude-plugin/plugin.json, .codex-plugin/plugin.json, or the equivalent plugin manifest/config surface for your agentic AI tool.`
 
-## Sources
+<a id="sources"></a>
+## 📚 Sources
 
-- Claude Code memory, slash commands, subagents, plugins, and `.claude` directory:
-  - https://docs.anthropic.com/en/docs/claude-code/memory
-  - https://docs.anthropic.com/en/docs/claude-code/slash-commands
-  - https://code.claude.com/docs/en/sub-agents
-  - https://code.claude.com/docs/en/claude-directory
-  - https://code.claude.com/docs/en/plugins-reference
-  - https://code.claude.com/docs/en/plugins
-  - https://code.claude.com/docs/en/slash-commands
-- OpenCode rules, skills, commands, agents, plugins, permissions, config:
-  - https://opencode.ai/docs/rules/
-  - https://opencode.ai/docs/skills/
-  - https://opencode.ai/docs/commands/
-  - https://opencode.ai/docs/agents/
-  - https://opencode.ai/docs/plugins/
-  - https://opencode.ai/docs/permissions
-  - https://opencode.ai/docs/config/
-- AGENTS.md and Agent Skills:
-  - https://agents.md/index
-  - https://agentskills.io/specification
-  - https://agentskills.io/skill-creation/quickstart
-- OpenAI Codex public docs:
-  - https://openai.com/index/introducing-codex/
-  - https://openai.com/academy/codex-plugins-and-skills
-  - https://developers.openai.com/api/docs/guides/latest-model
-  - https://developers.openai.com/codex/config-reference
-  - https://developers.openai.com/api/docs/guides/compaction
+- Claude Code memory, commands, subagents, plugins, and `.claude` directory:
+  - [Memory](https://docs.anthropic.com/en/docs/claude-code/memory)
+  - [Slash commands](https://docs.anthropic.com/en/docs/claude-code/slash-commands)
+  - [Subagents](https://code.claude.com/docs/en/sub-agents)
+  - [`.claude` directory](https://code.claude.com/docs/en/claude-directory)
+  - [Plugin reference](https://code.claude.com/docs/en/plugins-reference)
+  - [Plugins](https://code.claude.com/docs/en/plugins)
+- OpenCode rules, skills, commands, agents, plugins, permissions, and config:
+  - [Rules](https://opencode.ai/docs/rules/)
+  - [Skills](https://opencode.ai/docs/skills/)
+  - [Commands](https://opencode.ai/docs/commands/)
+  - [Agents](https://opencode.ai/docs/agents/)
+  - [Plugins](https://opencode.ai/docs/plugins/)
+  - [Permissions](https://opencode.ai/docs/permissions)
+  - [Configuration](https://opencode.ai/docs/config/)
+- `AGENTS.md` and Agent Skills:
+  - [`AGENTS.md`](https://agents.md/index)
+  - [Agent Skills specification](https://agentskills.io/specification)
+  - [Agent Skills quickstart](https://agentskills.io/skill-creation/quickstart)
+- OpenAI Codex public documentation:
+  - [Introducing Codex](https://openai.com/index/introducing-codex/)
+  - [Codex plugins and skills](https://openai.com/academy/codex-plugins-and-skills)
+  - [Latest-model guide](https://developers.openai.com/api/docs/guides/latest-model)
+  - [Codex configuration reference](https://developers.openai.com/codex/config-reference)
+  - [Compaction](https://developers.openai.com/api/docs/guides/compaction)
 - Installed local Codex skill/plugin tooling in this environment:
   - `${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/SKILL.md`
   - `${CODEX_HOME:-$HOME/.codex}/skills/.system/plugin-creator/SKILL.md`
