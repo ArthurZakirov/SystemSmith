@@ -107,6 +107,41 @@ A separate controlled Codex CLI `0.149.0` resume experiment changed a temporary 
 
 The rollout proves aggregate prefix reuse, not token-level attribution to a particular source block. The lower cached share immediately after each early injected-surface change, followed by a much higher share on the unchanged repeat, is consistent with exact-prefix invalidation and later reuse. It is not proof that the changed file alone caused every non-cached token: conversation growth, catalog reinjection, tools, and other rendered-request differences also changed. The unchanged skill-body edit retained high first-inference reuse because the body was loaded later through a tool call rather than changed in the initial metadata prefix.
 
+### Continuously open desktop cache observation
+
+A separate controlled Codex desktop experiment kept one chat and one app process open while changing a project-local skill. The tested app was version `26.924.20706` (build `11431`) with Codex CLI `0.149.0`; refresh those values using the commands in the [desktop lifecycle experiment](agent-runtime-model.md#controlled-codex-desktop-experiment). The rollout reported `cache_write_input_tokens: 0` for every recorded inference.
+
+| Desktop inference | Input tokens | Cached input tokens | Non-cached input tokens |
+| --- | ---: | ---: | ---: |
+| Initial setup turn | 38,560 | 21,248 | 17,312 |
+| Baseline with original nonmatching catalog entry | 45,053 | 38,400 | 6,653 |
+| After on-disk description change; catalog remained stale | 45,215 | 44,928 | 287 |
+| Unchanged repeat of the stale-catalog variant | 45,380 | 45,056 | 324 |
+| Skill-body `V2` invocation, before file read | 45,496 | 45,184 | 312 |
+| Skill-body `V2` invocation, after file read | 45,704 | 45,312 | 392 |
+| Project-instruction no-read probe | 45,922 | 45,568 | 354 |
+| Unchanged `V2` invocation, before file read | 46,100 | 45,696 | 404 |
+| Unchanged `V2` invocation, after file read | 46,308 | 45,952 | 356 |
+
+These counts show high aggregate prefix reuse after the initial turns. The on-disk metadata edit did not produce the cache reduction seen after the CLI resume metadata refresh because the desktop rollout did not inject the changed catalog entry. The body edit also left the initial prompt prefix highly reusable; the new body arrived later as tool output. This is consistent with exact-prefix caching, but it does not attribute any individual cached token to a particular instruction, catalog entry, or file.
+
+To reproduce the projection for one explicit rollout without printing the full JSONL:
+
+```bash
+jq -c '
+  select(.type == "token_usage_record")
+  | {
+      turn: .payload.turn_id,
+      input: .payload.usage.input_tokens,
+      cached: .payload.usage.cached_input_tokens,
+      cache_write: .payload.usage.cache_write_input_tokens,
+      output: .payload.usage.output_tokens
+    }
+' /absolute/path/to/the/desktop-rollout.jsonl
+```
+
+Treat the field names, counts, and ratios as version- and session-specific rollout evidence, not a stable desktop API or a billing statement. Official OpenAI documentation likewise says session continuity does not guarantee a cache hit and that recorded usage is best-effort.
+
 ## Optimization principles
 
 - Keep compact, broadly applicable invariants in `AGENTS.md`.

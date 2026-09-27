@@ -404,6 +404,31 @@ To reproduce the test without touching canonical or generated user files:
 
 When freshness is in doubt, inspect the smallest safe projection of the current rollout, distinguish injected messages from file-read tool output, and compare a fresh session with the exact continued-session lifecycle being diagnosed. Do not infer refresh from the final prose response alone.
 
+#### Controlled Codex desktop experiment
+
+Official documentation describes skill metadata selection, on-demand body loading, and prompt caching; it does not specify whether a continuously open Codex desktop chat hot-reloads local skill metadata or project instructions. A controlled local experiment therefore kept one desktop chat and one running app session open across all measured variants.
+
+The tested app identified itself as bundle `com.openai.codex`, desktop version `26.924.20706` (build `11431`), backed by Codex CLI `0.149.0`. Refresh these time-bound values with:
+
+```bash
+plutil -p /Applications/ChatGPT.app/Contents/Info.plist \
+  | rg 'CFBundle(Identifier|ShortVersionString|Version)'
+codex --version
+```
+
+The test used one projectless workspace, one `.agents/skills/isolated-procedure-zeta/SKILL.md`, distinctive `V1`/`V2` markers, and rollout projections from the same thread identifier. The app remained running; no chat recreation, app restart, compaction, or model-setting change occurred during the measured matrix.
+
+| Change in the open desktop chat | Rollout evidence | Observed behavior |
+| --- | --- | --- |
+| Baseline skill description did not match `comet orchard protocol` | The injected skill-catalog developer message contained the unrelated description; no skill-body read occurred | The model returned `NO_SKILL_SELECTED`. |
+| Only the on-disk YAML `description` changed to match; same prompt repeated twice | No new catalog message appeared, and the rollout retained only the original unrelated description | Both turns returned `NO_SKILL_SELECTED`; this running desktop chat did not refresh the catalog entry. |
+| Only the skill body changed from `V1` to `V2`; the skill was invoked explicitly | The tool call reread the same `SKILL.md` path and its output contained `BODY_MARKER_SKILL_V2` | The model returned `SKILL_BODY_V2`; the unchanged repeat reread and returned `V2` again. |
+| A project `AGENTS.md` was added after chat creation and later changed from `V1` to `V2` | Neither marker appeared as an injected instruction record, and the no-file-read probe returned `NO_PROJECT_AGENTS_MARKER` | This setup did not dynamically discover the post-creation project instruction file. It does **not** prove whether an `AGENTS.md` present at desktop-chat creation would hot-reload from `V1` to `V2`. |
+
+The narrow troubleshooting conclusion is lifecycle-specific: for this desktop version and projectless-chat setup, skill metadata was snapshotted when first injected, while an explicitly selected local skill body was read from disk at invocation. This differs from the CLI `exec resume` experiment above, where each resume process refreshed metadata and project instructions. Do not transfer either result to the other lifecycle without testing the exact boundary.
+
+To recheck a future desktop build, keep the app process and thread identifier constant, pre-provision the workspace before chat creation when possible, change one surface at a time, repeat unchanged variants, and inspect targeted rollout projections for catalog messages, injected instruction records, file-read outputs, and per-inference usage. A final answer alone cannot distinguish remembered content, injection, metadata selection, and a fresh file read.
+
 ### Subagents
 
 Subagents are separate model workers started by the harness for delegated work. They may have isolated task context and their own lifecycle events, but they remain bounded by what context, tools, permissions, and environment the harness gives them.
