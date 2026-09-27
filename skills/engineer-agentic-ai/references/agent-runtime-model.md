@@ -18,28 +18,19 @@ An agentic system is not just an LLM. Model the runtime as a loop with distinct 
 8. **Event / automation layer** — hooks, triggers, schedules, workflows, and external processes can run without relying on the model to spontaneously remember to act.
 
 ```mermaid
-flowchart LR
-    U[User] -->|Goal or request| C
-
-    subgraph H[Harness / orchestrator]
-        C[Assemble current context] --> M[Model inference and decision state]
-        M -->|Final response| R[Final result]
-        M -->|Action| G[Permissions and action gate]
-        O[Observation] -->|Add to next context| C
-    end
-
-    subgraph E[External state]
-        A[Tool execution / actuation] --> X[External environment]
-        P[(Persistence)]
-    end
-
-    G --> A
+flowchart TB
+    U[User goal / request] --> C
+    C[Context assembly / working state] --> M[1. Model inference / decide next step]
+    M -->|Complete / stop| R[Final response]
+    M -->|Through permission gate| A
+    A[2. Action / tool execution] --> X[External environment]
     X -->|Produces| O
-    P -->|Load durable state| C
+    O[3. Observation / tool result] -->|Update next context| C
+    P[(Persistence)] -->|Load durable state| C
     C -->|Persist updates| P
-    K[Hooks / events / automations] -->|Inject context| C
-    K -->|Trigger or gate action| G
-    R -->|Response or result| U
+    K[Runtime controls: permissions, hooks, events, automations] -.->|Inject context| C
+    K -.->|Gate or trigger action| A
+    R --> V[User receives response / result]
 ```
 
 This loop aligns with the thought-action-observation trajectories described in Yao et al.'s [ReAct paper](https://arxiv.org/abs/2210.03629): model inference updates the working decision state, actions interact with an environment, and observations ground the next iteration. Here, “reasoning” means model inference and decision state; it does not imply that private chain-of-thought is exposed, human-readable, or persisted.
