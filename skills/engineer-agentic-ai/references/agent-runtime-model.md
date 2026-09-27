@@ -143,9 +143,22 @@ To inspect another rollout safely, choose one explicit rollout JSONL file and re
 ```bash
 ROLLOUT_FILE=/absolute/path/to/one/rollout.jsonl
 jq -c 'select(.payload.type == "compacted") | .payload | {type, replacement_history_count: (.replacement_history | length)}' "$ROLLOUT_FILE" | head -n 3
+
+jq -c '
+  select(
+    .payload.type == "event_msg"
+    and .payload.payload.type == "token_count"
+  )
+  | .payload.payload.info
+  | {
+      total_token_usage,
+      last_token_usage,
+      model_context_window
+    }
+' "$ROLLOUT_FILE"
 ```
 
-Rollout files can contain prompts, tool output, and other sensitive context. Keep inspection local, target a known file, and project only the fields needed for the diagnosis.
+The second projection reproduces the token snapshot without returning prompt or tool content. Rollout files can contain prompts, tool output, and other sensitive context. Keep inspection local, target a known file, and project only the fields needed for the diagnosis. Field names and record shapes may change between Codex versions.
 
 Codex Goals are thread-scoped persisted state rather than global memory or project instructions. Thread/session state belongs to one ongoing trajectory, while files or another explicit store can persist state beyond that scope.
 
