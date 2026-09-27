@@ -30,6 +30,21 @@ Without caching, a stable block of `L` tokens retained across `N` model calls co
 
 Prompt caching reuses computation for an unchanged prefix. Cached tokens remain input tokens, occupy context-window space, and count toward rate limits; a cache hit reduces latency and the applicable input rate rather than removing those tokens from the request.
 
+```mermaid
+flowchart LR
+    SOURCES["Ordered sources<br/>instructions · tools · history · prompt"] --> TOKENS["Tokenize rendered input"]
+    TOKENS --> KV["Build or retrieve KV states"]
+    PRIOR["Prior cache entries"] --> MATCH["Find longest exact prefix"]
+    TOKENS --> MATCH
+    MATCH --> REUSE["Reuse matching-prefix KV states"]
+    MATCH --> NEW["Compute from first changed token onward"]
+    CHANGE["Earlier source changes"] --> STOP["Exact match ends at that position"]
+    STOP --> NEW
+    PRIOR --> RETAIN["Older entries may remain until expiry<br/>a miss does not necessarily delete them"]
+```
+
+The cache operates on the fully rendered, tokenized request, not on source-file identity. Sources are ordered before tokenization; the reusable portion is the longest exact prefix available under the provider's routing rules. A change near the beginning can therefore end reuse for everything after that position even when later text is unchanged. The nonmatching older entry is not necessarily deleted: it can remain eligible until eviction or expiry and may be reused by a later request that matches it again. See [Prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching) and [prompt-cache diagnostics](https://developers.openai.com/api/docs/guides/prompt-caching/diagnostics).
+
 With one full-price processing followed by cached reads at multiplier `r`, a simplified price-equivalent is:
 
 `L + (N − 1) × r × L`
@@ -76,6 +91,21 @@ The following evidence is version- and session-specific, not a universal ratio:
 | Remaining non-cached input | 472 tokens |
 
 Record count and model-call snapshot count clearly differ. The aggregate cache report does not attribute cached tokens to individual blocks, so it cannot establish per-block cache treatment or cost.
+
+### Configuration-refresh cache observation
+
+A separate controlled Codex CLI `0.149.0` resume experiment changed a temporary project skill and `AGENTS.md` while retaining one thread. These are first-inference snapshots for the relevant turns; tool-reading turns could contain an additional inference and are excluded from this comparison.
+
+| Resumed turn | Input tokens | Cached input tokens | Non-cached input tokens |
+| --- | ---: | ---: | ---: |
+| Initial baseline | 21,916 | 11,264 | 10,652 |
+| After matching skill-description change | 27,151 | 21,760 | 5,391 |
+| Repeated unchanged skill-description variant | 27,460 | 27,264 | 196 |
+| After skill-body change; metadata unchanged | 27,758 | 27,520 | 238 |
+| After `AGENTS.md` marker change | 32,376 | 28,032 | 4,344 |
+| Repeated unchanged `AGENTS.md` variant | 32,476 | 32,256 | 220 |
+
+The rollout proves aggregate prefix reuse, not token-level attribution to a particular source block. The lower cached share immediately after each early injected-surface change, followed by a much higher share on the unchanged repeat, is consistent with exact-prefix invalidation and later reuse. It is not proof that the changed file alone caused every non-cached token: conversation growth, catalog reinjection, tools, and other rendered-request differences also changed. The unchanged skill-body edit retained high first-inference reuse because the body was loaded later through a tool call rather than changed in the initial metadata prefix.
 
 ## Optimization principles
 

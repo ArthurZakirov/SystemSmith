@@ -378,6 +378,32 @@ A running conversation or agent session has its own assembled context and runtim
 
 Therefore, the existence of an updated file on disk and the presence of that update in a particular session's effective context are separate facts. A new session commonly rebuilds configuration/context from current sources; an existing session may require an explicit refresh, reload, re-read, session update, or restart depending on the harness. Do not assume automatic propagation without a documented mechanism or direct verification.
 
+#### Controlled Codex CLI resume experiment
+
+Official OpenAI documentation establishes `AGENTS.md` discovery/injection and skill progressive disclosure, but does not promise hot reload semantics for a continued Codex CLI or desktop session. A controlled local experiment therefore tested those semantics directly.
+
+The experiment used Codex CLI `0.149.0`, one temporary Git repository, one project-local `AGENTS.md`, one project-local test skill, and one persisted thread resumed by successive `codex exec resume` processes. The prompts, marker strings, and rollout projections were repeated where practical.
+
+| Change before resumed turn | Rollout evidence | Observed behavior |
+| --- | --- | --- |
+| None; skill description did not match the prompt | Initial skill-catalog developer message contained the unrelated description | The model did not select the test skill. |
+| Skill YAML `description` changed to match the same request | A new skill-catalog developer message in the same rollout contained the changed description before the response | The model selected the skill on that turn and again on a repeated turn. |
+| Full skill body marker changed from `V1` to `V2` without changing metadata | Tool-call output showed a fresh read of the current `SKILL.md` body | The same continued thread returned `V2` on the changed turn and its repeat. |
+| Project `AGENTS.md` marker changed from `V1` to `V2` | A new user-role instruction message carrying `V2` appeared in the same rollout before the prompt; no file-read tool call occurred | The continued thread returned `V2` on the changed turn and its repeat. |
+
+This supports a narrow conclusion: in this CLI version, a **resume boundary** refreshed changed project instructions and changed skill metadata, while selected skill bodies were read from disk at invocation. It does not establish behavior for a continuously open interactive TUI process, the Codex desktop app, another CLI version, another skill source, or every configuration surface. A durable thread identifier alone therefore does not imply frozen configuration, but neither should it be treated as a general hot-reload guarantee.
+
+To reproduce the test without touching canonical or generated user files:
+
+1. Create a temporary Git repository with a project `AGENTS.md` marker and `.agents/skills/<probe>/SKILL.md` containing a nonmatching description and a body marker.
+2. Start `codex exec --json` in that directory and record its thread identifier.
+3. Change only the skill description, resume the same thread with an equivalent prompt, and inspect the explicit rollout JSONL for the new catalog message and token snapshot.
+4. Change only the body marker, resume again, and inspect the skill-read tool output.
+5. Change only the `AGENTS.md` marker, resume again without allowing a file-read step, and inspect the new injected instruction message.
+6. Repeat the unchanged variants, record the CLI version and exact lifecycle boundary, then remove the temporary repository and test thread.
+
+When freshness is in doubt, inspect the smallest safe projection of the current rollout, distinguish injected messages from file-read tool output, and compare a fresh session with the exact continued-session lifecycle being diagnosed. Do not infer refresh from the final prose response alone.
+
 ### Subagents
 
 Subagents are separate model workers started by the harness for delegated work. They may have isolated task context and their own lifecycle events, but they remain bounded by what context, tools, permissions, and environment the harness gives them.
