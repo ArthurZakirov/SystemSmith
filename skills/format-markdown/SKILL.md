@@ -1,6 +1,6 @@
 ---
 name: format-markdown
-description: Generate or rewrite Markdown from unstructured notes, transcripts, scratch text, or rough drafts while preserving meaning and producing valid Markdown syntax. Use when the requested output is specifically a Markdown artifact.
+description: Create, edit, review, refactor, or rewrite Markdown artifacts while preserving meaning, valid syntax, navigability, and human reviewability. Use whenever work directly changes or reviews a Markdown file, including README.md, AGENTS.md, SKILL.md, reference docs, design docs, or Markdown produced from notes, transcripts, scratch text, or rough drafts.
 argument-hint: "[[--RAW] Raw message here..] [[--PART] Which part to apply guidelines to (default all)] [[--PRINCIPLE] Which specific guideline to apply (default all)] [[--SKIP] Which guidelines to skip (default none)]"
 ---
 
@@ -14,7 +14,7 @@ Also apply [`living-artifacts`](../living-artifacts/SKILL.md) when the output co
 
 ## Core Task
 
-Rewrite the supplied material into valid, readable Markdown while preserving its meaning.
+Create or edit the Markdown artifact so it remains valid, readable, navigable, and faithful to the intended meaning. Treat machine-consumed Markdown such as `AGENTS.md` and `SKILL.md` as dual-audience artifacts: optimize for correct agent use without sacrificing human review and navigation.
 
 ## Preservation Rules
 
@@ -39,6 +39,7 @@ Rewrite the supplied material into valid, readable Markdown while preserving its
 - No invented facts.
 - Markdown parses as intended.
 - Frontmatter and code fences remain valid.
-- Links and technical identifiers are represented correctly.
+- Every referenced file or path with a resolvable target is a meaningful clickable Markdown link; unresolved targets are identified rather than presented as if linked.
+- Machine-consumed Markdown remains easy for a human reviewer to navigate and inspect.
 - Representation and relevance/disclosure rules come from their dedicated skills rather than being redefined here.
 - When transforming raw thoughts, examples and nuance are preserved according to `thoughts-to-artifact`.
