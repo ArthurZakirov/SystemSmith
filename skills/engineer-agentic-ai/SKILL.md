@@ -1,335 +1,69 @@
 ---
 name: engineer-agentic-ai
-description: "Translate natural-language requests about modifying an AI coding agent, its skills, MCP tools, MCP servers, prompts, routing, tool descriptions, context loading, memory, portability, or other agentic behavior into the concrete mechanics of the target system. Use when a request is underspecified, phrased in human terms instead of runtime terms, or risks making the wrong change because the agent must reason about how Codex, Claude Code, OpenCode, MCP-based systems, or similar runtimes select skills, choose tools, load instructions, apply configuration, and stay transferable across users and machines."
+description: "Translate natural-language requests about AI-agent behavior, skills, MCP tools/servers, prompts, routing, context loading, memory, hooks, plugins, permissions, delegation, portability, or other agentic-system behavior into the concrete runtime mechanism and change surface. Use when a request is phrased as what the AI should understand/do rather than how the target harness actually observes, triggers, routes, persists, or enforces that behavior."
 ---
 
-# Engineer Agentic AI
-
-## Overview
-
-Convert fuzzy requests about "my AI" into precise changes to the underlying agent system. Focus on the mechanics that actually determine behavior: trigger metadata, prompt layering, context injection, tool availability, MCP descriptions, resource loading, and evaluation surfaces.
-
-## Reframe The Request
-
-Translate user language into implementation language before proposing edits.
-
-- Identify the target system or closest equivalent: Codex skill, Claude Code instruction file, OpenCode config, agent prompt, tool policy, memory file, plugin, or runtime setting.
-- Replace anthropomorphic phrasing such as "make the AI understand" with concrete levers such as "change trigger metadata", "move guidance into a file loaded post-trigger", or "add a deterministic script."
-- State which layer the request belongs to: always-loaded metadata, conditionally loaded instructions, on-demand reference material, executable tooling, or UI-only metadata.
-- Prefer the smallest layer that can reliably change the behavior.
-
-## Model The Runtime
-
-Read `references/agent-runtime-model.md` when runtime mechanics need to be established or checked. That file is descriptive only: it explains how the agent runtime works.
-
-Read `references/agent-engineering-process.md` when translating a desired behavior into a concrete system modification. That file contains the operationalization, mechanism-selection, implementation, and verification procedure.
-
-Reason from how the system actually consumes the artifact.
-
-- Treat the YAML frontmatter as the skill's interface contract for invocation. Treat the markdown body as the implementation that executes after invocation.
-- Treat MCP server descriptions and MCP tool descriptions the same way: they are interface text used for tool selection, not a place to explain internals.
-- For skill metadata, assume `name` and `description` exist to help the agent decide whether to load the skill. Write them for pattern matching, not for human explanation.
-- For MCP tools, assume the description is the primary selection surface exposed before tool execution. Write it to indicate when the tool should be called and what observable outcome it provides.
-- For MCP servers, assume the server description helps the agent understand when the server's capability area is relevant at all.
-- For the SKILL body, assume it is only read after the skill triggers. Put operating instructions there, not trigger criteria that the loader cannot see.
-- For tool implementation code, assume Python, libraries, and internal logic are invisible or irrelevant until after the tool has already been selected.
-- For references, assume they are read only when explicitly needed. Move bulky examples, schemas, or variant-specific details there.
-- For scripts and assets, assume they improve determinism or reuse rather than explanation.
-- For UI metadata such as `agents/openai.yaml`, optimize for the human chooser, not the runtime router.
-
-## Separate Interface From Implementation
-
-Keep a single source of truth for invocation.
-
-- Put "when this skill should load" in the YAML `description`, because that text is available before selection.
-- Put "when this MCP tool or server should be used" in its description field, because that text is available before execution.
-- Put "what to do after loading" in the markdown body, because that text is only available after selection.
-- Put "how the tool works internally" in the implementation code, not in the description.
-- Do not try to fix missed invocation by adding more "use this skill when..." prose to the markdown body. If the skill failed to trigger, the body was never available to help.
-- Do not try to fix missed tool use by expanding the tool description with library names, architecture, or internal algorithms unless those details are necessary for correct invocation.
-- Avoid describing implementation details in the YAML description when the real consumer need is the observable outcome or contract.
-- Prefer interface wording similar to a function signature or API contract: what kind of request this handles, what outcome it enables, and what context should route here.
-- Prefer body wording similar to an implementation: procedures, constraints, scripts, decision rules, and execution details.
-
-Use the programming analogy directly:
-
-- The YAML description is like the public function signature and docstring used for selection.
-- An MCP tool description is like the public signature and contract for choosing that tool.
-- The markdown body is like the function body.
-- The Python tool implementation is also like the function body.
-- References, scripts, and assets are support code and data loaded only when needed.
-- A caller choosing a function cares about inputs, outputs, and when to call it, not the internal algorithm.
-
-## Apply The Same Principle To MCP
-
-Use the same retrieval model across skills and tools.
-
-- A skill description and an MCP tool description serve the same class of purpose: they help the agent decide whether to bring a capability into play.
-- The main difference is the implementation artifact behind the interface: a skill usually expands into markdown instructions, while an MCP tool expands into executable code.
-- Because the routing mechanism is similar, the writing rule is similar: describe when to use it and what result it provides, not how it is built internally.
-- If a tool uses FastMCP, a custom transport, helper libraries, caching, or complex orchestration, that is usually implementation detail and belongs in code or internal docs, not the description.
-- Server descriptions operate at a broader routing level; tool descriptions operate at a narrower action-selection level. Both should stay contract-oriented.
-- When multiple tools overlap, sharpen the descriptions around distinguishing inputs, outputs, and intended use cases instead of exposing internals.
-
-## Do Not Mistake Emphasis For Control
-
-Treat repeated words like "always", "never", "critical", or "super important" as a signal to inspect the control plane.
-
-- Do not try to solve reliability problems by amplifying prompt wording across every skill, instruction file, or tool description.
-- Louder wording is not a mechanism. It does not create determinism, reduce context overload, or guarantee enforcement.
-- If a user says something must always happen or must never happen, interpret that as a requirement for stronger control, not stronger prose.
-- If many instructions compete in the same context window, assume some will be dropped or deprioritized. Fix the mechanism before adding more text.
-- Avoid turning the system into a graveyard of all-caps priorities and duplicated warnings. That usually makes routing and execution worse, not better.
-
-## Escalate To Stronger Mechanisms
-
-Choose the lightest mechanism that can actually enforce the requirement.
-
-1. Diagnose why the behavior failed.
-2. If the capability was never selected, fix the routing surface: skill description, tool description, server description, or other pre-selection metadata.
-3. If the capability was selected but instructions were ignored because the context was crowded or ambiguous, simplify, split, or relocate instructions.
-4. If the requirement is truly high-confidence or prohibitive, move from probabilistic instructions to deterministic controls.
-
-Deterministic controls can include:
-
-- event hooks that inject context, run checks, block actions, or trigger tooling
-- plugins that intercept runtime events or alter behavior
-- tool permissions or approval policies that deny, allow, or gate actions
-- wrappers or scripts that always run before or after a critical action
-- tests, validators, or linters that catch violations automatically
-- scheduled automations or trigger-driven workflows when the behavior should happen without relying on a fresh user prompt
-
-When choosing among these, use the official documentation for the current platform instead of assuming feature parity across systems.
-
-- Claude Code exposes hook events such as session start, prompt submission, and pre/post tool use, which can inject context or block actions depending on the hook type.
-- OpenCode exposes plugins with event hooks and tool permissions that can allow, deny, or require approval.
-- Codex exposes different surfaces such as skills, plugins, permissions, and automations or triggers depending on product surface; do not assume it has the same hook model as Claude Code.
-
-## Map Extremes To Enforcement
-
-Translate "always" and "never" into enforceable runtime behavior.
-
-- "Always load this context before the agent works" suggests a startup, session, or prompt-submission hook, or another deterministic context-injection surface.
-- "Always run this check after edits" suggests a post-edit hook, plugin event, or automated validator.
-- "Never run this command" suggests a pre-tool hook, permission rule, or blocking wrapper.
-- "Always ask before touching this system" suggests an approval or permission policy.
-- "Always do this recurring task" suggests an automation, schedule, or trigger rather than a passive instruction sitting in context.
-
-If no deterministic surface exists on the platform, say so explicitly and then choose the strongest available fallback rather than pretending prompt wording is equivalent.
-
-## Design For Portability
-
-Treat local names, local paths, and local product wording as contamination unless they are intentionally required.
-
-- Build skills, prompts, hooks, plugins, MCP servers, and related artifacts so they can be shared across people, machines, operating systems, and directory layouts.
-- Do not hard-code home directories, usernames, desktop paths, repository roots, temp directories, or other machine-specific locations when a portable construction is possible.
-- Prefer environment variables, repository-relative paths, configuration variables, or runtime discovery over literal absolute paths.
-- If a path depends on local installation or company setup, define the dependency explicitly and construct the path from environment variables at runtime.
-- If setup requires a user to export variables in a shell profile or config file, say so directly and name the variable instead of embedding one person's filesystem layout into the artifact.
-- If a tool needs a URI, command path, or binary location, make that configurable rather than assuming one install location.
-
-Portable patterns:
-
-- `${HOME}` instead of `/home/arthur` or `/Users/alice`
-- `${CODEX_HOME}` or another documented root variable instead of a machine-specific skill directory
-- repository-relative paths when the artifact lives inside the repo
-- config entries or environment variables for external tools, service endpoints, and credentials
-
-Non-portable patterns:
-
-- `/home/arthur/.codex/...`
-- `C:\\Users\\Arthur\\...`
-- prose that assumes one specific operating system or shell without saying so
-- scripts that only work because the author's machine has a particular binary in a particular place
-
-## Generalize Identity And Product Names
-
-Write instructions so they survive changes in model, tool, and human identity.
-
-- Do not anchor reusable skills to one product name just because the user mentioned that product in natural language.
-- Translate product-specific user phrasing such as "make Codex do this" or "don't let Claude Code do that" into tool-agnostic role language unless the implementation truly depends on one platform.
-- Prefer `you` for the agent and `user` or `I` for the human when writing reusable instructions.
-- Avoid human names such as `Arthur` in reusable artifacts. Replace them with `user`, `I`, or another role-based term.
-- Avoid agent names such as `Codex`, `Claude Code`, or `Gemini` in reusable instructions unless a platform-specific capability, limitation, or file format makes the distinction necessary.
-- If a section is genuinely platform-specific, isolate that specificity in the smallest possible place instead of letting it leak across the whole artifact.
-
-Role mapping:
-
-- `you` = the current AI agent or assistant
-- `user` or `I` = the human interacting with the agent
-- product names = only when needed to distinguish platform mechanics
-
-This keeps the artifact stable when:
-
-- the same company shares the skill across multiple people
-- one person uses multiple machines with different path layouts
-- different operating systems are involved
-- the same instruction set is reused across Codex, Claude Code, OpenCode, Gemini, or another agent runtime
-
-## Enumerate Provider Equivalents
-
-When a reusable artifact needs to mention a provider-specific file or directory, enumerate equivalents instead of naming only one vendor surface.
-
-- Do not say only `CLAUDE.md`, only `AGENTS.md`, only `.claude/skills/`, or only `.codex-plugin/plugin.json` unless the task is genuinely platform-specific.
-- If the concept is cross-provider, name the concept first and then list the relevant concrete paths for Claude Code, Codex, OpenCode, `.agents` or Agent Skills-compatible tools, and any other platform explicitly in scope.
-- End the enumeration with a fallback such as `or the equivalent for your agentic AI tool` when the ecosystem may include additional tools.
-- Read `references/provider-paths.md` when you need exact current filenames or directories for instruction files, skills, commands, agents, hooks, plugins, or manifests.
-- Treat names like skill, command, prompt, slash command, agent, subagent, hook, and plugin as potentially different labels for related mechanics. Translate by function, not by vendor wording alone.
-
-## Write Trigger Metadata For Retrieval
-
-Describe observable request patterns and target artifacts. Avoid restating facts already implied by the environment.
-
-- Name the concrete task, artifact, or mechanism: skills, MCP tools, MCP servers, agent prompts, tool routing, context files, memory, delegation, evaluation harnesses.
-- Include the kinds of user requests that should cause invocation: "fix a skill", "make Codex use this correctly", "change how Claude Code loads instructions", "turn this behavior complaint into the right config change."
-- For tools, describe the request pattern that should lead to selection and the externally visible action the tool performs.
-- Describe the contract from the consumer perspective: what problem this skill takes in and what kind of behavior change or output it produces.
-- Avoid "what the skill does internally" phrasing unless it is necessary for retrieval. Internal procedure belongs in the body.
-- Avoid "what the tool does internally" phrasing unless it is necessary to distinguish it from another tool.
-- Do not waste tokens on phrases like "for AI agents" when the field is only consumed by AI agents anyway.
-- Do not describe the skill as if explaining it to a person encountering a catalog entry unless the field is human-facing.
-- Prefer wording that helps embedding or pattern matching: nouns, verbs, platforms, artifacts, failure modes.
-
-Bad:
-`This skill is needed when an AI agent needs help understanding skills.`
-
-Better:
-`Use when editing skill metadata, trigger descriptions, or instruction files for Codex, Claude Code, OpenCode, or similar agent systems, especially when a natural-language request must be converted into the correct runtime mechanism.`
-
-Bad MCP tool description:
-`Tool that uses FastMCP, async Python, retries, and custom libraries to fetch data.`
-
-Better MCP tool description:
-`Use to fetch the current dataset or record needed to answer a user request when the agent needs live data from this server.`
-
-## Choose The Runtime Surface From Reliability Needs
-
-Do not choose between always-loaded instructions, references, skills, hooks, tools, or other mechanisms from user wording alone. First estimate the operating characteristics of the desired behavior.
-
-Evaluate at least these dimensions:
-
-- **Frequency** — how often is this behavior relevant across ordinary turns or tasks?
-- **Miss cost / risk** — what happens if the behavior is not considered at the relevant moment?
-- **Instruction size** — can the needed guidance remain compact enough for always-loaded context, or would it create persistent context pressure?
-- **Routability** — can the relevant situation be recognized reliably from information available before a conditional artifact is loaded?
-- **Required enforcement** — is probabilistic guidance sufficient, or must the system gate, block, schedule, validate, or otherwise enforce the behavior?
-
-Use these dimensions together rather than a fixed percentage threshold. Typical mappings:
-
-- High-frequency, compact invariants usually belong directly in always-loaded guidance.
-- High-frequency but bulky guidance usually needs a short always-loaded router plus a referenced detail file.
-- Low-frequency, clearly recognizable workflows are good skill candidates.
-- Rare but high-cost-to-miss rules may still need an always-loaded trigger or stronger deterministic mechanism.
-- Requirements that must fire by construction should use hooks, permission gates, validators, schedulers, or another enforcement surface when available.
-
-If frequency, miss cost, routability, or another decision-critical property is unknown and the answer would materially change the implementation surface, obtain that information before committing to a design. Prefer targeted questions such as:
-
-- "How often do you expect this to matter: almost every turn, sometimes, or rarely?"
-- "What is the consequence if the agent misses it once?"
-- "Can the relevant situation be recognized from the current prompt or runtime state before any skill/reference is loaded?"
-- "Does this need to be guaranteed, or is a best-effort reminder acceptable?"
-
-Do not ask for information that can already be inferred confidently from the request or runtime. If uncertainty does not affect the mechanism choice, proceed with the smallest robust design.
-
-### Layering Rule
-
-Use the surfaces as different layers rather than substitutes:
-
-- **Always-loaded instructions**: compact invariants and reliable routing conditions.
-- **References**: substantial guidance that should load after an always-visible condition determines relevance.
-- **Skills**: recognizable task-specific workflows whose full procedure need not be present on every turn.
-- **Deterministic controls**: requirements whose miss cost is too high for probabilistic selection or execution.
-
-A useful test is: if the behavior disappears completely when a skill fails to trigger, decide whether its routing condition or invariant must live on an earlier, more reliable surface.
-
-## Decide What To Change
-
-Choose the implementation target that matches the failure mode.
-
-- If the problem is incorrect invocation, edit the always-visible trigger metadata.
-- If the problem is incorrect tool selection, edit the MCP tool or server description before touching implementation code.
-- If the problem is good triggering but bad execution after load, edit the post-trigger instructions.
-- If the problem is good tool selection but bad execution, edit the Python implementation, tool schema, or runtime logic rather than the description.
-- If the user wants something to always happen or never happen, inspect whether a hook, plugin, permission rule, validator, or automation is the correct surface.
-- If the system is overloaded with many competing instructions, reduce context pressure before adding stronger wording.
-- If the artifact leaks a local path, username, hostname, or product-specific identity into reusable instructions, replace it with an environment variable, relative path, config surface, or role-based term.
-- If the artifact mentions only one provider-specific file for a cross-provider concept, rewrite it to enumerate the known equivalents and add an open-ended fallback.
-- If the body contains a long "when to use this skill" section, move the actionable trigger criteria into the YAML description and delete or sharply reduce the duplicate body prose.
-- If the problem is repeated fragile code generation, add a script.
-- If the problem is too much context in the main instructions, move details into references and point to them.
-- If the problem is only about how the skill appears in a picker, edit UI metadata instead of runtime metadata.
-- If the request spans multiple layers, separate them explicitly instead of blending them into one vague description.
-
-## Produce An Engineering Translation
-
-When responding or editing, explicitly translate the request into the mechanics you will modify.
-
-Use a compact format like:
-
-1. User intent: what outcome the user actually wants.
-2. Runtime interpretation: which mechanism controls that behavior.
-3. Change surface: which file or config layer to edit.
-4. Why this layer: why the other plausible layers are insufficient or redundant.
-
-Example translation:
-
-- User intent: "Make my AI better at knowing when to use this skill."
-- Runtime interpretation: improve skill retrieval, not task execution.
-- Change surface: `SKILL.md` frontmatter `description`.
-- Why this layer: the body is unavailable until after trigger, and UI metadata is not part of runtime routing.
-
-Another translation:
-
-- User intent: "Make the agent choose this MCP tool correctly."
-- Runtime interpretation: improve tool selection, not tool internals.
-- Change surface: MCP tool `description`.
-- Why this layer: the description is what the agent sees before deciding to call the tool; Python implementation details are not the routing surface.
-
-Another translation:
-
-- User intent: "This must always happen after every file edit."
-- Runtime interpretation: this is an enforcement requirement, not a wording requirement.
-- Change surface: a post-edit hook, plugin event, validator, or other deterministic runtime control supported by the platform.
-- Why this layer: repeating "always do this" in instructions remains probabilistic, while an event-based control can run every time by construction.
-
-Another translation:
-
-- User intent: "Make this work for everyone on the team, not just on my machine."
-- Runtime interpretation: remove machine-local assumptions from paths, identities, and platform naming.
-- Change surface: environment variables, relative path construction, config surfaces, and reusable role-based wording in the relevant files.
-- Why this layer: portability failures come from hard-coded local state, not from insufficiently strong prose.
-
-Another translation:
-
-- User intent: "This instruction should refer to CLAUDE.md, AGENTS.md, skills, and plugin manifests correctly across tools."
-- Runtime interpretation: map a shared concept onto the current providers' actual filenames and directories.
-- Change surface: reusable wording plus exact path enumeration backed by `references/provider-paths.md`.
-- Why this layer: the failure is incorrect provider mapping, not missing emphasis or missing implementation detail.
-
-## Guardrails
-
-- Do not preserve user phrasing if it obscures the mechanism.
-- Do not invent abstractions when the platform already exposes a direct primitive.
-- Do not conflate human-facing descriptions with machine-facing routing text.
-- Do not put trigger logic only in places that are loaded after selection.
-- Do not treat the markdown body as a fallback trigger surface.
-- Do not let YAML become an implementation dump. Keep it at the contract level.
-- Prefer a single source of truth for "when to use this skill." For now, keep that source in YAML `description`.
-- Do not let MCP tool descriptions become implementation dumps. Keep them at the contract level too.
-- Do not answer "make this always happen" by merely adding more "always", "never", or "critical" wording.
-- Do not assume more emphatic instructions can substitute for hooks, plugins, permissions, validators, or automations.
-- Do not assume one platform's control surfaces exist on another platform without checking the current docs.
-- Do not hard-code personal names, home directories, or machine-local absolute paths into reusable artifacts.
-- Do not let one product name become the default pronoun for the agent when the instruction should be portable.
-- Do not keep user identity as a proper noun when a role term such as `user`, `I`, or `you` is sufficient.
-- Do not mention only one provider-specific path when the underlying concept is cross-provider and the artifact is meant to be reusable.
-- Do not add redundant wording whose only meaning is already guaranteed by the field's usage context.
-
-## Output Standard
-
-Deliver either:
-
-- a concrete edit to the relevant system files, or
-- a short mapping from user phrasing to the exact files and fields that should change.
-
-If the platform is ambiguous, state the assumption and still express the answer in runtime terms rather than human-description terms.
+# 🛠️ Engineer Agentic AI
+
+Turn desired agent behavior into mechanisms the target runtime can actually observe, trigger, execute, persist, and verify.
+
+## 🗂️ Contents
+
+- [🧭 Workflow](#workflow)
+- [📚 Reference routing](#reference-routing)
+- [🔎 Engineering translation](#engineering-translation)
+- [✅ Completion standard](#completion-standard)
+
+<a id="workflow"></a>
+## 🧭 Workflow
+
+1. **Preserve the intent.** State the desired outcome without prematurely converting it into prompt text or a specific provider feature.
+2. **Model the runtime.** Identify the harness, available context/sensors, lifecycle event, routing surface, actuators, persistence, permissions, and freshness constraints.
+3. **Operationalize.** Connect observable signal → trigger → decision rule → actuator → persistence → verification. If the chain is incomplete, keep the item in the wishlist/problem space rather than calling it implemented.
+4. **Choose the narrowest reliable mechanism.** Prefer the lightest surface that meets frequency, miss-cost, routability, instruction-size, and enforcement requirements.
+5. **Implement only after the mechanism is justified.** Edit the canonical source, validate the real propagation path, and verify behavior rather than relying on stronger wording.
+6. **Keep the information architecture lean.** Put routing and invariants in the top-level skill; substantial runtime facts, provider mappings, examples, and procedures belong in references.
+<a id="reference-routing"></a>
+## 📚 Reference routing
+
+Read only the references needed for the current failure or design question.
+
+| Need | Read |
+| --- | --- |
+| How context, harnesses, tools, hooks, state, goals, sessions, compaction, or subagents actually behave | `references/agent-runtime-model.md` |
+| How to turn a desired behavior into an observable, testable mechanism; mechanism selection; debugging; wishlist promotion | `references/agent-engineering-process.md` |
+| Skill/MCP routing, interface-vs-implementation boundaries, trigger metadata, and when prose is being mistaken for control | `references/interface-routing-and-control.md` |
+| Portability, identity-neutral wording, and concept-first provider mapping | `references/portability-and-provider-mapping.md` |
+| Exact provider-specific instruction/skill/agent/hook/plugin paths | `references/provider-paths.md` |
+
+Do not preload every reference. If current product behavior matters, verify current official documentation or direct runtime evidence instead of relying on stale provider assumptions.
+
+<a id="engineering-translation"></a>
+## 🔎 Engineering translation
+
+Before editing, make the mapping explicit:
+
+| Field | Answer |
+| --- | --- |
+| **User intent** | What outcome should be true in the user's world? |
+| **Runtime interpretation** | Which observable/runtime mechanism controls it? |
+| **Change surface** | Which canonical file, config, hook, tool, script, plugin, permission, scheduler, or other surface changes it? |
+| **Why this surface** | Why are nearby alternatives insufficient or redundant? |
+| **Verification** | What evidence will prove the mechanism actually worked? |
+
+If the request contains `always`, `never`, “must”, or another reliability claim, explicitly test whether passive guidance can meet that requirement. Do not equate emphatic wording with enforcement.
+<a id="completion-standard"></a>
+## ✅ Completion standard
+
+A change is complete only when all relevant claims below are supported:
+
+- The target behavior is operationalized rather than merely restated as intent.
+- Trigger/applicability information lives on a surface available when the decision must be made.
+- Detailed instructions are progressively disclosed instead of duplicated across metadata, body, and references.
+- A deterministic requirement uses the strongest available enforcement surface needed by its miss cost.
+- Reusable artifacts do not accidentally depend on one person's identity, filesystem, machine, or provider vocabulary.
+- Current provider capabilities were verified when mechanism choice depends on them.
+- The canonical source was changed, generated/deployed copies were refreshed as needed, and session/config freshness was considered.
+- Validation tests the actual mechanism or propagation path, not just Markdown wording.
+
+Deliver the concrete edit when authorized. If the mechanism is not yet known or validated, preserve the desired outcome in the canonical wishlist with the missing evidence/decision stated explicitly; do not promote speculative instructions into production guidance.
