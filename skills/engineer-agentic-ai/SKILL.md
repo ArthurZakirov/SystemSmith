@@ -31,6 +31,7 @@ Read only the references needed for the current failure or design question.
 | Need | Read |
 | --- | --- |
 | How context, harnesses, tools, hooks, state, goals, sessions, compaction, or subagents actually behave | `references/agent-runtime-model.md` |
+| How Voice/Desktop/Web/product surfaces capture input, stay responsive, render output, gate approvals, run in background, or return delegated results | `references/interaction-runtime-model.md` |
 | How to turn a desired behavior into an observable, testable mechanism; mechanism selection; debugging; wishlist promotion | `references/agent-engineering-process.md` |
 | Skill/MCP routing, interface-vs-implementation boundaries, trigger metadata, and when prose is being mistaken for control | `references/interface-routing-and-control.md` |
 | Portability, identity-neutral wording, and concept-first provider mapping | `references/portability-and-provider-mapping.md` |
