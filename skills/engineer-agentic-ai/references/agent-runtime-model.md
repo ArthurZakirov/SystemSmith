@@ -88,9 +88,11 @@ flowchart TB
                 CURRENT_REQUEST["🎯 Current user request"]
                 EARLIER_MESSAGES["💬 Earlier user messages"]
                 SCOPED["📜 Scoped instruction files<br/>AGENTS.md / CLAUDE.md"]
-                SKILL_BODY["📘 Selected skill body /<br/>loaded workflow guidance"]
+                SKILL_BODY["📘 Selected SKILL.md body /<br/>loaded workflow guidance"]
+                SUPPORTING["🗃️ Supporting references / assets"]
+                INJECT_NOTE["discover / inject at session or context build<br/>retained active content repeats in later inputs"]
 
-                CURRENT_REQUEST ~~~ EARLIER_MESSAGES ~~~ SCOPED ~~~ SKILL_BODY
+                CURRENT_REQUEST ~~~ EARLIER_MESSAGES ~~~ SCOPED ~~~ INJECT_NOTE ~~~ SKILL_BODY ~~~ SUPPORTING
             end
             subgraph CAPABILITY_INPUTS["🧰 Available capabilities"]
                 direction TB
@@ -104,8 +106,9 @@ flowchart TB
                 HISTORY["🧠 Conversation history or<br/>compacted replacement state"]
                 RESOURCES["📚 Retrieved resources /<br/>references"]
                 PRIOR_RESULTS["👁️ Prior tool results /<br/>observations"]
+                COMPACT_NOTE["Compaction replaces older active context<br/>with opaque item + retained items"]
 
-                HISTORY ~~~ RESOURCES ~~~ PRIOR_RESULTS
+                HISTORY ~~~ RESOURCES ~~~ PRIOR_RESULTS ~~~ COMPACT_NOTE
             end
             ASSEMBLE([Assemble context])
 
@@ -114,6 +117,7 @@ flowchart TB
             CAPABILITY_INPUTS --> ASSEMBLE
             EVIDENCE_INPUTS --> ASSEMBLE
         end
+        CACHE_NOTE["Prompt cache<br/>cache hit lowers processing / price<br/>not context-window size"]
         CURRENT[(🗂️ Current model context)]
         SKILLS["📘 Skills / retrieval"]
         PERSIST[(💾 Persistence<br/>thread / session state)]
@@ -124,6 +128,7 @@ flowchart TB
         ASSEMBLE -->|assembled context| CURRENT
         CURRENT -->|persist state| PERSIST
         GOAL -.->|optional completion contract| CURRENT
+        CURRENT -.-> CACHE_NOTE
     end
 
     subgraph LOOP["3 · Agent loop and runtime controls"]
@@ -152,15 +157,35 @@ flowchart TB
         VALIDATE -->|evidence| OBS
     end
 
+    subgraph DISCLOSURE["4 · Progressive skill disclosure"]
+        direction TB
+        D_META["🗂️ Skill metadata / catalog"]
+        D_CONTEXT[(🗂️ Rendered model context)]
+        D_SELECT{{"🧠 Model selects<br/>matching skill"}}
+        D_BODY["📘 Load selected<br/>SKILL.md body"]
+        D_UPDATE[(🗂️ Context update)]
+        D_NEXT{{"🧠 Next model inference"}}
+        D_SUPPORT["🗃️ Supporting references / assets"]
+
+        D_META -->|rendered into| D_CONTEXT
+        D_CONTEXT -->|selection decision| D_SELECT
+        D_SELECT -->|match / invoke<br/>progressive disclosure| D_BODY
+        D_BODY -->|loaded content| D_UPDATE
+        D_UPDATE --> D_NEXT
+        D_BODY -.->|load only when needed| D_SUPPORT
+        D_SUPPORT -.->|retrieved content| D_UPDATE
+    end
+
     USER -->|types| TYPED
     USER -->|speaks| VOICE
     SPOKEN -->|played to| USER
 
     BACKEND -->|starts with| CURRENT
-    CURRENT -->|rendered input| MODEL
+    CURRENT -->|rendered on every inference<br/>input tokens| MODEL
     RESULT -->|delivered to| USER
 
     HOOKS -.->|inject / trigger| UPDATE
+    CONTEXT ~~~ DISCLOSURE
 
     classDef actor fill:#1D4ED8,stroke:#1E3A8A,color:#FFFFFF,stroke-width:3px
     classDef message fill:#DBEAFE,stroke:#2563EB,color:#172554,stroke-width:2px
@@ -182,17 +207,35 @@ flowchart TB
     class USER actor
     class TYPED,VOICE,SPOKEN,RESULT message
     class SPEECH,BACKEND surface
-    class SYSTEM,DEVELOPER,CURRENT_REQUEST,EARLIER_MESSAGES,SCOPED,SKILL_BODY,SKILL_CATALOG,TOOL_SCHEMAS,HISTORY,RESOURCES,PRIOR_RESULTS,ASSEMBLE,CURRENT,UPDATE context
-    class MODEL decision
+    class SYSTEM,DEVELOPER,CURRENT_REQUEST,EARLIER_MESSAGES,SCOPED,SKILL_BODY,SUPPORTING,SKILL_CATALOG,TOOL_SCHEMAS,HISTORY,RESOURCES,PRIOR_RESULTS,ASSEMBLE,CURRENT,UPDATE,D_META,D_CONTEXT,D_BODY,D_UPDATE,D_SUPPORT context
+    class MODEL,D_SELECT,D_NEXT decision
     class ACTION action
     class OBS observation
     class GATE,HOOKS,VALIDATE control
     class PERSIST,GOAL persistence
     class SKILLS,DELEGATE delegation
-    class ENV note
+    class ENV,INJECT_NOTE,CACHE_NOTE,COMPACT_NOTE note
 ```
 
 The diagram uses the general term **agent loop** from OpenAI's [long-horizon Codex explanation](https://developers.openai.com/blog/run-long-horizon-tasks-with-codex). In provider terms, Codex runs a turn within a durable thread, while Anthropic's [Claude Code CLI reference](https://docs.anthropic.com/en/docs/claude-code/cli-usage) uses **agentic turns** within a session. OpenAI's [Goals guide](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex) keeps a Goal separate as an optional thread-scoped completion contract across turns. The realtime-voice branch records one observed Codex macOS architecture, not a universal voice design. Whether a frontend speech model can access backend instructions such as `AGENTS.md` or `CLAUDE.md` must be verified separately for each voice implementation; the diagram does not assume that access.
+
+### Context-window and cost mechanics
+
+Codex CLI enumerates applicable `AGENTS.md` files and injects each discovered chunk near the top of conversation history as a separate user-role message, before the user prompt, in root-to-leaf order. This describes discovery and injection, not a claim that the file is physically reread before every inference. Once retained in active history, the injected tokens can appear in every later rendered model input until context reconstruction, pruning, or compaction replaces them. See OpenAI's [Codex model guidance](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-5.3-codex#using-agentsmd).
+
+Skills use progressive disclosure. The initial model context contains compact metadata: name and description, plus the path for local Responses API skills. The model selects a matching skill from that metadata and then reads its full `SKILL.md`; supporting references, scripts, templates, and assets remain additional on-demand material. See the official [Skills API guide](https://developers.openai.com/api/docs/guides/tools-skills) and [plugin Skills concepts](https://developers.openai.com/plugins/concepts/skills).
+
+| Mechanic | Context-window effect | Processing and price effect |
+| --- | --- | --- |
+| Repeated inference | Every model call receives a rendered context. Retained content occupies input space on every call in which it remains active. | Input-token usage measures the rendered input, including repeated content. A turn, an individual tool-loop inference, and a stored transcript record are different units. |
+| Prompt caching | Cached prefix tokens still occupy the context window and count as input tokens and toward rate limits. | A cache hit reuses prefix computation, reducing latency and the applicable input-token rate. For GPT-5.6+ API pricing, reads are currently `0.1×` and writes `1.25×`; this is API pricing, not a universal Codex-subscription accounting promise. |
+| Compaction | Older active history is replaced by a smaller opaque compaction item plus retained items, reducing later rendered inputs. | The changed prefix can reduce prompt-cache reuse immediately after compaction. |
+
+Without caching, a stable block of `L` tokens retained across `N` model calls contributes approximately `L × N` input tokens. With one full-price processing followed by cached reads at multiplier `r`, its simplified price-equivalent is approximately `L + (N − 1) × r × L`, while every call still occupies `L` context-window tokens. When the model uses a distinct cache-write rate `w`, replace the first `L` with `w × L`; for current GPT-5.6+ API mechanics, `w = 1.25` and `r = 0.1`. Product subscriptions and internal accounting can differ from API token pricing. See [Prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching) and [Compaction](https://developers.openai.com/api/docs/guides/compaction).
+
+> **Local rollout observation — version/session-specific, not universal.** The stored rollout contained one explicit `AGENTS.md` record of approximately 19,812 characters or 4,953 tokens using the existing four-characters-per-token estimator, and five Skill catalog records totaling approximately 112,454 characters or 28,113 estimated tokens. The latest measured inference reported 158,680 exact input tokens, including 158,208 cached tokens and 472 non-cached input tokens. This demonstrates that context-window occupancy and uncached processing are different dimensions; the aggregate cache report does not attribute cached tokens to individual blocks.
+
+Design for progressive disclosure: keep compact, broadly applicable invariants in `AGENTS.md`; put concise trigger conditions in skill metadata; keep detailed procedures in the selected `SKILL.md`; and load deeper references or assets only when the task needs them.
 
 The model cannot reason from information that never reaches its context, and it cannot perform an action for which the harness exposes no actuator.
 
