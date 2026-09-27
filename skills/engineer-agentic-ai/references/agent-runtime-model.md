@@ -19,18 +19,33 @@ An agentic system is not just an LLM. Model the runtime as a loop with distinct 
 
 ```mermaid
 flowchart TB
-    U[User goal / request] --> C
-    C[Context assembly / working state] --> M[1. Model inference / decide next step]
-    M -->|Complete / stop| R[Final response]
-    M -->|Through permission gate| A
-    A[2. Action / tool execution] --> X[External environment]
-    X -->|Produces| O
-    O[3. Observation / tool result] -->|Update next context| C
-    P[(Persistence)] -->|Load durable state| C
-    C -->|Persist updates| P
-    K[Runtime controls: permissions, hooks, events, automations] -.->|Inject context| C
-    K -.->|Gate or trigger action| A
-    R --> V[User receives response / result]
+    U([💬 User message / goal])
+    M{{🧠 Model inference<br/>Decide next step}}
+    A[[🛠️ Tool / action]]
+    O[/👁️ Observation<br/>Tool result/]
+    F([💬 Final response / result])
+
+    U -->|request| M
+    M -->|act| A
+    A -->|result| O
+    O -->|update| M
+    M -->|complete| F
+
+    classDef message fill:#DBEAFE,stroke:#2563EB,color:#172554,stroke-width:2px
+    classDef decision fill:#EDE9FE,stroke:#7C3AED,color:#3B0764,stroke-width:2px
+    classDef action fill:#FFEDD5,stroke:#EA580C,color:#431407,stroke-width:2px
+    classDef observation fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:2px
+
+    class U,F message
+    class M decision
+    class A action
+    class O observation
+
+    linkStyle 0 stroke:#64748B,stroke-width:1.5px
+    linkStyle 1 stroke:#EA580C,stroke-width:2px
+    linkStyle 2 stroke:#16A34A,stroke-width:2px
+    linkStyle 3 stroke:#7C3AED,stroke-width:2px
+    linkStyle 4 stroke:#2563EB,stroke-width:1.5px
 ```
 
 This loop aligns with the thought-action-observation trajectories described in Yao et al.'s [ReAct paper](https://arxiv.org/abs/2210.03629): model inference updates the working decision state, actions interact with an environment, and observations ground the next iteration. Here, “reasoning” means model inference and decision state; it does not imply that private chain-of-thought is exposed, human-readable, or persisted.
