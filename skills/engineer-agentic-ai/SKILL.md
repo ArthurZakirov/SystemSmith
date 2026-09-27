@@ -5,67 +5,60 @@ description: "Translate natural-language requests about AI-agent behavior, skill
 
 # 🛠️ Engineer Agentic AI
 
-Turn desired agent behavior into mechanisms the target runtime can actually observe, trigger, execute, persist, and verify.
+Translate desired agent behavior into mechanisms the target runtime can observe, trigger, execute, persist, and verify.
 
 ## 🗂️ Contents
 
-- [🧭 Workflow](#workflow)
+- [🎯 Purpose and applicability](#purpose)
+- [🧭 Engineering framework](#framework)
 - [📚 Reference routing](#reference-routing)
-- [🔎 Engineering translation](#engineering-translation)
-- [✅ Completion standard](#completion-standard)
+- [✅ Quality gates](#quality-gates)
 
-<a id="workflow"></a>
-## 🧭 Workflow
+<a id="purpose"></a>
+## 🎯 Purpose and applicability
 
-1. **Preserve the intent.** State the desired outcome without prematurely converting it into prompt text or a specific provider feature.
-2. **Model the runtime.** Identify the harness, available context/sensors, lifecycle event, routing surface, actuators, persistence, permissions, and freshness constraints.
-3. **Operationalize.** Connect observable signal → trigger → decision rule → actuator → persistence → verification. If the chain is incomplete, keep the item in the wishlist/problem space rather than calling it implemented.
-4. **Choose the narrowest reliable mechanism.** Prefer the lightest surface that meets frequency, miss-cost, routability, instruction-size, and enforcement requirements.
-5. **Implement only after the mechanism is justified.** Edit the canonical source, validate the real propagation path, and verify behavior rather than relying on stronger wording.
-6. **Keep the information architecture lean.** Put routing and invariants in the top-level skill; substantial runtime facts, provider mappings, examples, and procedures belong in references.
+Use this skill when a request describes what an agent should understand, decide, remember, trigger, prevent, or accomplish, but the concrete runtime mechanism is missing or uncertain. It applies to instructions, skills, routing, tools, MCP servers, hooks, permissions, plugins, automations, persistence, delegation, and related agent-system behavior.
+
+The outcome is an implemented and behaviorally verified mechanism—or an explicitly retained problem-space requirement when the runtime chain cannot yet be closed.
+
+<a id="framework"></a>
+## 🧭 Engineering framework
+
+Use this as the single end-to-end process:
+
+1. **Preserve the problem-space intent.** State the observable outcome without prematurely turning it into prompt wording or a provider feature.
+2. **Route the investigation.** Load only the narrowest references required by the current uncertainty using [Reference routing](#reference-routing).
+3. **Operationalize the behavior.** Connect observable signal and evidence → trigger/lifecycle event → decision rule → actuator → persistence → verification. Include reliability and miss-cost requirements. If a required link is unavailable, keep the outcome in the problem space rather than calling it implemented.
+4. **Choose the mechanism and surface.** Select the lightest available mechanism that can meet the required reliability; verify current provider capabilities when the choice depends on them.
+5. **Implement canonically.** Change the authoritative instruction, skill, hook, tool, permission, plugin, script, automation, or configuration surface and validate its propagation path.
+6. **Validate real behavior.** Exercise the mechanism through a representative agent interaction or runtime event. Test the observable outcome, not only syntax, file presence, or plausible prose.
+7. **Diagnose and iterate.** On failure, trace guidance freshness, trigger match, visible evidence, rule specification, routing/selection, actuation, permissions, persistence, and propagation; adjust the mechanism or test and run it again. Use positive, negative, boundary, and repeated cases when behavior is model-mediated or routing-dependent.
+8. **Promote and hand off.** Promote only after the required behavioral evidence exists. Refresh deployed/generated copies, record remaining unknowns and tested scope, and retire or mark any superseded wishlist item.
+
+The detailed operationalization, validation, debugging, and promotion methods live in the [`Agent engineering process`](references/agent-engineering-process.md); do not recreate parallel procedures in this file.
+
 <a id="reference-routing"></a>
 ## 📚 Reference routing
 
-Read only the references needed for the current failure or design question.
+Load a reference only when its condition matches the current decision or failure.
 
-| Need | Read |
-| --- | --- |
-| How context, harnesses, tools, hooks, state, goals, sessions, compaction, or subagents actually behave | [`Agent Runtime Model`](references/agent-runtime-model.md) |
-| Token usage, context-window consumption, cached versus uncached input, cost estimation, subscription allowances, credits, billing, rollout-log usage analysis, or token optimization | [`Token Usage and Cost Model`](references/token-usage-and-cost-model.md) |
-| How Voice/Desktop/Web/product surfaces capture input, stay responsive, render output, gate approvals, run in background, or return delegated results | [`Interaction Runtime Model`](references/interaction-runtime-model.md) |
-| How to turn a desired behavior into an observable, testable mechanism; mechanism selection; debugging; wishlist promotion | [`Agent Engineering Process`](references/agent-engineering-process.md) |
-| Skill/MCP routing, interface-vs-implementation boundaries, trigger metadata, and when prose is being mistaken for control | [`Interface Routing and Control`](references/interface-routing-and-control.md) |
-| Portability, identity-neutral wording, and concept-first provider mapping | [`Portability and Provider Mapping`](references/portability-and-provider-mapping.md) |
-| Exact provider-specific instruction/skill/agent/hook/plugin paths | [`Provider Path Reference`](references/provider-paths.md) |
+| When | Read | Use it for |
+| --- | --- | --- |
+| Translating, validating, debugging, or promoting an agent behavior | [`Agent engineering process`](references/agent-engineering-process.md) | Operationalization, mechanism selection, behavioral testing, failure diagnosis, and wishlist promotion. |
+| Establishing how context, tools, hooks, state, sessions, compaction, or delegation behave | [`Agent runtime model`](references/agent-runtime-model.md) | Runtime mechanics and Codex-specific lifecycle evidence. |
+| Diagnosing selection, metadata, interface boundaries, or missing enforcement | [`Interface, routing, and control design`](references/interface-routing-and-control.md) | Pre-selection routing versus post-selection execution and control strength. |
+| Reasoning about voice/text, desktop/web, approvals, background work, or result delivery | [`Interaction runtime model`](references/interaction-runtime-model.md) | Human-to-runtime input, lifecycle, and return-path behavior. |
+| Designing a reusable artifact across identities, machines, operating systems, or providers | [`Portability and provider mapping`](references/portability-and-provider-mapping.md) | Concept-first portability and provider-neutral wording. |
+| Needing an exact provider filename, directory, manifest, or settings location | [`Provider path reference`](references/provider-paths.md) | Current provider-specific path mappings and sources. |
+| Analyzing context size, tokens, caching, compaction cost, allowances, credits, or billing | [`Token usage and cost model`](references/token-usage-and-cost-model.md) | Usage evidence, cache mechanics, product accounting, and optimization. |
 
-Do not preload every reference. If current product behavior matters, verify current official documentation or direct runtime evidence instead of relying on stale provider assumptions.
+<a id="quality-gates"></a>
+## ✅ Quality gates
 
-<a id="engineering-translation"></a>
-## 🔎 Engineering translation
+A change is ready only when:
 
-Before editing, make the mapping explicit:
-
-| Field | Answer |
-| --- | --- |
-| **User intent** | What outcome should be true in the user's world? |
-| **Runtime interpretation** | Which observable/runtime mechanism controls it? |
-| **Change surface** | Which canonical file, config, hook, tool, script, plugin, permission, scheduler, or other surface changes it? |
-| **Why this surface** | Why are nearby alternatives insufficient or redundant? |
-| **Verification** | What evidence will prove the mechanism actually worked? |
-
-If the request contains `always`, `never`, “must”, or another reliability claim, explicitly test whether passive guidance can meet that requirement. Do not equate emphatic wording with enforcement.
-<a id="completion-standard"></a>
-## ✅ Completion standard
-
-A change is complete only when all relevant claims below are supported:
-
-- The target behavior is operationalized rather than merely restated as intent.
-- Trigger/applicability information lives on a surface available when the decision must be made.
-- Detailed instructions are progressively disclosed instead of duplicated across metadata, body, and references.
-- A deterministic requirement uses the strongest available enforcement surface needed by its miss cost.
-- Reusable artifacts do not accidentally depend on one person's identity, filesystem, machine, or provider vocabulary.
-- Current provider capabilities were verified when mechanism choice depends on them.
-- The canonical source was changed, generated/deployed copies were refreshed as needed, and session/config freshness was considered.
-- Validation tests the actual mechanism or propagation path, not just Markdown wording.
-
-Deliver the concrete edit when authorized. If the mechanism is not yet known or validated, preserve the desired outcome in the canonical wishlist with the missing evidence/decision stated explicitly; do not promote speculative instructions into production guidance.
+- the [`operationalization chain`](references/agent-engineering-process.md#operationalization-test) is complete, or the missing link is explicitly retained as an unresolved requirement;
+- the chosen mechanism and routed references support the required reliability without competing canonical rules;
+- [`behavior validation`](references/agent-engineering-process.md#behavior-validation) proves the intended outcome on the stated surface and scope;
+- the canonical source, propagation path, and deployed/generated state are verified; and
+- the handoff names remaining unknowns and completes the applicable [`wishlist-to-production lifecycle`](references/agent-engineering-process.md#wishlist-lifecycle).
