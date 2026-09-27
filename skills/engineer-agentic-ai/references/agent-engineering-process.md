@@ -33,46 +33,29 @@ When the user states a high-level wish:
 8. Define how the behavior will be tested.
 9. Only then edit the production instruction, skill, hook, tool, permission, script, or automation.
 
-## Runtime Behavior Experiments
+## Behavior Validation and Iteration
 
-Use a controlled experiment when documentation does not establish whether an instruction, skill, configuration, or other runtime surface is refreshed during a particular session lifecycle. Read the [`Agent Runtime Model`](agent-runtime-model.md) for loading and lifecycle mechanics and the [`Token Usage and Cost Model`](token-usage-and-cost-model.md) for rollout-log, usage, and prompt-cache interpretation.
+Static validation proves that an implementation is well-formed; it does not prove that the agent behaves as intended. Every implemented change to skills, instructions, hooks, tools, routing, automations, prompt rules, persistence, or another agent-system mechanism must pass a behavioral loop before it is considered validated or ready for promotion.
 
-### Experimental record
+1. **State the outcome.** Begin with the problem-space need and express the desired agent behavior as an observable result.
+2. **Operationalize it.** Map the outcome to observable signals, trigger, decision rule, actuator, persistence, reliability requirement, and implementation surface. Record what evidence would prove success or failure.
+3. **Implement and validate statically.** Change the canonical surface and run its syntax, schema, link, test, or deployment checks. Confirm that the intended artifact reached the target runtime.
+4. **Exercise the real behavior.** Send a representative prompt or event through an actual agent on the target surface so the intended situation, routing decision, and action must occur.
+5. **Observe the outcome.** Check whether the requested real-world behavior happened. File existence, valid Markdown, a successful installation, or a plausible model response is insufficient when stronger runtime evidence is available.
+6. **Diagnose the complete path on failure.** Determine whether the guidance was present and current, the trigger matched, required evidence was visible, the rule was specified correctly, the relevant skill/tool/hook was available and selected, an actuator and permission existed, and persistence, propagation, or session freshness behaved as assumed.
+7. **Adjust and repeat.** Correct the mechanism or the test, then prompt or trigger the agent again. Iterate until the observable outcome is reached at the required reliability level.
+8. **Test variation.** Include positive, negative, and boundary cases. Repeat routing-dependent or model-mediated cases enough to distinguish a stable mechanism from stochastic selection.
+9. **Promote only behavioral evidence.** Treat the change as validated or promotion-ready only after the real interaction succeeds. Record remaining unknowns and do not silently broaden the claim beyond the tested cases.
 
-Before testing, record the dimensions that define the claim:
+The test should exercise the strongest relevant part of the mechanism. A deterministic hook requires evidence that the hook fired and enforced its result; a skill requires evidence that routing and body execution occurred; an automation requires evidence that its event and action path ran; a persistence change requires evidence across the intended boundary.
 
-| Dimension | Record |
-| --- | --- |
-| Hypothesis | One observable claim, such as “a changed project skill description is visible on the next turn of this same open chat.” |
-| Surface | CLI, continuously open TUI, desktop chat, new desktop chat, web, voice frontend, or another exact surface. |
-| Runtime | Product mode, app/CLI version, model, relevant feature/config state, and working directory. |
-| Lifecycle | Chat/thread identifier where safe, whether the process or app stayed open, and every resume, restart, reload, or new-chat boundary. |
-| Mutation | The one file or field changed between baseline and treatment. |
-| Evidence | Model response, injected instruction/catalog content, file-read output, targeted session/rollout projection, and usage/cache fields that can confirm or falsify the claim. |
+### When the runtime surface is the subject
 
-The hypothesis and conclusion must use the same lifecycle vocabulary. “Same thread resumed by a new CLI process” is not equivalent to “same continuously open process.”
+Use a narrower controlled runtime experiment when the question itself concerns surface differences, session lifecycle, hot reload, caching, or propagation. Isolate the test in temporary project-local instructions or skills, establish a baseline, change one variable, repeat the treatment, and use a negative control. Inspect targeted instruction/catalog records, file reads, lifecycle boundaries, and usage/cache fields rather than relying on answer text or loading an entire rollout log.
 
-### Controlled procedure
+For Codex CLI, distinguish one persistent thread resumed through separate `codex exec resume` processes from a continuously open TUI. For Codex desktop, keep the same chat and app session open when that lifecycle is under test; a newly created chat is a separate control. Record surface, product/app version, model/configuration, workspace scope, and every process, resume, restart, reload, or new-chat boundary.
 
-1. Create an isolated temporary workspace. Use a project-local `AGENTS.md` and project-local test skill with unmistakable, non-sensitive `V1` markers. Do not alter real global instructions, generated installations, or production skills.
-2. Capture the baseline before changing anything. Confirm both the expected positive behavior and a negative condition that should not trigger the test skill.
-3. Change exactly one independent variable, such as the `AGENTS.md` marker, skill-description trigger, or skill-body marker from `V1` to `V2`.
-4. Run the equivalent prompt in the exact lifecycle under test. Keep model, working directory, permissions, and other relevant settings stable.
-5. Repeat the critical treatment unchanged. Skill selection is stochastic; one selection or miss does not by itself demonstrate hot reload or frozen state.
-6. Run a negative control where practical, such as a deliberately nonmatching skill description or a prompt that must not require a file read.
-7. Inspect runtime evidence instead of accepting the answer text alone. Project only the relevant records from one known rollout/session log: current instruction or catalog markers, targeted file-read calls and outputs, lifecycle boundaries, and per-inference usage/cache fields. Never load an entire large JSONL transcript into model context merely to find a marker.
-8. Report four distinct layers: documented provider facts, direct experimental observations, the narrow conclusion supported by those observations, and remaining unknowns.
-9. Remove the temporary workspace and test chats/threads with exact targets. Prefer recoverable cleanup where practical; verify that production and global files remained unchanged.
-
-### Surface-specific variants
-
-**Codex CLI resume:** start with `codex exec --json` in the temporary workspace, retain the returned thread identifier, and issue later treatments through `codex exec resume --json <thread-id>`. Record that each resume may be a new operating-system process even though the persisted thread is the same. This variant tests the resume boundary; it does not test a continuously open TUI.
-
-**Continuously open Codex desktop chat:** create the chat from the temporary project and keep both that chat and the desktop app session open across baseline, mutation, treatment, and repeat. Send every probe back into that exact chat without navigating to a new chat or restarting the app. When computer-use tooling is required to preserve that surface, record it as part of the experimental setup and retain evidence of the selected chat. A newly created chat is a separate variant and useful control, not a substitute for the open-chat treatment.
-
-### Generalization rule
-
-A result applies only to the tested **surface + version + model/configuration + workspace scope + session lifecycle**. Do not silently generalize among CLI resume, a continuously open CLI TUI, an open desktop chat, a new chat, or a voice frontend. Differences across those variants are valid findings rather than contradictions. Mark any untested transition—such as editing an `AGENTS.md` that already existed when a desktop chat was created—as unknown until that exact transition is tested.
+Runtime findings apply only to the tested **surface + version + configuration + workspace scope + session lifecycle**. Do not equate CLI resume, an open TUI, an open desktop chat, a new chat, or a voice frontend. See the [`Agent Runtime Model`](agent-runtime-model.md) for loading and lifecycle mechanics and the [`Token Usage and Cost Model`](token-usage-and-cost-model.md) for rollout-log, usage, and prompt-cache interpretation.
 
 ## Natural-Language Rule Design
 
