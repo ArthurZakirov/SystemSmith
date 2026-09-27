@@ -33,6 +33,47 @@ When the user states a high-level wish:
 8. Define how the behavior will be tested.
 9. Only then edit the production instruction, skill, hook, tool, permission, script, or automation.
 
+## Runtime Behavior Experiments
+
+Use a controlled experiment when documentation does not establish whether an instruction, skill, configuration, or other runtime surface is refreshed during a particular session lifecycle. Read the [`Agent Runtime Model`](agent-runtime-model.md) for loading and lifecycle mechanics and the [`Token Usage and Cost Model`](token-usage-and-cost-model.md) for rollout-log, usage, and prompt-cache interpretation.
+
+### Experimental record
+
+Before testing, record the dimensions that define the claim:
+
+| Dimension | Record |
+| --- | --- |
+| Hypothesis | One observable claim, such as “a changed project skill description is visible on the next turn of this same open chat.” |
+| Surface | CLI, continuously open TUI, desktop chat, new desktop chat, web, voice frontend, or another exact surface. |
+| Runtime | Product mode, app/CLI version, model, relevant feature/config state, and working directory. |
+| Lifecycle | Chat/thread identifier where safe, whether the process or app stayed open, and every resume, restart, reload, or new-chat boundary. |
+| Mutation | The one file or field changed between baseline and treatment. |
+| Evidence | Model response, injected instruction/catalog content, file-read output, targeted session/rollout projection, and usage/cache fields that can confirm or falsify the claim. |
+
+The hypothesis and conclusion must use the same lifecycle vocabulary. “Same thread resumed by a new CLI process” is not equivalent to “same continuously open process.”
+
+### Controlled procedure
+
+1. Create an isolated temporary workspace. Use a project-local `AGENTS.md` and project-local test skill with unmistakable, non-sensitive `V1` markers. Do not alter real global instructions, generated installations, or production skills.
+2. Capture the baseline before changing anything. Confirm both the expected positive behavior and a negative condition that should not trigger the test skill.
+3. Change exactly one independent variable, such as the `AGENTS.md` marker, skill-description trigger, or skill-body marker from `V1` to `V2`.
+4. Run the equivalent prompt in the exact lifecycle under test. Keep model, working directory, permissions, and other relevant settings stable.
+5. Repeat the critical treatment unchanged. Skill selection is stochastic; one selection or miss does not by itself demonstrate hot reload or frozen state.
+6. Run a negative control where practical, such as a deliberately nonmatching skill description or a prompt that must not require a file read.
+7. Inspect runtime evidence instead of accepting the answer text alone. Project only the relevant records from one known rollout/session log: current instruction or catalog markers, targeted file-read calls and outputs, lifecycle boundaries, and per-inference usage/cache fields. Never load an entire large JSONL transcript into model context merely to find a marker.
+8. Report four distinct layers: documented provider facts, direct experimental observations, the narrow conclusion supported by those observations, and remaining unknowns.
+9. Remove the temporary workspace and test chats/threads with exact targets. Prefer recoverable cleanup where practical; verify that production and global files remained unchanged.
+
+### Surface-specific variants
+
+**Codex CLI resume:** start with `codex exec --json` in the temporary workspace, retain the returned thread identifier, and issue later treatments through `codex exec resume --json <thread-id>`. Record that each resume may be a new operating-system process even though the persisted thread is the same. This variant tests the resume boundary; it does not test a continuously open TUI.
+
+**Continuously open Codex desktop chat:** create the chat from the temporary project and keep both that chat and the desktop app session open across baseline, mutation, treatment, and repeat. Send every probe back into that exact chat without navigating to a new chat or restarting the app. When computer-use tooling is required to preserve that surface, record it as part of the experimental setup and retain evidence of the selected chat. A newly created chat is a separate variant and useful control, not a substitute for the open-chat treatment.
+
+### Generalization rule
+
+A result applies only to the tested **surface + version + model/configuration + workspace scope + session lifecycle**. Do not silently generalize among CLI resume, a continuously open CLI TUI, an open desktop chat, a new chat, or a voice frontend. Differences across those variants are valid findings rather than contradictions. Mark any untested transition—such as editing an `AGENTS.md` that already existed when a desktop chat was created—as unknown until that exact transition is tested.
+
 ## Natural-Language Rule Design
 
 Even after a skill or instruction file has loaded, each situational rule inside it should make two parts explicit:
