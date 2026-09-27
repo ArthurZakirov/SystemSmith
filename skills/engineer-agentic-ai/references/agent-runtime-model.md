@@ -56,10 +56,12 @@ The overview above isolates the ReAct cycle. The expanded map adds product-surfa
 
 ```mermaid
 flowchart TB
+    USER((👤 User))
+
     subgraph ROUTING["1 · Interaction routing"]
         direction LR
         TYPED([⌨️ Typed text])
-        VOICE([🎙️ Realtime voice<br/>Codex macOS observation<br/>not universal])
+        VOICE([🎙️ Realtime voice input])
         SPEECH([🗣️ Frontend speech model])
         SPOKEN([💬 Spoken response])
         BACKEND[[⚙️ Backend agent turn]]
@@ -67,7 +69,6 @@ flowchart TB
         TYPED -->|normally enters| BACKEND
         VOICE -->|utterance| SPEECH
         SPEECH -->|direct reply| SPOKEN
-        SPOKEN -.->|next utterance| SPEECH
         SPEECH -->|selected delegation| BACKEND
     end
 
@@ -112,11 +113,17 @@ flowchart TB
         VALIDATE -->|evidence| OBS
     end
 
+    USER -->|types| TYPED
+    USER -->|speaks| VOICE
+    SPOKEN -->|played to| USER
+
     BACKEND -->|starts with| CURRENT
     CURRENT -->|rendered input| MODEL
+    RESULT -->|delivered to| USER
 
     HOOKS -.->|inject / trigger| UPDATE
 
+    classDef actor fill:#1D4ED8,stroke:#1E3A8A,color:#FFFFFF,stroke-width:3px
     classDef message fill:#DBEAFE,stroke:#2563EB,color:#172554,stroke-width:2px
     classDef surface fill:#CFFAFE,stroke:#0891B2,color:#164E63,stroke-width:2px
     classDef context fill:#F1F5F9,stroke:#64748B,color:#0F172A,stroke-width:2px
@@ -128,6 +135,7 @@ flowchart TB
     classDef delegation fill:#CCFBF1,stroke:#0F766E,color:#134E4A,stroke-width:2px
     classDef note fill:#F8FAFC,stroke:#94A3B8,color:#334155,stroke-width:1px
 
+    class USER actor
     class TYPED,VOICE,SPOKEN,RESULT message
     class SPEECH,BACKEND surface
     class INPUTS,CURRENT,UPDATE context
