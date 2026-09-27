@@ -87,7 +87,6 @@ Existing non-symlink paths are left untouched unless `--force` is used.
 | `messaging-framework` | Core principles for technical communication such as commits, PR descriptions, branch names, and technical documentation. Use when writing or refining engineering-facing messaging and when other skills need a shared communication baseline. |
 | `relevance-first-information-design` | Design or review any human- or agent-facing information surface so the consumer sees the minimum sufficient information at the right abstraction level for the current task, with clear routes to deeper detail only when relevant. Use for chat, docs, code, APIs, dashboards, charts, websites, profiles, messages, UIs, agent instructions, or other information-bearing interfaces. |
 | `security` | Mandatory credential protection skill for all agents. Prevents reading, exposing, or leaking credentials, secrets, API keys, tokens, passwords, and auth-capable config files. |
-| `self-review` | Analyze the current conversation or mine historical chat sessions for correction patterns, wrong conclusions, or unnecessary user intervention. Use when the user wants to improve prompts, skills, workflows, or guardrails based on repeated mistakes. |
 | `swe-method` | Guide for working through a Jira story efficiently by separating context gathering, immutable evidence collection, codebase exploration, human-in-the-loop specification refinement, execution planning, and implementation. Use when turning a ticket into a reliable engineering workflow instead of jumping straight to code. |
 | `thoughts-to-artifact` | Transform a user's raw thoughts, dictation, transcript, notes, brainstorm, or conversational explanation into a structured communication artifact while preserving meaning, examples, nuance, and recoverable detail. Use for articles, documentation, skills, READMEs, messages, briefs, posts, or similar outputs when the source structure is incidental and the output should organize ideas by meaning rather than original speaking order. |
 <!-- END GENERATED SECTION: skills -->
@@ -142,7 +141,6 @@ Existing non-symlink paths are left untouched unless `--force` is used.
 │   ├── messaging-framework/
 │   ├── relevance-first-information-design/
 │   ├── security/
-│   ├── self-review/
 │   ├── swe-method/
 │   └── thoughts-to-artifact/
 ├── pyproject.toml
