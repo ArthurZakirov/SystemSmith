@@ -72,6 +72,15 @@ Every call still occupies `L` context-window tokens. When a model uses a distinc
 
 Compaction replaces older active history with a smaller opaque compaction item plus retained items. This can reduce later rendered inputs while changing the prompt prefix enough to reduce cache reuse immediately afterward. Treat the returned compacted window as the canonical next context rather than inferring its contents from older stored records. See [Compaction](https://developers.openai.com/api/docs/guides/compaction).
 
+One inspected Codex CLI `0.149.0` rollout stored a `type: compacted` record with `replacement_history`; the replacement retained explicit messages plus an encrypted compaction item. These field names are version-specific local evidence, not a stable public schema. To inspect another known rollout without dumping sensitive content:
+
+```bash
+ROLLOUT_FILE=/absolute/path/to/one/rollout.jsonl
+jq -c 'select(.payload.type == "compacted") | .payload | {type, replacement_history_count: (.replacement_history | length)}' "$ROLLOUT_FILE" | head -n 3
+```
+
+Rollout files can contain prompts, tool output, and other sensitive context. Keep inspection local and project only the fields required for the diagnosis.
+
 <a id="product-accounting"></a>
 ## 💳 Product accounting
 
