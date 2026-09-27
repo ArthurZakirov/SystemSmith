@@ -34,7 +34,9 @@ With one full-price processing followed by cached reads at multiplier `r`, a sim
 
 `L + (N − 1) × r × L`
 
-Every call still occupies `L` context-window tokens. When a model uses a distinct cache-write multiplier `w`, replace the first `L` with `w × L`. For current GPT-5.6+ API mechanics, reads are documented at `0.1×` and writes at `1.25×`. These are current API pricing mechanics, not a universal Codex-subscription billing promise. See [Prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching).
+Every call still occupies `L` context-window tokens. When a model uses a distinct cache-write multiplier `w`, replace the first `L` with `w × L`. As a verified snapshot on 2026-09-27, the GPT-5.6+ API documentation lists reads at `0.1×` and writes at `1.25×` the standard uncached input-token rate. These are time-bound API mechanics, not a confirmed formula for the Codex allowance included with a ChatGPT subscription. See [Prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching).
+
+> **Live-verification rule:** Before making a cost decision, verify the current factors and their model/API applicability in the official OpenAI prompt-caching and pricing documentation. Rates, supported models, and cache behavior can change; never promote this dated snapshot into a timeless constant or a ChatGPT/Codex subscription formula.
 
 ## Compaction
 
