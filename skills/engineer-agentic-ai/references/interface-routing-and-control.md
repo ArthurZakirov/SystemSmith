@@ -15,11 +15,18 @@ Use this reference when the problem is about whether a skill/tool/server is sele
 
 A missed skill invocation is fixed on a pre-selection surface; adding more trigger prose to a body that never loaded cannot fix retrieval.
 
+Skill disclosure is staged: the runtime exposes a metadata catalog before selection, loads the complete `SKILL.md` after selection, and reads supporting references, scripts, or assets only as needed. Keep routing criteria in metadata and conditional detail behind explicit links from the body.
+
+Always-on response behavior is not a conditional workflow. Put it in an always-loaded instruction surface, or use a lifecycle hook, validator, permission, or other stronger control when the miss cost requires enforcement.
+
+**Surface/version observation:** in one Codex desktop realtime session, catalog-bearing developer messages were repeated at `task_started`. This is evidence about that client/version's context assembly, not a portable lifecycle guarantee.
+
 ## 🎯 Write routing metadata for retrieval
 
 Name concrete requests, artifacts, mechanisms, and failure modes. Prefer contract-oriented language: what kind of request should route here and what outcome becomes possible. When capabilities overlap, distinguish them by inputs, outputs, and intended use rather than implementation details.
 
 Treat skill descriptions and MCP tool descriptions as the same class of interface: both help the model decide whether to bring a capability into play, even though one expands to instructions and the other to executable code.
+
 ## 🛡️ Emphasis is not control
 
 Repeated `always`, `never`, `critical`, duplicated warnings, and all-caps remain prompt-level guidance. If reliability is the problem, diagnose the missing mechanism instead of amplifying prose.

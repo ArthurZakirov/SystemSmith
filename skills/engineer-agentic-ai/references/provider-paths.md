@@ -1,6 +1,6 @@
 # Provider Path Reference
 
-Last checked: 2026-05-10
+Last checked: 2026-09-27
 
 Use this reference when a skill, prompt, plugin, hook, or instruction file needs to mention provider-specific filenames or directories. Prefer concept-first wording in the main instructions, then enumerate concrete provider equivalents only when the filesystem location matters.
 
@@ -40,10 +40,10 @@ These names often refer to the same underlying idea even when the provider uses 
 
 ### Codex
 
-- Uses `AGENTS.md` as a scoped instruction file.
-- `AGENTS.md` can appear anywhere in the filesystem, including `~` and inside repositories.
-- Scope is the directory tree rooted at the folder containing that `AGENTS.md`.
-- No dedicated Codex-only always-loaded file like `~/.codex/AGENTS.md` was found in the sources consulted.
+- User-global instructions: `$CODEX_HOME/AGENTS.md` (normally `~/.codex/AGENTS.md`).
+- Project instructions: `AGENTS.md` or `AGENTS.override.md` from the identified project root through the current working directory.
+- The default project-root marker is `.git`; `project_root_markers` can configure other markers.
+- If no configured marker is found, Codex checks only the current working directory for project guidance. An `AGENTS.md` in a non-project parent is not inherited.
 
 ### AGENTS.md ecosystem
 
@@ -209,6 +209,9 @@ If the plugin manifest matters:
 - OpenAI Codex public docs:
   - https://openai.com/index/introducing-codex/
   - https://openai.com/academy/codex-plugins-and-skills
+  - https://developers.openai.com/api/docs/guides/latest-model
+  - https://developers.openai.com/codex/config-reference
+  - https://developers.openai.com/api/docs/guides/compaction
 - Installed local Codex skill/plugin tooling in this environment:
   - `${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/SKILL.md`
   - `${CODEX_HOME:-$HOME/.codex}/skills/.system/plugin-creator/SKILL.md`

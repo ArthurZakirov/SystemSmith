@@ -1,6 +1,6 @@
 # Agent Runtime Model
 
-Last checked: 2026-09-26
+Last checked: 2026-09-27
 
 This reference describes how agentic runtimes work: how context reaches the model, how capabilities are selected, how actions affect the environment, and how state or events persist across turns.
 
@@ -18,6 +18,7 @@ An agentic system is not just an LLM. Model the runtime as a loop with distinct 
 8. **Event / automation layer** — hooks, triggers, schedules, workflows, and external processes can run without relying on the model to spontaneously remember to act.
 
 The model cannot reason from information that never reaches its context, and it cannot perform an action for which the harness exposes no actuator.
+
 ## Mechanism Taxonomy
 
 Different mechanisms control different parts of the runtime.
@@ -51,6 +52,7 @@ The condition can only affect runtime behavior when the model has evidence from 
 This is distinct from skill-level progressive disclosure. Skill metadata can determine whether a skill body becomes available at all; once the body is loaded, individual rules inside it can still have their own conditions. Loading the body makes a rule available to the model, but does not mean its condition is satisfied. A rule such as "when you are tired, do X" therefore depends on whether the runtime supplies evidence from which "tired" can be inferred.
 
 Because condition and consequence are separate logical roles, instruction text can represent them explicitly rather than embedding both in one prose sentence. For example, Markdown may use visibly separated **When** and **Then** blocks, a two-column condition/action table, or another structure that preserves the same distinction. This formatting does not create a new runtime mechanism; it makes the rule's applicability and consequence easier to distinguish within the context already loaded.
+
 ## Reliability Characteristics
 
 Mechanisms provide different levels of enforcement:
@@ -64,6 +66,7 @@ Mechanisms provide different levels of enforcement:
 7. External automation or system policy independent of model initiative.
 
 The sequence generally moves from probabilistic guidance toward stronger enforcement, while implementation cost and platform coupling also tend to increase.
+
 ## Provider / Harness Reality
 
 Agent harnesses do not have feature parity. The same conceptual mechanism can be exposed through different concrete surfaces, or may be absent on a given runtime.
@@ -86,13 +89,16 @@ Agent harnesses do not have feature parity. The same conceptual mechanism can be
 MCP is a protocol boundary, not an agent by itself. Servers can expose resources, prompts, and tools; clients decide how those capabilities are surfaced to the model and user. Tool selection is generally model-controlled, while the protocol does not mandate a single agent loop or user interface.
 
 The 2026-07-28 MCP specification uses a stateless protocol core. Cross-call server state therefore requires an explicit state mechanism such as handles or application-managed persistence rather than implicit transport session state.
+
 ## Codex Runtime Mechanism Map
 
 These are distinct control surfaces with different loading, triggering, and enforcement behavior.
 
 ### Hierarchical `AGENTS.md`
 
-Codex CLI discovers instruction files from the user/global level and then from the repository root down to the current working directory. The resulting instruction chunks are injected before the current user prompt in root-to-leaf order; deeper scopes can override earlier guidance. `AGENTS.override.md` can replace the normal file at a scope.
+Codex loads global guidance from `$CODEX_HOME/AGENTS.md` (normally `~/.codex/AGENTS.md`). It then discovers project guidance from the identified project root down to the current working directory. The default project-root marker is `.git`; when no configured project marker is found, Codex checks only the current working directory for project guidance. An `AGENTS.md` in a non-Git parent is therefore not inherited merely because it is an ancestor.
+
+The resulting instruction chunks are injected before the current user prompt in root-to-leaf order; deeper scopes can override earlier guidance. `AGENTS.override.md` can replace the normal file at a scope. Treat the configured `project_root_markers` list as live configuration rather than assuming `.git` when diagnosing a specific installation.
 
 ### Skills and progressive disclosure
 
@@ -101,6 +107,8 @@ Skill discovery is staged:
 1. Codex initially sees skill metadata, especially `name` and `description`.
 2. When a skill is selected, its `SKILL.md` instructions become available.
 3. `references/`, `scripts/`, and `assets/` are consumed only when the workflow needs them.
+
+The metadata catalog is therefore a pre-selection routing surface, while the body and supporting resources are post-selection execution surfaces. A behavior that must shape every response belongs in always-loaded guidance or a stronger lifecycle/enforcement mechanism, not only in a conditional skill.
 
 ### Hooks
 
@@ -121,9 +129,23 @@ A plugin is a packaging and distribution boundary. OpenAI plugins can bundle ski
 ### Permissions and approvals
 
 Permissions and approval policies are enforcement surfaces that can determine whether an action may proceed. Hooks are a separate event-driven surface that can perform checks before or after supported tool calls.
+
 ### Sessions, compaction, goals, and persistent state
 
-Conversation state, global instructions, and memory are separate forms of state. In OpenAI's managed Codex harness, a session is a durable unit of work. Context compaction can replace older detailed history with compacted state while preserving enough information to continue the trajectory.
+Conversation state, global instructions, and memory are separate forms of state. In OpenAI's managed Codex harness, a session is a durable unit of work.
+
+"Context usage" means the currently rendered model input, not the visible chat length or the entire persisted transcript. OpenAI's [compaction guide](https://developers.openai.com/api/docs/guides/compaction) documents that crossing a configured threshold can emit an encrypted, opaque compaction item, prune older active context, and carry forward key prior state and reasoning in fewer tokens. A compacted window can also retain selected earlier items. The full local rollout may remain persisted even though those records are no longer all rendered into the next inference.
+
+**Version-specific local observation (Codex 0.149.0):** one inspected rollout stored a `type: compacted` record with `replacement_history`; the replacement retained explicit messages plus an encrypted compaction item, while reported input fell from roughly 223k to 51k tokens. These field names and counts describe that version and rollout, not a stable public schema.
+
+To inspect another rollout safely, choose one explicit rollout JSONL file and return only the compacted-record projection instead of searching the whole rollout tree:
+
+```bash
+ROLLOUT_FILE=/absolute/path/to/one/rollout.jsonl
+jq -c 'select(.payload.type == "compacted") | .payload | {type, replacement_history_count: (.replacement_history | length)}' "$ROLLOUT_FILE" | head -n 3
+```
+
+Rollout files can contain prompts, tool output, and other sensitive context. Keep inspection local, target a known file, and project only the fields needed for the diagnosis.
 
 Codex Goals are thread-scoped persisted state rather than global memory or project instructions. Thread/session state belongs to one ongoing trajectory, while files or another explicit store can persist state beyond that scope.
 
@@ -138,3 +160,9 @@ Therefore, the existence of an updated file on disk and the presence of that upd
 Subagents are separate model workers started by the harness for delegated work. They may have isolated task context and their own lifecycle events, but they remain bounded by what context, tools, permissions, and environment the harness gives them.
 
 Delegation changes task decomposition and context isolation; it does not by itself create an enforcement mechanism.
+
+## Context-Efficient Observation
+
+Local computation is not itself model context. Only the command or tool result returned to the model consumes the active context window. Parse large artifacts locally and return a compact projection: bound matches, select relevant fields, cap lines, and summarize counts.
+
+Avoid broad recursive `rg`, web search, resource-listing, or rollout-log queries when a narrower target will answer the question. In particular, self-referential searches over rollout history can reproduce earlier prompts and nested tool outputs, injecting thousands of duplicate tokens into the very context being diagnosed.
