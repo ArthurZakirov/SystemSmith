@@ -50,6 +50,98 @@ flowchart TB
 
 This loop aligns with the thought-action-observation trajectories described in Yao et al.'s [ReAct paper](https://arxiv.org/abs/2210.03629): model inference updates the working decision state, actions interact with an environment, and observations ground the next iteration. Here, “reasoning” means model inference and decision state; it does not imply that private chain-of-thought is exposed, human-readable, or persisted.
 
+### Expanded runtime and mechanism map
+
+The overview above isolates the ReAct cycle. The expanded map adds product-surface routing, active-context assembly, durable state, and the mechanisms that inject, gate, execute, delegate, or validate work.
+
+```mermaid
+flowchart TB
+    subgraph ROUTING["1 · Interaction routing"]
+        direction LR
+        TYPED([⌨️ Typed text])
+        VOICE([🎙️ Realtime voice<br/>Codex macOS observation<br/>not universal])
+        SPEECH([🗣️ Frontend speech model])
+        SPOKEN([💬 Spoken response])
+        BACKEND[[⚙️ Backend agent turn]]
+
+        TYPED -->|normally enters| BACKEND
+        VOICE -->|utterance| SPEECH
+        SPEECH -->|direct reply| SPOKEN
+        SPOKEN -.->|next utterance| SPEECH
+        SPEECH -->|selected delegation| BACKEND
+    end
+
+    subgraph CONTEXT["2 · Context and durable state"]
+        direction TB
+        INPUTS["📚 Context inputs<br/>System / developer / user messages<br/>History or compacted replacement state<br/>Scoped instructions · selected skill metadata/body<br/>Tool schemas · retrieved resources · prior tool results"]
+        CURRENT[(🗂️ Current model context)]
+        SKILLS["📘 Skills / retrieval"]
+        PERSIST[(💾 Persistence<br/>thread / session state)]
+        GOAL([🎯 Optional Codex Goal<br/>thread-scoped contract])
+
+        SKILLS -->|selected content| INPUTS
+        PERSIST -->|load state| INPUTS
+        INPUTS -->|assemble| CURRENT
+        CURRENT -->|persist state| PERSIST
+        GOAL -.->|optional completion contract| CURRENT
+    end
+
+    subgraph LOOP["3 · Agent loop and runtime controls"]
+        direction TB
+        MODEL{{🧠 Model inference<br/>Decide next step}}
+        GATE{{🔐 Permissions / approvals}}
+        ACTION[[🛠️ Tool / MCP action]]
+        ENV[(🌐 External environment)]
+        OBS[/👁️ Observation / tool result/]
+        UPDATE[(🗂️ Context update)]
+        RESULT([💬 Response / result])
+        DELEGATE[[🤝 Delegation / subagent]]
+        HOOKS["⚡ Hooks / events / automations"]
+        VALIDATE["✅ Validators / tests"]
+
+        MODEL -->|complete| RESULT
+        MODEL -->|act| GATE
+        GATE -->|allowed| ACTION
+        ACTION -->|interact| ENV
+        ENV -->|observe| OBS
+        OBS -->|add result| UPDATE
+        UPDATE -->|next inference| MODEL
+        MODEL -->|delegate| DELEGATE
+        DELEGATE -->|returns| OBS
+        HOOKS -.->|trigger / gate| GATE
+        VALIDATE -->|evidence| OBS
+    end
+
+    BACKEND -->|starts with| CURRENT
+    CURRENT -->|rendered input| MODEL
+
+    HOOKS -.->|inject / trigger| UPDATE
+
+    classDef message fill:#DBEAFE,stroke:#2563EB,color:#172554,stroke-width:2px
+    classDef surface fill:#CFFAFE,stroke:#0891B2,color:#164E63,stroke-width:2px
+    classDef context fill:#F1F5F9,stroke:#64748B,color:#0F172A,stroke-width:2px
+    classDef decision fill:#EDE9FE,stroke:#7C3AED,color:#3B0764,stroke-width:2px
+    classDef action fill:#FFEDD5,stroke:#EA580C,color:#431407,stroke-width:2px
+    classDef observation fill:#DCFCE7,stroke:#16A34A,color:#14532D,stroke-width:2px
+    classDef control fill:#FEE2E2,stroke:#DC2626,color:#450A0A,stroke-width:2px
+    classDef persistence fill:#FEF3C7,stroke:#D97706,color:#451A03,stroke-width:2px
+    classDef delegation fill:#CCFBF1,stroke:#0F766E,color:#134E4A,stroke-width:2px
+    classDef note fill:#F8FAFC,stroke:#94A3B8,color:#334155,stroke-width:1px
+
+    class TYPED,VOICE,SPOKEN,RESULT message
+    class SPEECH,BACKEND surface
+    class INPUTS,CURRENT,UPDATE context
+    class MODEL decision
+    class ACTION action
+    class OBS observation
+    class GATE,HOOKS,VALIDATE control
+    class PERSIST,GOAL persistence
+    class SKILLS,DELEGATE delegation
+    class ENV note
+```
+
+The diagram uses the general term **agent loop** from OpenAI's [long-horizon Codex explanation](https://developers.openai.com/blog/run-long-horizon-tasks-with-codex). In provider terms, Codex runs a turn within a durable thread, while Anthropic's [Claude Code CLI reference](https://docs.anthropic.com/en/docs/claude-code/cli-usage) uses **agentic turns** within a session. OpenAI's [Goals guide](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex) keeps a Goal separate as an optional thread-scoped completion contract across turns. The realtime-voice branch records one observed Codex macOS architecture, not a universal voice design.
+
 The model cannot reason from information that never reaches its context, and it cannot perform an action for which the harness exposes no actuator.
 
 ## Mechanism Taxonomy
