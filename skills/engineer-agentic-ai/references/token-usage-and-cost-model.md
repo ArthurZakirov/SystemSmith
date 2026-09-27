@@ -112,7 +112,7 @@ Record count and model-call snapshot count clearly differ. The aggregate cache r
 
 ### 🔄 Configuration-refresh cache observation
 
-A separate controlled Codex CLI `0.149.0` resume experiment changed a temporary project skill and `AGENTS.md` while retaining one thread. These are first-inference snapshots for the relevant turns; tool-reading turns could contain an additional inference and are excluded from this comparison.
+A separate [controlled Codex CLI `0.149.0` resume experiment](codex-configuration-freshness-experiments.md#cli-resume-experiment) changed a temporary project skill and `AGENTS.md` while retaining one thread. These are first-inference snapshots for the relevant turns; tool-reading turns could contain an additional inference and are excluded from this comparison.
 
 | Resumed turn | Input tokens | Cached input tokens | Non-cached input tokens |
 | --- | ---: | ---: | ---: |
@@ -127,7 +127,7 @@ The rollout proves aggregate prefix reuse, not token-level attribution to a part
 
 ### 🖥️ Continuously open desktop cache observation
 
-A separate controlled Codex desktop experiment kept one chat and one app process open while changing a project-local skill. The tested app was version `26.924.20706` (build `11431`) with Codex CLI `0.149.0`; refresh those values using the commands in the [desktop lifecycle experiment](agent-runtime-model.md#controlled-codex-desktop-experiment). The rollout reported `cache_write_input_tokens: 0` for every recorded inference.
+A separate controlled Codex desktop experiment kept one chat and one app process open while changing a project-local skill. The tested app was version `26.924.20706` (build `11431`) with Codex CLI `0.149.0`; refresh those values using the commands in the [desktop lifecycle experiment](codex-configuration-freshness-experiments.md#desktop-experiment). The rollout reported `cache_write_input_tokens: 0` for every recorded inference.
 
 | Desktop inference | Input tokens | Cached input tokens | Non-cached input tokens |
 | --- | ---: | ---: | ---: |
