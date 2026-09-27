@@ -74,7 +74,7 @@ flowchart TB
 
     subgraph CONTEXT["2 · Context and durable state"]
         direction TB
-        INPUTS["📚 Context inputs<br/>System / developer / user messages<br/>History or compacted replacement state<br/>Scoped instructions · selected skill metadata/body<br/>Tool schemas · retrieved resources · prior tool results"]
+        INPUTS["📚 Context inputs<br/>System / developer / user messages<br/>History or compacted replacement state<br/>Scoped instructions (for example AGENTS.md / CLAUDE.md)<br/>Selected skill metadata/body<br/>Tool schemas · retrieved resources · prior tool results"]
         CURRENT[(🗂️ Current model context)]
         SKILLS["📘 Skills / retrieval"]
         PERSIST[(💾 Persistence<br/>thread / session state)]
@@ -148,7 +148,7 @@ flowchart TB
     class ENV note
 ```
 
-The diagram uses the general term **agent loop** from OpenAI's [long-horizon Codex explanation](https://developers.openai.com/blog/run-long-horizon-tasks-with-codex). In provider terms, Codex runs a turn within a durable thread, while Anthropic's [Claude Code CLI reference](https://docs.anthropic.com/en/docs/claude-code/cli-usage) uses **agentic turns** within a session. OpenAI's [Goals guide](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex) keeps a Goal separate as an optional thread-scoped completion contract across turns. The realtime-voice branch records one observed Codex macOS architecture, not a universal voice design.
+The diagram uses the general term **agent loop** from OpenAI's [long-horizon Codex explanation](https://developers.openai.com/blog/run-long-horizon-tasks-with-codex). In provider terms, Codex runs a turn within a durable thread, while Anthropic's [Claude Code CLI reference](https://docs.anthropic.com/en/docs/claude-code/cli-usage) uses **agentic turns** within a session. OpenAI's [Goals guide](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex) keeps a Goal separate as an optional thread-scoped completion contract across turns. The realtime-voice branch records one observed Codex macOS architecture, not a universal voice design. Whether a frontend speech model can access backend instructions such as `AGENTS.md` or `CLAUDE.md` must be verified separately for each voice implementation; the diagram does not assume that access.
 
 The model cannot reason from information that never reaches its context, and it cannot perform an action for which the harness exposes no actuator.
 
