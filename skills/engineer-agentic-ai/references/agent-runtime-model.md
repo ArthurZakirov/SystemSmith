@@ -17,6 +17,33 @@ An agentic system is not just an LLM. Model the runtime as a loop with distinct 
 7. **Persistence** — files, session state, memory systems, databases, git, or other stores preserve information beyond one inference call.
 8. **Event / automation layer** — hooks, triggers, schedules, workflows, and external processes can run without relying on the model to spontaneously remember to act.
 
+```mermaid
+flowchart LR
+    U[User] -->|Goal or request| C
+
+    subgraph H[Harness / orchestrator]
+        C[Assemble current context] --> M[Model inference and decision state]
+        M -->|Final response| R[Final result]
+        M -->|Action| G[Permissions and action gate]
+        O[Observation] -->|Add to next context| C
+    end
+
+    subgraph E[External state]
+        A[Tool execution / actuation] --> X[External environment]
+        P[(Persistence)]
+    end
+
+    G --> A
+    X -->|Produces| O
+    P -->|Load durable state| C
+    C -->|Persist updates| P
+    K[Hooks / events / automations] -->|Inject context| C
+    K -->|Trigger or gate action| G
+    R -->|Response or result| U
+```
+
+This loop aligns with the thought-action-observation trajectories described in Yao et al.'s [ReAct paper](https://arxiv.org/abs/2210.03629): model inference updates the working decision state, actions interact with an environment, and observations ground the next iteration. Here, “reasoning” means model inference and decision state; it does not imply that private chain-of-thought is exposed, human-readable, or persisted.
+
 The model cannot reason from information that never reaches its context, and it cannot perform an action for which the harness exposes no actuator.
 
 ## Mechanism Taxonomy
