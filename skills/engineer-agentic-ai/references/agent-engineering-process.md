@@ -82,6 +82,21 @@ A loaded Markdown body can contain many rules that are irrelevant to the current
 
 If the condition depends on an abstraction such as "when the user is tired" or "when this work is low value," operationalize how that state is inferred from observable evidence before treating the rule as reliable.
 
+### Runtime perspective and referents
+
+Treat phrases such as "the agent should...", "the orchestrator should...", or "this chat should..." as problem-space language unless the target runtime exposes those identities as observable facts. The human may naturally describe the desired system from outside; production instructions must be rewritten from inside the executing runtime.
+
+- Prefer `you` for the executing model and `the user` for the human when direct address is clear.
+- Prefer neutral observable conditions when identity labels add no information, for example `When creating a separate user-visible delegated conversation...` rather than `When the orchestrator creates...`.
+- Do not require the model to infer that it is "an orchestrator", "a worker", "a chat", or another architecture role unless that role is explicitly supplied by trustworthy runtime metadata or context.
+- If a rule depends on such a role, first establish the sensor or metadata that exposes it; otherwise reformulate the condition around facts the model can actually observe.
+
+### Active guidance versus architecture description
+
+Production guidance must help the executing model decide or act. Keep a sentence on an active instruction surface only when it changes at least one of: what evidence to inspect, when a rule applies, which branch to choose, what action or tool to use, what action to avoid, or how to verify the result.
+
+Move explanatory statements about system architecture, frontend/backend boundaries, provider mechanics, or why a limitation exists into runtime documentation or a routed reference unless the model needs that fact to make the current decision. For example, a sentence such as `This rule governs work that reaches the backend agent; it cannot control replies produced entirely by a frontend speech model` describes the architecture but gives the executing model no usable branch or actuator. Replace it with an observable condition and action if one exists; otherwise remove it from active guidance.
+
 <a id="mechanism-selection"></a>
 ## ⚙️ Mechanism selection
 

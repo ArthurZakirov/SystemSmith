@@ -19,6 +19,7 @@ This skill does **not** decide whether information belongs on the current surfac
 | Ordered or procedural sequence | Numbered list |
 | Unordered independent points | Bulleted list |
 | Parent/child concepts at different abstraction levels | Hierarchy, headings, or nested navigation |
+| Dependent conditions where a child rule applies only inside a parent condition | Nested decision hierarchy; use indented rules by default, pseudocode when code-like logic materially improves precision, and diagrams as a supplementary view when visual branching helps |
 | Narrative reasoning where sequence and causal flow matter | Prose |
 | Relationships, flow, topology, or spatial structure | Diagram when it materially improves comprehension |
 | Quantitative comparison or trend | Appropriate chart or table |
@@ -26,6 +27,7 @@ This skill does **not** decide whether information belongs on the current surfac
 ## Structural Rules
 
 - When several records repeat the same labels, encode those labels once as table columns instead of repeating headings or `When`/`Then` blocks.
+- Do not flatten a decision tree into peer table rows when child conditions are meaningful only under a parent condition. Preserve the dependency explicitly with nesting unless each row intentionally restates the complete condition.
 - Do not use a table for a simple linear flow solely because multiple steps exist.
 - Group related material by concept rather than preserving an arbitrary source order.
 - Keep sibling sections at comparable abstraction levels.
