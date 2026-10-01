@@ -30,3 +30,19 @@ Do not promote a user-observed quirk into a universal rule without reproduction 
 **Observed runtime behavior, not a universal voice contract:** typed input in Codex starts an ordinary Codex turn. In the inspected macOS desktop realtime voice architecture, a frontend realtime speech model can answer directly and delegates selected work to a backend Codex runtime. Backend `AGENTS.md` and skills govern work that reaches that backend; they cannot govern every spoken response produced by the frontend model.
 
 When diagnosing voice behavior, identify which model produced the response and whether delegation occurred before changing backend guidance. Do not infer this split for every client or voice implementation; verify it from current runtime metadata or a reproducible trace on the target surface.
+
+### Realtime prompt control
+
+In current Codex, realtime startup context deliberately excludes repo-memory instructions, `AGENTS.md`, project-doc prompt blends, and memory summaries. Those inputs belong to the normal backend prompt path after delegation. Therefore, adding a rule only to `AGENTS.md` cannot control a spoken response that the realtime conversational model produces before delegation.
+
+Codex exposes the experimental top-level `experimental_realtime_ws_backend_prompt` configuration key as the prompt-level actuator for the realtime websocket conversation. It overrides the realtime conversational-layer instructions without changing normal backend prompts. Because it replaces the bundled prompt rather than appending to it, preserve the required upstream delegation/transcript protocol when supplying a custom value.
+
+Use this distinction when engineering behavior:
+
+| Desired behavior | Change surface |
+| --- | --- |
+| Must affect the realtime conversational model before it decides whether to delegate. | Realtime prompt/configuration surface such as `experimental_realtime_ws_backend_prompt`, then behaviorally test the exact product surface. |
+| Applies only after the backend agent receives work. | Backend guidance such as `AGENTS.md`, skills, tools, hooks, or project context. |
+| Must hold across both layers. | Encode each part on the layer that can observe and act on it; do not describe one layer as if it can read the other's private guidance. |
+
+Primary evidence: [Codex config source](https://github.com/openai/codex/blob/main/codex-rs/config/src/config_toml.rs), [bundled realtime backend prompt](https://github.com/openai/codex/blob/main/codex-rs/prompts/templates/realtime/backend_prompt.md), and the source-backed reproduction in [openai/codex#37950](https://github.com/openai/codex/issues/37950). Treat the key as experimental and re-verify it before relying on it in a durable setup.
