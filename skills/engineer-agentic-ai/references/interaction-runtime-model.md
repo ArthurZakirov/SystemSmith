@@ -46,3 +46,21 @@ Use this distinction when engineering behavior:
 | Must hold across both layers. | Encode each part on the layer that can observe and act on it; do not describe one layer as if it can read the other's private guidance. |
 
 Primary evidence: [Codex config source](https://github.com/openai/codex/blob/main/codex-rs/config/src/config_toml.rs), [bundled realtime backend prompt](https://github.com/openai/codex/blob/main/codex-rs/prompts/templates/realtime/backend_prompt.md), and the source-backed reproduction in [openai/codex#37950](https://github.com/openai/codex/issues/37950). Treat the key as experimental and re-verify it before relying on it in a durable setup.
+
+### Do not address a frontend model through backend guidance
+
+When a product uses a separate realtime/frontend model, write each instruction for the agent that can actually read and act on it. Do not put sentences in backend `AGENTS.md` that tell an unseen frontend model how to speak, pause, click, or pace an explanation. Instead:
+
+- put frontend conversational behavior on a verified frontend prompt, personalization, or equivalent surface;
+- put backend responsibilities in backend guidance—for example, resolve exact repository/worktree/file/line evidence, inspect UI state, or return one grounded next action;
+- define the handoff contract between the two layers when both contribute to one user experience.
+
+Use agent-relative wording such as `you`, `the user`, or `the agent` only when the reader is unambiguous from the artifact's runtime. Avoid architectural prose such as “the orchestrator should...” when the model reading the instruction cannot observe that role.
+
+### ChatGPT Live boundary
+
+OpenAI currently documents ChatGPT Live as a GPT-Live voice experience that can use web search and memory and may coexist with text/images in the same chat. OpenAI also documents that preset ChatGPT personalities do not currently apply to Live. Custom Instructions are documented as applying across ChatGPT chats, but the public documentation inspected on 2026-10-01 does not establish the exact prompt assembly or whether those instructions are injected directly into the Live model versus applied elsewhere in the product pipeline.
+
+Therefore, do not assume Codex's `experimental_realtime_ws_backend_prompt` architecture or its frontend/backend split maps directly onto ordinary ChatGPT Live. Verify the exact ChatGPT surface before choosing its control mechanism.
+
+Evidence: [ChatGPT Voice](https://help.openai.com/en/articles/20001274-chatgpt-voice) and [ChatGPT Custom Instructions](https://help.openai.com/en/articles/8096356-chatgpt-custom-instructions).
