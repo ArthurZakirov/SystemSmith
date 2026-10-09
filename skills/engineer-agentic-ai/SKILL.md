@@ -45,6 +45,7 @@ Load a reference only when its condition matches the current decision or failure
 | When | Read | Use it for |
 | --- | --- | --- |
 | Translating, validating, debugging, or promoting an agent behavior | [`Agent engineering process`](references/agent-engineering-process.md) | Operationalization, mechanism selection, behavioral testing, failure diagnosis, and wishlist promotion. |
+| Preserving instructions, repository rules, and constraints across agent/harness handoffs | [`Delegation and instruction preservation`](references/delegation-instruction-preservation.md) | Source inventory, outgoing-prompt contradiction audit, context-transfer limits, and behavioral checks. |
 | Establishing how context, tools, hooks, state, sessions, compaction, or delegation behave | [`Agent runtime model`](references/agent-runtime-model.md) | Runtime mechanics and Codex-specific lifecycle evidence. |
 | Diagnosing selection, metadata, interface boundaries, or missing enforcement | [`Interface, routing, and control design`](references/interface-routing-and-control.md) | Pre-selection routing versus post-selection execution and control strength. |
 | Reasoning about voice/text, desktop/web, approvals, background work, or result delivery | [`Interaction runtime model`](references/interaction-runtime-model.md) | Human-to-runtime input, lifecycle, and return-path behavior. |
