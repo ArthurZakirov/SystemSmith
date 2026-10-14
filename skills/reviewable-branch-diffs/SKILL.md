@@ -31,27 +31,38 @@ git ls-files --others --exclude-standard
 
 The three-dot form compares committed branch changes with their merge base. The second command compares that same baseline with the current working tree, including **staged and unstaged tracked changes**. The last command discovers untracked files that neither diff includes.
 
-## 2. Apply rules according to what the branch introduced
+## 2. Determine the eligible change scope
 
-| Code relative to the baseline | Action |
+| Code relative to the baseline | Treatment |
 | --- | --- |
-| Newly introduced function, class, argument, or other code | Apply relevant coding rules, including placement, typing, and formatting. |
-| Existing code changed for the feature | Apply rules only to the genuinely new or necessary changes; preserve the surrounding structure and minimize adjacent churn. |
-| Existing code unchanged by the feature—even in a touched file | Do not clean it up solely because a rule identifies a violation. |
+| Newly introduced code | Apply the applicable coding standards. |
+| Existing code changed for the feature | Change only what is necessary; preserve unrelated surrounding code. |
+| Existing code unchanged by the feature—even in a touched file | Leave pre-existing violations untouched. |
 
 A change to one line does not make an entire function or file eligible for reorganization.
 
-## 3. Preserve reviewable changes
+## 3. Apply conventions within that scope
 
-- **Existing function edited in place:** If a feature modifies line five of an existing function, leave the function at its original location even if a separate style rule would place it elsewhere. Moving it hides the localized logic change inside distant deletion/addition blocks.
-- **New function:** Insert it in the position required by the applicable external coding rules; there is no previous position to preserve.
-- **Argument typing:** Type new functions and newly introduced parameters according to the relevant rule. Do not add annotations across unrelated existing functions; avoid reflowing an existing signature just for incidental cleanup.
-- **Formatting:** Format new or necessary changed code without reformatting unrelated lines. If a formatter rewrites large existing regions, isolate the required changes and revert unrelated formatting churn where feasible.
-- **Commits:** A separate cleanup commit **on the same feature branch** still adds noise to its aggregate diff. Unrelated changes require separate scope, not just separate commits.
+### Structural organization
 
-If a mandatory code formatter or check requires wider changes, identify the constraint and make the smallest technically valid change; do not silently create a large formatting-only diff.
+- **Existing function:** Keep its location when the feature changes a line inside it, even if a separate ordering convention would place it elsewhere. Otherwise, a small logic change becomes distant deletion/addition blocks.
+- **New function:** Insert it at the location prescribed by the applicable coding rules; it has no prior location to preserve.
 
-## 4. Verify the result
+### Declarations and type annotations
+
+Apply required typing conventions to newly introduced functions and parameters. Do not retrofit unrelated existing signatures. When a feature changes an existing function, keep annotation changes limited to genuinely new or modified declarations and avoid incidental signature reflow.
+
+### Formatting
+
+Format newly introduced or necessarily modified code without reformatting unrelated existing lines. If a formatter rewrites larger regions, retain the required edits and revert unrelated churn where feasible.
+
+If a mandatory formatter or check requires wider changes, identify the constraint and make the smallest technically valid change; do not silently accept a large formatting-only diff.
+
+## 4. Preserve the branch-level review boundary
+
+A separate cleanup **commit on the same branch** still appears in its aggregate diff. Unrelated cleanup needs a separate scope, not merely a separate commit.
+
+## 5. Verify the result
 
 1. Reinspect the full diff against the resolved baseline, including outstanding tracked edits and untracked files.
 2. Check each moved block, reflowed signature, and formatting-only hunk for a **necessary feature-related reason**. Remove incidental cleanup.
