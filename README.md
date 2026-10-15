@@ -90,6 +90,7 @@ Existing non-symlink paths are left untouched unless `--force` is used.
 | `review-ready-code` | Turn a finished, tested implementation into a human-reviewable Git commit stack without changing the final code. Use when the user says a completed change is ready for review, asks to make a branch or diff review-ready, wants a large agent-generated diff split into small conceptual changes, or needs a review sequence that follows Google's Small CL guidance. |
 | `reviewable-branch-diffs` | Apply coding standards, style guidance, linting, formatting, or refactoring instructions to changes on a Git feature branch without adding unrelated cleanup. Use when a user, another skill, AGENTS.md, project policy, or a tool asks an agent to improve code quality while implementing or reviewing branch changes. Determine eligibility from the Git diff against the intended integration branch, not from all violations found in touched files; preserve a focused, easy-to-review branch diff. |
 | `security` | Mandatory credential protection skill for all agents. Prevents reading, exposing, or leaking credentials, secrets, API keys, tokens, passwords, and auth-capable config files. |
+| `software-design` | Design and review code, tests, scripts, configuration, and reusable agent artifacts around clear responsibility and change boundaries, explicit dependencies, truthful contracts, and justified complexity. Use when implementing or refactoring functions, defaults, fallbacks, validators, domain values, entry points, compatibility paths, or skills and documentation that combine reusable rules with changing data. |
 | `swe-method` | Guide for working through a Jira story efficiently by separating context gathering, immutable evidence collection, codebase exploration, human-in-the-loop specification refinement, execution planning, and implementation. Use when turning a ticket into a reliable engineering workflow instead of jumping straight to code. |
 | `thoughts-to-artifact` | Transform a user's raw thoughts, dictation, transcript, notes, brainstorm, or conversational explanation into a structured communication artifact while preserving meaning, examples, nuance, and recoverable detail. Use for articles, documentation, skills, READMEs, messages, briefs, posts, or similar outputs when the source structure is incidental and the output should organize ideas by meaning rather than original speaking order. |
 <!-- END GENERATED SECTION: skills -->
@@ -147,6 +148,7 @@ Existing non-symlink paths are left untouched unless `--force` is used.
 │   ├── review-ready-code/
 │   ├── reviewable-branch-diffs/
 │   ├── security/
+│   ├── software-design/
 │   ├── swe-method/
 │   └── thoughts-to-artifact/
 ├── pyproject.toml
