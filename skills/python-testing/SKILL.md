@@ -125,85 +125,16 @@ If they do, prefer a **decision table** / parameterized test:
 
 **Do not over-parameterize.** Prefer separate tests or scenarios when the cases express different behavioral contracts, require meaningfully different setups/actions, have distinct ownership or failure semantics, or when a parameter table would introduce branching and obscure the intent. The goal is clarity, not the smallest test-function count.
 
-### Keep pytest parameter tables readable *after formatting*
+### Human-readable test representations
 
-Treat multi-argument parametrization as a **decision table**, even though Python represents the rows as tuples or `pytest.param(...)` calls. A reader must be able to associate each column name with the corresponding value in every row without mentally rotating the layout.
+Tests document expected behavior for a human reader. Optimize for immediate comprehension, not merely syntactic validity, brevity, parameterization, or formatter compliance.
 
-**Avoid mismatched orientations.** In particular, Black or another automatic formatter may expand a tuple/list of parameter names **vertically** while leaving each row of values **horizontally** (or may expand long value rows while their names remain compact). This destroys the immediate column-to-value mapping:
+- **Visual clarity:** Make relationships between conditions, inputs, and expected results apparent at a glance. A decision table is useful only when readers can readily associate each value with its meaning and compare cases without counting tuple positions or reconstructing mappings.
+- **Low cognitive load:** Avoid opaque indirection, positional decoding, unexplained abstractions, or unnecessary navigation. Keep relevant inputs and expected outcomes close together.
+- **Choose the representation for the information:** Parameterize shared behavior when that makes comparison clearer; use named cases, descriptive IDs, separate tests, or other structures when they communicate better. Do not force all cases into one syntactic shape.
+- **Judge the formatted artifact:** Assess what a developer encountering the final code without implementation context will actually see. Formatter compliance does not establish readability; if the final representation is difficult to scan, redesign it rather than adding exceptions to a formatting rule.
 
-```python
-# Hard to scan: vertically stacked headers, horizontal data rows.
-@pytest.mark.parametrize(
-    (
-        "input_payload",
-        "expected_status",
-        "expected_priority",
-    ),
-    [
-        ({"status": " ready ", "priority": 2}, "ready", 2),
-        ({"status": "pending", "priority": 1}, "pending", 1),
-    ],
-)
-def test_parse_payload(input_payload, expected_status, expected_priority):
-    ...
-```
-
-**Prefer a horizontal header and one compact, scannable row per case** when the values fit the formatter's line length:
-
-```python
-@pytest.mark.parametrize(
-    "payload, status, priority",
-    [
-        ({"status": " ready ", "priority": 2}, "ready", 2),
-        ({"status": "pending", "priority": 1}, "pending", 1),
-    ],
-)
-def test_parse_payload(payload, status, priority):
-    ...
-```
-
-- For multiple pytest arguments, prefer a **single comma-separated string** for `argnames` where it keeps the column header on one line. This syntax is supported by pytest. Choose concise, unambiguous names rather than artificially long headers or names so short they hide meaning.
-- Keep related values visually grouped into one row when practical; use meaningful `pytest.param(..., id="...")` IDs when they aid case identification. Do **not** distort the production API, drop useful test cases, or sacrifice clarity solely to squeeze a row into a line-length limit.
-- When rows are inherently large or heterogeneous and cannot be read as a compact table, use a **named case structure** (for example a small dataclass with explicit field names), reduce the number of columns by grouping related input data, or split genuinely distinct behaviors. The reader should still see each case's input and expected output together. Do not introduce a custom case type for an otherwise simple two-column table.
-- **Run the repository's configured formatter and inspect the resulting layout**, not only the handwritten version. Revise the parametrization if formatting creates a rotated header/value layout or forces readers to count tuple positions. Do not disable the formatter to protect a fragile layout.
-
-Example:
-
-```python
-import pytest
-from pydantic import ValidationError
-
-@pytest.mark.parametrize(
-    "payload, expected_status",
-    [
-        pytest.param({"status": " ready "}, "ready", id="trim-status"),
-        pytest.param({"status": "pending"}, "pending", id="preserve-status"),
-    ],
-)
-def test_model_normalizes_status(payload, expected_status):
-    result = StatusModel.model_validate(payload)
-    assert result.status == expected_status
-
-
-def test_model_rejects_unknown_status():
-    with pytest.raises(ValidationError):
-        StatusModel.model_validate({"status": "unknown"})
-```
-
-The model and values above are illustrative. Reuse actual repository contracts and conventions; do not copy example cases literally.
-
-For BDD:
-
-```gherkin
-Scenario Outline: Valid requests produce the expected stored status
-  When I submit a request with status "<input_status>"
-  Then the stored record has status "<stored_status>"
-
-  Examples:
-    | input_status | stored_status |
-    | ready        | ready         |
-    | pending      | pending       |
-```
+The objective is human comprehension across all tests, not compliance with any one example layout. The same standard applies to test descriptions, fixtures, mocks, BDD steps, and organization.
 
 ## 6. Test composed behavior; isolate external effects, not internal logic by default
 
@@ -291,6 +222,18 @@ A feature is a **reason to update several tests**, not a good default basis for 
 - **Different levels have different organization:** Integration, contract, BDD, and system tests can be organized around an **interface or business capability** rather than a single source module. Their ownership must still be explicit and their SUT boundaries consistent; a single BDD feature must retain one coherent SUT/entry/observation scope (section 3). Do not mingle internal component tests with whole-system scenarios simply because they share a feature label.
 
 For a change affecting `PayloadModel` and `PayloadParser.parse_payload()`, the model's validation cases belong with the **model tests**, and the parser's observable behavior belongs with the **parser tests**. Consider higher-level scenarios independently under section 2. Do not combine them in one unit-test file just because both are part of the same feature.
+
+## Behavioral descriptions must match the tested boundary
+
+Test names, parameter IDs, BDD scenario titles, and Given–When–Then wording are part of the behavioral specification. They must describe the **same externally observable contract, at the same SUT boundary**, that the test executes and asserts.
+
+- **Boundary alignment:** Name the input conditions and observable result of the SUT, not an internal mechanism used to produce it. A test of a model's public validation should describe what input it accepts or rejects and what value/error the caller observes, rather than focusing on a private validator or trimming implementation.
+- **Behavioral specificity:** Prefer concrete domain entities, relevant conditions, and expected outcomes over vague groupings such as “correct systems,” “handles validation,” or “works as expected.” Name the actual system or effect when it is relevant to the contract.
+- **Self-contained meaning:** A developer should understand the specified behavior from the name and immediate enclosing context without opening the test body, step definitions, fixtures, or production code merely to discover what is meant.
+- **Semantic consistency:** Description, Act/When, and Assert/Then must refer to one coherent contract. Do not describe an implementation detail when the test asserts a public outcome, or promise an outcome the assertions do not verify.
+- **Information density:** Use the enclosing test module, class, or BDD feature to avoid redundant wording, but never at the expense of identifying the behavior. Prefer precise domain language to mechanically verbose names.
+
+For example, a public model-validation test might be named `test_accepts_serial_number_with_whitespace_and_returns_normalized_value` rather than `test_trims_whitespace`; a system BDD Then step should identify the observable record or service outcome rather than claiming that unspecified downstream systems were called. These are illustrations, not prescribed naming templates.
 
 ## 8. Make the SUT and the Act step unmistakable
 
