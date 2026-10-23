@@ -80,9 +80,10 @@ Existing non-symlink paths are left untouched unless `--force` is used.
 
 | Skill | Description |
 | --- | --- |
+| `change-consistency` | Use when implementing or revising behavior, terminology, interfaces, or usage patterns, or reviewing a branch for changes that were not carried through consistently. |
 | `engineer-agentic-ai` | Translate natural-language requests about AI-agent behavior, skills, MCP tools/servers, prompts, routing, context loading, memory, hooks, plugins, permissions, delegation, portability, or other agentic-system behavior into the concrete runtime mechanism and change surface. Use when a request is phrased as what the AI should understand/do rather than how the target harness actually observes, triggers, routes, persists, or enforces that behavior. |
 | `format-markdown` | Create, edit, review, refactor, or rewrite Markdown artifacts while preserving meaning, valid syntax, navigability, and human reviewability. Use whenever work directly changes or reviews a Markdown file, including README.md, AGENTS.md, SKILL.md, reference docs, design docs, or Markdown produced from notes, transcripts, scratch text, or rough drafts. |
-| `information-representation-design` | Choose or review the representation form for information that will already be shown: table, list, hierarchy, prose, diagram, code abstraction, chart, or another structure. Use when the same content could be organized in multiple ways and readability, comparison, scanning, or structural clarity depends on the representation. |
+| `information-representation-design` | Choose and review the representation and reader navigation of any human-readable text: chat replies, messages, emails, social posts, PR and ticket descriptions, documentation, agent skills, websites, articles, and resumes. Use when organizing prose, lists, tables, headings, and nested sections so readers can find answers and sibling elements have coherent semantic roles. |
 | `living-artifacts` | Apply when producing any markdown artifact for someone else (or future-you) to read — READMEs, analysis documents, Confluence pages, status reports, troubleshooting write-ups, skill content, conversation summaries, ticket descriptions, post-mortems, snapshots of system state, or any document that contains concrete current-state values. Defines the "snapshot + reproducer" rule (every static value must be paired with the command/query/script that regenerates it), the single-source-of-truth rule (reference canonical homes instead of duplicating values), and fact-vs-assumption marking. Trigger keywords include writing or producing or creating or drafting a README, analysis, Confluence page, status update, summary, snapshot, current state, documenting data, posting findings, file tree, port number, version number, table count, or any concrete value that may drift over time. |
 | `messaging-framework` | Core principles for technical communication such as commits, PR descriptions, branch names, and technical documentation. Use when writing or refining engineering-facing messaging and when other skills need a shared communication baseline. |
 | `python-testing` | Design, extend, and review Python tests across the existing repository's test architecture, with emphasis on observable behavior, clear subject-under-test boundaries, source-aligned test organization, explicit Arrange–Act–Assert structure, and readable parameterization. Use whenever implementing or modifying Python behavior, creating or updating tests, or reviewing test coverage. |
@@ -138,6 +139,7 @@ Existing non-symlink paths are left untouched unless `--force` is used.
 │   ├── setup-local-links.sh
 │   └── update-readme.sh
 ├── skills/
+│   ├── change-consistency/
 │   ├── engineer-agentic-ai/
 │   ├── format-markdown/
 │   ├── information-representation-design/
