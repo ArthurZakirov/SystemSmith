@@ -25,6 +25,20 @@ Product-surface behavior changes quickly. Prefer, in order:
 
 Do not promote a user-observed quirk into a universal rule without reproduction or documentation. Conversely, do not overwrite a reproducible observed limitation merely because public documentation is silent.
 
+## 🤝 Designing cooperation across agents and surfaces
+
+Apply this design when a requirement actually spans multiple agents, interfaces, or execution boundaries. **Do not assume that every voice interface has a separate backend, that all agents share context, or that every interaction needs user checkpoints.** Establish the target runtime topology first.
+
+1. **Identify participants and entry points.** For each relevant model, controller, tool, and human participant, determine the input/trigger, instructions it receives, evidence and state it can observe, permissions and actuators it controls, and output channels it can use.
+2. **Define the requested outcome and interaction constraints.** Identify the user-visible success condition and whether this particular behavior requires delegation, confirmation, pacing, interruption, background continuation, or approval. Treat those as conditional requirements, not universal steps.
+3. **Assign decisions and actions to capable participants.** Place a rule where its recipient can observe its trigger and perform its consequence. When it cannot, define a request to a participant with the required capability; do not assume shared memory, tool access, or authority.
+4. **Design the handoff contract.** Specify the initiating condition, request payload and necessary context, response format/channel, progress and error states, approval owner, and how changed user instructions or interruptions propagate. Define who retains state and who resumes after a handoff.
+5. **Choose the authoritative implementation surfaces.** Place conversational/interaction guidance on the participant that handles that interaction; execution and verification guidance on the participant that performs it. Put the cross-boundary contract where the relevant participants can use it without duplicating task-specific routines.
+6. **Specify result attribution and disclosure.** Distinguish an action that was **requested**, **attempted**, **reported successful**, or **independently verified**. Attribute each claim to its actual actor and observation. Require staged disclosure or a visual checkpoint only if the particular workflow needs it.
+7. **Validate boundaries and generality.** Exercise successful cooperation, missing access or failed delegation, and a change or interruption when applicable. Test an unrelated task as a negative control for workflow-specific assumptions. Verify real behavior on the target runtime rather than merely checking prompt wording.
+
+The reusable contract is about **who can observe, decide, act, hand off, and verify**. It does not mandate any particular application, editor, repository structure, or conversation sequence.
+
 ## ⌨️ Codex text and realtime voice
 
 **Observed runtime behavior, not a universal voice contract:** typed input in Codex starts an ordinary Codex turn. In the inspected macOS desktop realtime voice architecture, a frontend realtime speech model can answer directly and delegates selected work to a backend Codex runtime. Backend `AGENTS.md` and skills govern work that reaches that backend; they cannot govern every spoken response produced by the frontend model.
@@ -47,27 +61,25 @@ Use this distinction when engineering behavior:
 
 Primary evidence: [Codex config source](https://github.com/openai/codex/blob/main/codex-rs/config/src/config_toml.rs), [bundled realtime backend prompt](https://github.com/openai/codex/blob/main/codex-rs/prompts/templates/realtime/backend_prompt.md), and the source-backed reproduction in [openai/codex#37950](https://github.com/openai/codex/issues/37950). Treat the key as experimental and re-verify it before relying on it in a durable setup.
 
-### Do not address a frontend model through backend guidance
+### Apply the capability boundaries to Codex
 
-When a product uses a separate realtime/frontend model, write each instruction for the agent that can actually read and act on it. Do not put sentences in backend `AGENTS.md` that tell an unseen frontend model how to speak, pause, click, or pace an explanation. Instead:
+When the **verified Codex runtime** has a separate realtime conversational model and execution backend, their instructions and capabilities must be treated separately:
 
-- put frontend conversational behavior on a verified frontend prompt, personalization, or equivalent surface;
-- put backend responsibilities in backend guidance—for example, resolve exact repository/worktree/file/line evidence, inspect UI state, or return one grounded next action;
-- define the handoff contract between the two layers when both contribute to one user experience.
+- Use the verified frontend prompt/configuration surface for interaction behavior that must occur before delegation, such as deciding when to request backend work or honoring a task's conversation constraints.
+- Use backend `AGENTS.md`, skills, tools, or project guidance for actions and checks the backend can perform. The conversational model should request those actions through the supported handoff instead of claiming that it executed them.
+- Define the request, return channel, error handling, and attribution appropriate to the requested behavior. If the user-facing layer speaks backend output, ensure that output itself makes the actor and evidence status clear.
+- Verify the actual frontend/backend split on the target product and version. Neither all-voice delegation nor any specific step-by-step presentation policy follows automatically from this architecture.
 
-Use agent-relative wording such as `you`, `the user`, or `the agent` only when the reader is unambiguous from the artifact's runtime. Avoid architectural prose such as “the orchestrator should...” when the model reading the instruction cannot observe that role.
+### Example only: paced code-evidence walkthrough
 
-### Capability and attribution audit for cooperating agents
+**Scenario-specific requirement:** The user wants a voice-guided review of code evidence, with one visible location at a time. The backend can inspect a repository or worktree and may have access to VS Code; the conversational frontend can coordinate the discussion but cannot itself inspect files or control the editor.
 
-When developing separate prompts or instructions for a frontend conversational agent and an execution backend, audit the complete handoff—not just the text of each file:
+- **Frontend's role in this example:** Request only the next evidence location, wait for the user's confirmation when the requested walkthrough requires a checkpoint, and avoid disclosing future locations early.
+- **Backend's role in this example:** Verify the repository/worktree, file, and line; ask VS Code to open the location if available; check the command and UI outcome as far as its tools permit; return grounded evidence and an accurately attributed status.
+- **Example handoff:** Instead of instructing the frontend to "open the next file," instruct it to request that operation from the backend. The returned text can say "The backend asked VS Code to open the verified file and line; can you see it?" Only claim the location is visibly open when that was actually verified.
+- **Failure case:** If local editor access fails, have the backend return that limitation and a manual target, rather than implying a successful editor action.
 
-1. **Name the receiving agent.** Identify which model reads each instruction, what it knows from its own context, what tools it can invoke, and which requests it can pass to another model. The two agents are not a single actor merely because the user experiences one conversation.
-2. **Match verbs to actuators.** Instructions to the voice frontend may govern listening, speaking, turn-taking, disclosure, confirmation checkpoints, and backend requests. Instructions to open VS Code, run a CLI, inspect repository contents, or verify an editor window belong to an agent with those capabilities. If the frontend must influence such an action, tell it to **ask the backend** to perform or defer it.
-3. **Split one requirement across the correct surfaces.** For paced code walkthroughs, the frontend should withhold future evidence from speech and ask the backend not to open future evidence locations. Backend guidance should handle accurate repository/worktree/file/line verification and editor navigation. Keep the interactive checkpoint protocol on the frontend, not duplicated as backend execution guidance.
-4. **Attribute the executor in visible language.** A frontend that reads backend text must not imply it performed backend actions. Have the backend's user-visible result identify the actor when needed, and distinguish a request to open a file, an attempted editor operation, and verification that the intended location is visible. Do not rewrite the visible result into an unsupported first-person claim.
-5. **Validate the handoff.** Review each imperative, capability assumption, and example in both instructions. Exercise a case requiring delegation, a case where editor control fails, and a multi-step walkthrough. Verify the frontend neither exposes future checkpoints nor claims it performed backend tools, and that the backend returns grounded, accurately attributed results.
-
-For example, rather than telling a voice-only frontend “Do not open the next evidence file,” tell it “Ask the backend not to open the next evidence file until the user confirms readiness; do not tell the user about that file yet.” Rather than suggesting it say “I opened VS Code,” request backend-visible wording such as “The backend asked VS Code to open the verified file and line. Can you see it?” Use the stronger completion claim only when the backend actually verified the result.
+**Scope:** VS Code, worktrees, code review, withholding future evidence, and one-at-a-time confirmation are properties of *this example's request*. They are **not** required steps for engineering other agent workflows. For a calendar lookup, for instance, a conversational participant could request calendar data from a permitted backend and present the result with correct attribution—without an editor, a worktree, or visual checkpoints.
 
 ### ChatGPT Live boundary
 
