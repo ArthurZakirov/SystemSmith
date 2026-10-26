@@ -57,6 +57,18 @@ When a product uses a separate realtime/frontend model, write each instruction f
 
 Use agent-relative wording such as `you`, `the user`, or `the agent` only when the reader is unambiguous from the artifact's runtime. Avoid architectural prose such as “the orchestrator should...” when the model reading the instruction cannot observe that role.
 
+### Capability and attribution audit for cooperating agents
+
+When developing separate prompts or instructions for a frontend conversational agent and an execution backend, audit the complete handoff—not just the text of each file:
+
+1. **Name the receiving agent.** Identify which model reads each instruction, what it knows from its own context, what tools it can invoke, and which requests it can pass to another model. The two agents are not a single actor merely because the user experiences one conversation.
+2. **Match verbs to actuators.** Instructions to the voice frontend may govern listening, speaking, turn-taking, disclosure, confirmation checkpoints, and backend requests. Instructions to open VS Code, run a CLI, inspect repository contents, or verify an editor window belong to an agent with those capabilities. If the frontend must influence such an action, tell it to **ask the backend** to perform or defer it.
+3. **Split one requirement across the correct surfaces.** For paced code walkthroughs, the frontend should withhold future evidence from speech and ask the backend not to open future evidence locations. Backend guidance should handle accurate repository/worktree/file/line verification and editor navigation. Keep the interactive checkpoint protocol on the frontend, not duplicated as backend execution guidance.
+4. **Attribute the executor in visible language.** A frontend that reads backend text must not imply it performed backend actions. Have the backend's user-visible result identify the actor when needed, and distinguish a request to open a file, an attempted editor operation, and verification that the intended location is visible. Do not rewrite the visible result into an unsupported first-person claim.
+5. **Validate the handoff.** Review each imperative, capability assumption, and example in both instructions. Exercise a case requiring delegation, a case where editor control fails, and a multi-step walkthrough. Verify the frontend neither exposes future checkpoints nor claims it performed backend tools, and that the backend returns grounded, accurately attributed results.
+
+For example, rather than telling a voice-only frontend “Do not open the next evidence file,” tell it “Ask the backend not to open the next evidence file until the user confirms readiness; do not tell the user about that file yet.” Rather than suggesting it say “I opened VS Code,” request backend-visible wording such as “The backend asked VS Code to open the verified file and line. Can you see it?” Use the stronger completion claim only when the backend actually verified the result.
+
 ### ChatGPT Live boundary
 
 OpenAI currently documents ChatGPT Live as a GPT-Live voice experience that can use web search and memory and may coexist with text/images in the same chat. OpenAI also documents that preset ChatGPT personalities do not currently apply to Live. Custom Instructions are documented as applying across ChatGPT chats, but the public documentation inspected on 2026-10-01 does not establish the exact prompt assembly or whether those instructions are injected directly into the Live model versus applied elsewhere in the product pipeline.
