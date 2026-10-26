@@ -28,7 +28,7 @@ Use this as the single end-to-end process:
 
 1. **Preserve the problem-space intent.** State the observable outcome without prematurely turning it into prompt wording or a provider feature.
 2. **Route the investigation.** Load only the narrowest references required by the current uncertainty using [Reference routing](#reference-routing).
-3. **Operationalize the behavior.** Connect observable signal and evidence → trigger/lifecycle event → decision rule → actuator → persistence → verification. Include reliability and miss-cost requirements. If a required link is unavailable, keep the outcome in the problem space rather than calling it implemented.
+3. **Operationalize the behavior.** Connect observable signal and evidence → trigger/lifecycle event → decision rule → actuator → persistence → verification. For multi-agent interactions, identify which agent receives each instruction, which actions it can actually perform, what it can request of another agent, and how it may truthfully attribute the result. Include reliability and miss-cost requirements. If a required link is unavailable, keep the outcome in the problem space rather than calling it implemented.
 4. **Choose the mechanism and surface.** Select the lightest available mechanism that can meet the required reliability; verify current provider capabilities when the choice depends on them.
 5. **Implement canonically.** Change the authoritative instruction, skill, hook, tool, permission, plugin, script, automation, or configuration surface and validate its propagation path.
 6. **Validate real behavior.** Exercise the mechanism through a representative agent interaction or runtime event. Test the observable outcome, not only syntax, file presence, or plausible prose.
@@ -47,7 +47,7 @@ Load a reference only when its condition matches the current decision or failure
 | Translating, validating, debugging, or promoting an agent behavior | [`Agent engineering process`](references/agent-engineering-process.md) | Operationalization, mechanism selection, behavioral testing, failure diagnosis, and wishlist promotion. |
 | Establishing how context, tools, hooks, state, sessions, compaction, or delegation behave | [`Agent runtime model`](references/agent-runtime-model.md) | Runtime mechanics and Codex-specific lifecycle evidence. |
 | Diagnosing selection, metadata, interface boundaries, or missing enforcement | [`Interface, routing, and control design`](references/interface-routing-and-control.md) | Pre-selection routing versus post-selection execution and control strength. |
-| Reasoning about voice/text, desktop/web, approvals, background work, or result delivery | [`Interaction runtime model`](references/interaction-runtime-model.md) | Human-to-runtime input, lifecycle, and return-path behavior. |
+| Reasoning about voice/text, desktop/web, frontend/backend responsibility splits, approvals, background work, or result delivery | [`Interaction runtime model`](references/interaction-runtime-model.md) | Human-to-runtime input, agent capability boundaries, action attribution, lifecycle, and return-path behavior. |
 | Designing a reusable artifact across identities, machines, operating systems, or providers | [`Portability and provider mapping`](references/portability-and-provider-mapping.md) | Concept-first portability and provider-neutral wording. |
 | Needing an exact provider filename, directory, manifest, or settings location | [`Provider path reference`](references/provider-paths.md) | Current provider-specific path mappings and sources. |
 | Analyzing context size, tokens, caching, compaction cost, allowances, credits, or billing | [`Token usage and cost model`](references/token-usage-and-cost-model.md) | Usage evidence, cache mechanics, product accounting, and optimization. |
@@ -59,6 +59,7 @@ A change is ready only when:
 
 - the [`operationalization chain`](references/agent-engineering-process.md#operationalization-test) is complete, or the missing link is explicitly retained as an unresolved requirement;
 - the chosen mechanism and routed references support the required reliability without competing canonical rules;
+- each instruction targets an agent with the required observations and actuator, or explicitly tells the recipient to request another agent's action; user-visible claims truthfully attribute the actor and distinguish requests, attempts, and verified outcomes;
 - [`behavior validation`](references/agent-engineering-process.md#behavior-validation) proves the intended outcome on the stated surface and scope;
 - the canonical source, propagation path, and deployed/generated state are verified; and
 - the handoff names remaining unknowns and completes the applicable [`wishlist-to-production lifecycle`](references/agent-engineering-process.md#wishlist-lifecycle).
