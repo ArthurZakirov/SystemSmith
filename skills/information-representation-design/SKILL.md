@@ -1,6 +1,6 @@
 ---
 name: information-representation-design
-description: "Choose and review the representation and reader navigation of any human-readable text: chat replies, messages, emails, social posts, PR and ticket descriptions, documentation, agent skills, websites, articles, and resumes. Use when organizing prose, lists, tables, headings, and nested sections so readers can find answers and sibling elements have coherent semantic roles."
+description: "Organize or review human-readable text (chat replies, code explanations, documentation, Markdown, PRs, tickets, emails, websites, articles, agent skills) for clear lists, readable paragraphs, navigation, and exact technical wording. Use for dense comma-separated inventories, walls of prose, vague descriptions of code, or headings and bullets that mix unrelated facts and rules."
 ---
 
 # Information Representation Design
@@ -122,6 +122,51 @@ before inspecting its diff:
 ```
 
 In a short message, a single sentence can serve as both the container label and lead-in; avoid adding headings merely to satisfy a template.
+
+## Scannable Inventories and Separate Rules
+
+- When a sentence lists three or more distinct things readers might want to scan, use a short lead-in ending with `:` followed by bullets instead of chaining the items with commas. Short, natural pairs can remain inline.
+- Start a new paragraph or list item when the subject, rule, consequence, or reason changes. Keep genuinely connected causal reasoning as prose; line breaks should expose meaningful changes, not occur after every sentence by default.
+- Separate what an item contains or a command preserves from independent rules about that item. Give each group a clear lead-in; do not append unrelated rules after a comma-separated list.
+
+**Hard to scan:**
+
+> The updater preserves staged versus unstaged changes, untracked and ignored files, symlinks, executable modes, conflicted indexes, and previous commits. Submodule copies receive independent Git metadata. Interrupted-operation metadata is saved as evidence; archived operations are not automatically resumed in recovery copies.
+
+**Preferred:**
+
+```markdown
+The updater preserves:
+
+- staged versus unstaged changes
+- untracked and ignored files
+- symlinks
+- executable modes
+- conflicted indexes
+- previous commits
+
+The following rules apply:
+
+- Submodule copies receive independent Git metadata.
+- Interrupted-operation metadata is saved as evidence.
+- Archived operations are not automatically resumed in recovery copies.
+```
+
+## Exact Code Descriptions
+
+When explaining existing code, use its actual identifiers, expressions, inputs, and outputs. Do not describe code with invented spatial, structural, or possessive metaphors such as `left edge`, `both halves`, `prefix`, `tail`, `envelope`, `owns`, `carries`, and `is responsible for` unless they are literal names visible in the code.
+
+Avoid generic words such as `partition`, `disjoint`, `invariant`, `idempotent`, `boundary`, and `semantics` in explanations of specific code behavior. Replace them with the variable, column, function, expression, or value being discussed. Retain an abstract term only when quoting an actual identifier or when an external specification requires the term.
+
+For transformations, show observed input → output using concrete values. For bugs, give the failing input, the incorrect output, and the expected output. Label fabricated teaching examples as hypothetical.
+
+| Do not write | Write instead |
+| --- | --- |
+| Days before the rebuild start now have an owner. | Rows with `state_date < rebuild_start` are now written by `_keep_intervals_before_rebuild`. |
+| The kept prefix carries `is_current=False`. | Those rows get `is_current=False`, so no row has `is_current=True` unless the rebuild writes one. |
+| The old left edge is wrong. | The explode starts at `valid_from`; it must start at `rebuild_start`. |
+
+**Stable references:** If a fact, rule, question, or example will be mentioned later, assign a bold tag at its first definition (for example **F1**, **R1**, **Q1**). Use that exact bold tag in later references; never use phrases such as `the first fact` or `the previous rule` instead. Do not add tags to one-off statements that are never referenced again.
 
 ## Structural Rules
 
