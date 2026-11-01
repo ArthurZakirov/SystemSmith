@@ -31,7 +31,7 @@ Use these **four structural decisions recursively**. They are complementary ways
 <a id="structure-1"></a>
 ### S1 — Define the parent contract
 
-Identify the questions a reader needs answered and group the corresponding material. For every parent heading or list lead-in, identify the type of its immediate children:
+Identify the questions a reader needs answered and group the corresponding material. For every parent heading, list lead-in, or other grouping, identify the semantic type of its immediate children. The following are **illustrative categories, not an exhaustive taxonomy**:
 
 - **Steps:** actions or stages in a specified order.
 - **Principles:** independent guidelines, each with supporting detail.
@@ -43,7 +43,8 @@ Identify the questions a reader needs answered and group the corresponding mater
 Apply these **parent-contract rules at every level**, not only beneath headings:
 
 - **Declare the group type.** Before any set of peer headings, bullets, table entries, or separate statements, tell the reader what kind of items follow—rules, options, steps, reasons, examples, or another accurate category—and whether their order matters. A topic label alone is insufficient: "Continue structuring inside a container" does not say whether the following text is a rule, example, or explanation.
-- **Preserve the hierarchy.** Put examples, conditions, and qualifications beneath the rule or statement they explain, not beside it as if they were peers. A parent comparison and its positive/negative examples must have visibly different heading levels.
+- **Preserve the hierarchy.** Put supporting detail beneath the item it explains, not beside it as if both had the same role. Parent and child must occupy visibly different levels.
+- **Make peers structurally consistent.** When siblings play comparable roles, use equivalent labeling, hierarchy, representation, and fields so readers can compare them directly. **Check the information fields, not just visual style:** if one sibling embeds a restriction, reason, qualification, or other information role while its peers only name items, separate that material into a correctly typed group or expose comparable fields in a table. Do not invent values just to make fields symmetrical. This applies to **any** siblings—steps, reasons, alternatives, rules, examples, and other categories. Do not force genuinely different kinds of content into identical formats merely for symmetry; explain a deliberate difference when it matters.
 - **Identify real sequences.** Number actions only when order matters. Use identifiers such as P1/P2 for principles when later references benefit; the digits do not automatically imply execution order.
 - **Reapply inside containers.** Repeat the same semantic-role test for bullet groups, explanatory paragraphs, table cells, diagram descriptions, and nested sections. A new representation does not exempt its contents from these rules.
 - **Avoid redundant labels.** A genuinely continuous explanation can remain prose under an existing label. Do not manufacture extra headings for every sentence; add a new label or peer group when the **reader-facing role changes**.
@@ -126,7 +127,7 @@ Apply these **answer-labeling rules**:
 - **Length:** Aim for one to three words when that remains accurate; use a longer name where needed.
 - **Medium:** Choose a heading, bold lead-in, list label, or another appropriate level.
 - **Containment:** Keep details underneath the item they explain rather than promoting them to sibling items.
-- **Peer consistency:** Give comparable siblings consistent labels and layouts.
+- **Peer consistency:** Apply S1's structural-consistency rule to all peer items, regardless of their semantic type.
 - **Semantic type:** When introducing a standalone instruction, example, reason, or qualification, identify that role before its topic. A bold action phrase alone is not a sufficient label when the reader cannot tell why it appears.
 
 #### Comparison example — identifying a rule group
@@ -177,7 +178,7 @@ At each nesting level, ask these **structural review questions** about the *rend
 - **Group type:** Can a reader tell *what kind of items* follow before encountering the first sibling, even if the items are bullets, table rows, or paragraphs rather than headings?
 - **Standalone text:** Does each independent paragraph or bold lead-in clearly function as an explanation, rule, example, condition, or consequence? If not, can it be grouped with a related peer or labeled with its true type?
 - **Parent contract:** Do all immediate children have the type their parent promises?
-- **Peer presentation:** Do comparable items use equivalent labels, visual levels, and representations?
+- **Peer presentation and fields:** Do comparable siblings have equivalent labels, visual levels, representations, and information fields? Is a rule, reason, constraint, or qualification hidden in only one item? If so, split distinct roles into separate groups or expose the differing field explicitly.
 - **Composition:** Can an item contain an additional pattern without being mistaken for a sibling of that pattern?
 - **Order and navigation:** Are sequences distinguishable from unordered alternatives, and can the reader find the desired answer on a quick scan?
 
@@ -246,7 +247,7 @@ The four subsections below are **representation categories**, not ordered steps.
 
 ### 📝 Prose and lists
 
-Apply the following four **text and example rules** to prose, lists, and comparable example groups:
+Apply these **three prose-and-list rules** to the formats used in the current document:
 
 #### T1 — Frame each list
 
@@ -286,11 +287,13 @@ Review these in priority order; read the description before each diff:
 3. **PR C** — Simplify the deployment path.
 ```
 
-#### T2 — Separate scannable items and distinct rules
+#### T2 — Group scannable items by semantic type
 
-When one sentence contains three or more independently scannable items, replace the enumeration with a lead-in and one bullet per item. Keep inseparable pairs, such as "staged versus unstaged changes", together.
+Follow these **grouping rules**:
 
-When the text changes from describing contents to stating rules, exceptions, or consequences, start a second explicitly named group.
+- **Expose separate peers.** When a sentence or paragraph contains independently scannable items, use bullets, rows, or other suitable containers if doing so improves recognition. Keep inseparable pairs such as "staged versus unstaged changes" together; there is no fixed item-count threshold.
+- **Separate different semantic types.** When adjacent items serve different purposes, give each type its own accurately named group, whether the types are changes, steps, reasons, alternatives, evidence, constraints, examples, decisions, or anything else. These are **examples, not a closed list**; derive the categories from the content.
+- **Keep connected material together.** Do not create a new group merely because two sentences differ in wording. Split when readers need to recognize a change in semantic role, not simply to increase the number of headings.
 
 ##### Comparison example — updater behavior
 
@@ -325,33 +328,20 @@ The following rules apply:
 - Archived operations are not automatically resumed in recovery copies.
 ```
 
-#### T3 — Make paragraphs purposeful
+**Illustration scope:** This particular example separates preserved items from operational rules. In another document, the distinct groups might be alternatives and trade-offs, completed work and open questions, or other types determined by the content—not by this example.
 
-Keep explanatory prose inside the statement, rule, or question it develops.
+#### T3 — Make prose purposeful
+
+Every prose block needs a **reader-facing function**: it either develops the semantic role already identified by its parent or introduces a new, appropriately identified role. That role might be to explain a reason, qualify a decision, describe a step, present evidence, or something else. **Discover the role from the material**; these illustrations are not an exhaustive taxonomy or mandatory heading templates.
 
 Follow these **paragraph-writing rules**:
 
-- **Identify the point.** Begin with the claim or an identifying lead-in.
-- **Explain its meaning.** Elaborate when a short label is too abstract.
-- **Ground the claim.** Show an example or evidence when the reader needs to see what it means.
-- **Separate distinct roles.** Start a new paragraph or list item when the subject, action, or reason changes, and label its role when it introduces a new kind of information.
+- **Identify the purpose.** Start with an identifying lead-in or point so the reader knows what the paragraph contributes.
+- **Explain the meaning.** Elaborate when a short label cannot communicate the relevant detail.
+- **Support the point.** Include evidence, an example, a consequence, or context when it helps the reader understand the item.
+- **Separate changed roles.** Start a new paragraph or list item when the purpose changes; identify the new role when it is not already clear from the parent section.
 
 Keep genuinely connected causal reasoning in prose. A new sentence does not automatically require a separate paragraph.
-
-#### T4 — Keep peer examples comparable
-
-When two or more examples are siblings of one parent, use **the same kind of representation, labeling, and visual level** for each. Name the shared parent **Comparison example — [topic]** (or an equivalent clearly typed label). Name contrasting children **Negative example — [specific defect]** and **Positive example — [specific improvement]** so that the reader can identify the role of each case from the outline, not only the adjective. For example, do not compare an "Ambiguous" Markdown snippet written in prose with a "Clear" snippet rendered in a code fence.
-
-Apply these **peer-comparison rules**:
-
-- **Compare like with like.** If one case is a Markdown example, render the other as Markdown too. If each case has the same fields, align them as rows or columns of a comparison table.
-- **Expose hierarchy and role.** Give the shared comparison its own parent label; make the positive and negative cases visibly subordinate and identically leveled. Use headings or table headers that explicitly identify **Negative example** and **Positive example**, not only adjectives such as "Unframed" or "Clear". The specific adjectives may follow the semantic role.
-- **Use a suitable layout.** A side-by-side Bad/Good table works for short comparisons. For longer code or Markdown blocks, use parallel labeled subsections with matching language-tagged fences.
-- **Preserve content.** Keep comparable context and sufficient detail for both cases; do not shorten one side so far that the comparison changes meaning.
-
-Apply this to alternatives, before/after states, examples, reasons, rules, and other peer items—not only to code snippets.
-
-**Validation rule — before presenting a comparison:** Inspect each case in the actual draft. Verify that every label declares the **type** of case (positive/negative example) before the specific condition, and that parallel cases use matching containers (fence versus fence, quote versus quote, or table row versus table row), matching syntax highlighting when they demonstrate the same language, and equally subordinate labels. If one side is prose and the other is a fenced excerpt, make both comparable excerpts or change the whole comparison format. Recheck the rendered hierarchy, not just the Markdown source.
 
 ### 📋 Tables
 
