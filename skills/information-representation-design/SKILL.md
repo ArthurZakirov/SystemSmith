@@ -40,9 +40,13 @@ Identify the questions a reader needs answered and group the corresponding mater
 - **Examples:** concrete illustrations of an introduced rule.
 - **Information categories:** different content types grouped by a clear purpose.
 
-Before introducing sibling headings, state their shared type and whether their order matters. Number actual sequences. Use identifiers such as P1/P2 for principles only when later references benefit; numbers do not automatically imply order.
+Apply these **parent-contract rules at every level**, not only beneath headings:
 
-A parent example and its contrasting cases must have **visibly different heading levels**. Likewise, a principle's example belongs beneath that principle, not beside it.
+- **Declare the group type.** Before any set of peer headings, bullets, table entries, or separate statements, tell the reader what kind of items follow—rules, options, steps, reasons, examples, or another accurate category—and whether their order matters. A topic label alone is insufficient: "Continue structuring inside a container" does not say whether the following text is a rule, example, or explanation.
+- **Preserve the hierarchy.** Put examples, conditions, and qualifications beneath the rule or statement they explain, not beside it as if they were peers. A parent comparison and its positive/negative examples must have visibly different heading levels.
+- **Identify real sequences.** Number actions only when order matters. Use identifiers such as P1/P2 for principles when later references benefit; the digits do not automatically imply execution order.
+- **Reapply inside containers.** Repeat the same semantic-role test for bullet groups, explanatory paragraphs, table cells, diagram descriptions, and nested sections. A new representation does not exempt its contents from these rules.
+- **Avoid redundant labels.** A genuinely continuous explanation can remain prose under an existing label. Do not manufacture extra headings for every sentence; add a new label or peer group when the **reader-facing role changes**.
 
 #### Comparison example — parent contracts
 
@@ -117,10 +121,45 @@ Reapply a pattern inside a list item, a table cell, or another component when it
 
 For each meaningful block, identify the reader question it answers. Give it a **short, skimmable semantic label**, then keep its explanation, evidence, examples, and qualifications directly below.
 
-- Aim for one to three words when that remains accurate; use a longer name where needed.
-- Choose a heading, bold lead-in, list label, or another appropriate level.
-- Keep details underneath the item they explain rather than promoting them to sibling items.
-- Give comparable siblings consistent labels and layouts.
+Apply these **answer-labeling rules**:
+
+- **Length:** Aim for one to three words when that remains accurate; use a longer name where needed.
+- **Medium:** Choose a heading, bold lead-in, list label, or another appropriate level.
+- **Containment:** Keep details underneath the item they explain rather than promoting them to sibling items.
+- **Peer consistency:** Give comparable siblings consistent labels and layouts.
+- **Semantic type:** When introducing a standalone instruction, example, reason, or qualification, identify that role before its topic. A bold action phrase alone is not a sufficient label when the reader cannot tell why it appears.
+
+#### Comparison example — identifying a rule group
+
+Both examples are Markdown excerpts about the same organizing-structure decisions.
+
+##### Negative example — Unidentified instructions
+
+```markdown
+### Organizing structures
+
+Choose these based on the relationship rather than the content type.
+
+**Continue structuring inside a container:** A table cell can contain
+multiple labeled points.
+```
+
+The reader encounters two instructions but is not told that they are rules.
+
+##### Positive example — Explicit rule group
+
+```markdown
+### Organizing structures
+
+Follow these rules for applying organizing structures:
+
+- **Choose by relationship.** Select the structure that fits the
+  relationship between items.
+- **Structure nested content.** Reapply semantic grouping inside table
+  cells when the renderer supports it.
+```
+
+The parent lead-in identifies the following items as rules. Each bullet names a distinct rule and contains its explanation.
 
 **Example — one principle in a testing guide**
 
@@ -133,20 +172,26 @@ A longer guide could give the principle a heading; a concise list can use the bo
 
 Use headings for document and article navigation. In a brief message, an opening clause or bold label may be enough. Choose the smallest hierarchy that exposes meaningful relationships.
 
-At each nesting level, compare the actual draft with its parent's contract:
+At each nesting level, ask these **structural review questions** about the *rendered* draft:
 
-- **Role:** do all immediate children have the promised type?
-- **Presentation:** are comparable peers shown at the same visual level and with the same representation?
-- **Composability:** can an item contain an additional pattern or layout without being mistaken for a peer?
-- **Order:** are actual sequences distinguished from unordered alternatives?
-- **Navigation:** can a reader find the right answer without reading unrelated prose?
+- **Group type:** Can a reader tell *what kind of items* follow before encountering the first sibling, even if the items are bullets, table rows, or paragraphs rather than headings?
+- **Standalone text:** Does each independent paragraph or bold lead-in clearly function as an explanation, rule, example, condition, or consequence? If not, can it be grouped with a related peer or labeled with its true type?
+- **Parent contract:** Do all immediate children have the type their parent promises?
+- **Peer presentation:** Do comparable items use equivalent labels, visual levels, and representations?
+- **Composition:** Can an item contain an additional pattern without being mistaken for a sibling of that pattern?
+- **Order and navigation:** Are sequences distinguishable from unordered alternatives, and can the reader find the desired answer on a quick scan?
 
-Correct mismatches wherever they occur, including inside tables, list items, and examples.
+**Action after review — repair the draft:** If any block fails, rewrite its lead-in, move it beneath the correct parent, or combine it with other rules/examples of the same type. Recheck the whole document, not only the section recently edited. Do not rely on Markdown syntax validity as evidence of semantic clarity.
 
 <a id="stage-2"></a>
 ## 🗂️ Stage 2 — Choose a representation inside each section
 
-After identifying semantic relationships, choose how they appear in the target medium. **Organizing structures** and **content representations** are different choices: headings, lists, and tables organize other information; prose, code excerpts, and visualizations communicate content inside those structures.
+After identifying semantic relationships, choose how they appear in the target medium.
+
+Stage 2 distinguishes **two representation categories**:
+
+- **Organizing structures:** Headings, lists, and tables group and arrange information, potentially containing further structures.
+- **Content representations:** Prose, code excerpts, diagrams, and charts communicate the information within those structures.
 
 ### Organizing structures
 
@@ -159,9 +204,10 @@ These forms can contain further semantic patterns and other representations:
 | Steps in required order | Numbered list |
 | Multiple records with comparable fields | Table |
 
-Choose these based on the relationship, not on the presence of a specific content type. Repeated Bad/Good examples, for instance, share two fields and therefore are strong candidates for a two-column comparison table.
+Follow these **rules for applying organizing structures**:
 
-**Continue structuring inside a container:** A table cell can contain multiple labeled points or a nested list when the renderer supports them. Apply the same reader-question and sibling-consistency rules to those entries. If the table renderer cannot handle multi-item cells or the content becomes difficult to scan, keep cells concise and provide labeled details immediately below the table.
+- **Choose by relationship.** Select headings, lists, or tables based on how the information relates, not the content type. For example, repeated negative/positive examples share comparable fields and may fit a two-column comparison table.
+- **Continue structuring within containers.** A table cell can contain multiple labeled points or a nested list when the renderer supports them. Apply the same parent-contract and sibling-consistency rules inside the cell. If the resulting cell becomes difficult to scan or the renderer cannot handle nested formatting, keep it concise and move the details into a clearly labeled section below the table.
 
 ### Content representations
 
@@ -174,7 +220,13 @@ These convey the substance within the chosen layout. They are **not competing al
 | Relationships, dependencies, topology, or process flow | Diagram |
 | Quantitative comparison or trend | Chart |
 
-A table can contain inline code in its cells; a section can include a diagram with explanatory paragraphs; a list item can contain both a short statement and a code example. Code fences usually function as content elements rather than Markdown containers that hold other rendered tables.
+**Examples of composable representations:**
+
+- A table cell can contain inline code.
+- A section can include a diagram alongside explanatory paragraphs.
+- A list item can contain both a short statement and a code example.
+
+**Boundary rule:** A code fence is ordinarily a content element, not a Markdown container for rendering nested tables.
 
 **Example — environment variables**
 
@@ -199,6 +251,8 @@ Apply the following four **text and example rules** to prose, lists, and compara
 #### T1 — Frame each list
 
 Use a short label or lead-in to say what its children represent and why the reader needs them.
+
+**Available forms and their roles:**
 
 - **Bullets:** unordered items of the same kind.
 - **Numbers:** steps whose order matters.
@@ -275,16 +329,20 @@ The following rules apply:
 
 Keep explanatory prose inside the statement, rule, or question it develops.
 
-- Begin with the claim or an identifying lead-in.
-- Elaborate when a short label is too abstract.
-- Show an example or evidence when the reader needs to see what the claim means.
-- Start a new paragraph or list item when the subject, action, or reason changes.
+Follow these **paragraph-writing rules**:
+
+- **Identify the point.** Begin with the claim or an identifying lead-in.
+- **Explain its meaning.** Elaborate when a short label is too abstract.
+- **Ground the claim.** Show an example or evidence when the reader needs to see what it means.
+- **Separate distinct roles.** Start a new paragraph or list item when the subject, action, or reason changes, and label its role when it introduces a new kind of information.
 
 Keep genuinely connected causal reasoning in prose. A new sentence does not automatically require a separate paragraph.
 
 #### T4 — Keep peer examples comparable
 
 When two or more examples are siblings of one parent, use **the same kind of representation, labeling, and visual level** for each. Name the shared parent **Comparison example — [topic]** (or an equivalent clearly typed label). Name contrasting children **Negative example — [specific defect]** and **Positive example — [specific improvement]** so that the reader can identify the role of each case from the outline, not only the adjective. For example, do not compare an "Ambiguous" Markdown snippet written in prose with a "Clear" snippet rendered in a code fence.
+
+Apply these **peer-comparison rules**:
 
 - **Compare like with like.** If one case is a Markdown example, render the other as Markdown too. If each case has the same fields, align them as rows or columns of a comparison table.
 - **Expose hierarchy and role.** Give the shared comparison its own parent label; make the positive and negative cases visibly subordinate and identically leveled. Use headings or table headers that explicitly identify **Negative example** and **Positive example**, not only adjectives such as "Unframed" or "Clear". The specific adjectives may follow the semantic role.
@@ -293,27 +351,31 @@ When two or more examples are siblings of one parent, use **the same kind of rep
 
 Apply this to alternatives, before/after states, examples, reasons, rules, and other peer items—not only to code snippets.
 
-**Before presenting a comparison**, inspect each case in the actual draft. Verify that every label declares the **type** of case (positive/negative example) before the specific condition, and that parallel cases use matching containers (fence versus fence, quote versus quote, or table row versus table row), matching syntax highlighting when they demonstrate the same language, and equally subordinate labels. If one side is prose and the other is a fenced excerpt, make both comparable excerpts or change the whole comparison format. Recheck the rendered hierarchy, not just the Markdown source.
+**Validation rule — before presenting a comparison:** Inspect each case in the actual draft. Verify that every label declares the **type** of case (positive/negative example) before the specific condition, and that parallel cases use matching containers (fence versus fence, quote versus quote, or table row versus table row), matching syntax highlighting when they demonstrate the same language, and equally subordinate labels. If one side is prose and the other is a fenced excerpt, make both comparable excerpts or change the whole comparison format. Recheck the rendered hierarchy, not just the Markdown source.
 
 ### 📋 Tables
 
 Use a table when the reader compares records with the same columns or conditions with the same fields.
 
-- State the table's purpose in a heading or preceding sentence.
-- Use each row for one comparable record.
-- Put repeated labels in column headers rather than repeating them inside every cell.
-- Split unrelated rules or multi-paragraph explanations out of cells and place them under their owning section.
-- Prefer a numbered list for a simple sequence instead of a table with one row per step.
-- For recurring examples with the same two fields, prefer a compact comparison table when the cells remain readable.
-- For a cell that itself contains multiple items, use renderer-supported lists, line breaks, or short labels. Reapply semantic grouping inside that cell; if the resulting cell becomes unwieldy or its renderer does not support nested formatting, put the elaboration in a clearly labeled section beneath the table.
+Apply these **table rules**:
+
+- **Purpose:** State what the table contains in a heading or preceding sentence.
+- **Rows:** Use each row for one comparable record.
+- **Columns:** Put repeated field labels in headers rather than repeating them in every cell.
+- **Cell scope:** Move unrelated rules or multi-paragraph explanations out of cells and under the appropriate section.
+- **Sequences:** Prefer a numbered list for a simple procedure instead of a one-step-per-row table.
+- **Repeated comparisons:** Use a compact comparison table when examples repeatedly have the same fields and cells remain readable.
+- **Nested detail:** When a cell needs multiple items, use supported lists, line breaks, or short labels and reapply semantic grouping. If the cell becomes unwieldy or unsupported, provide clearly labeled details below the table.
 
 ### 📊 Diagrams and charts
 
 Use a diagram when a relationship, process, topology, or spatial structure is easier to understand visually. Use a chart for quantitative comparisons or trends. **Make the figure and its surrounding explanation two views of the same information**, not disconnected pieces.
 
-#### Match referential labels exactly
+Follow these **two diagram-and-chart rules**:
 
-For every visual label that names an existing code element, document section, category, series, or other identifiable source concept:
+#### R1 — Match referential labels exactly
+
+For visual labels naming an existing code element, document section, category, series, or other source concept, perform these **reference-matching checks**:
 
 - **Locate the target.** Find the actual symbol, heading, data field, or named concept in the current code or document.
 - **Copy its exact name.** Match spelling, case, underscores, punctuation, and word order. Do not paraphrase a referential label merely to make the diagram shorter.
@@ -322,7 +384,7 @@ For every visual label that names an existing code element, document section, ca
 
 Generic relationship verbs, axis units, and explanatory annotations do not need a matching source identifier unless they themselves refer to a named source element. Do not invent a code symbol or heading to justify a generic label.
 
-#### Connect the figure to its explanation
+#### R2 — Connect the figure to its explanation
 
 Structure the nearby prose with **the same named concepts** the visual presents. The reader should be able to select a diagram node or chart series, find the identically labeled explanation, learn what it does or measures, and return to the visual to inspect its relationships with other named elements.
 
@@ -357,7 +419,7 @@ When an answer locates, explains, or proposes changing repository code, inspect 
 
 Copy the original spelling of any inspected identifier: every character, including punctuation and underscores. Use inline backticks for literal code; use verified links when referring to a located symbol.
 
-Use the same **Bad / Good** columns for these comparable examples. All values and expressions below are illustrative, not claims about the current repository. The identifier and source expression shown in the good examples must be verified when applied to actual code.
+The following **four negative/positive comparison examples** share the same two columns. All values and expressions are illustrative, not claims about the current repository. The identifier and source expression shown in the good examples must be verified when applied to actual code.
 
 | Negative example (Bad) | Positive example (Good) |
 | --- | --- |
@@ -366,9 +428,10 @@ Use the same **Bad / Good** columns for these comparable examples. All values an
 | "The older dates are kept." | "Rows where `state_date < rebuild_start` are kept; rows where `state_date >= rebuild_start` are rebuilt." |
 | "The old left edge is wrong." | "With `valid_from='2026-10-01'` and `rebuild_start='2026-10-10'`, the output starts at `2026-10-01`; the expected start is `2026-10-10`." |
 
-Avoid invented spatial descriptions ("left edge", "tail"), possessive metaphors ("owns", "carries"), or abstract jargon ("partition", "idempotent") **when they replace** the executable operation. Technical concepts remain useful after the actual expression and its observable effect have been identified.
+Apply these **code-explanation rules** when elaborating on the comparisons:
 
-Use representative inputs and resulting values when they make an operation easier to understand. Distinguish observed behavior from a hypothetical demonstration.
+- **Prefer exact operations.** Avoid invented spatial descriptions ("left edge", "tail"), possessive metaphors ("owns", "carries"), or abstract jargon ("partition", "idempotent") **when they replace** the executable operation. Technical concepts remain useful after the actual expression and its observable effect are identified.
+- **Ground outputs.** Use representative inputs and resulting values when they make an operation easier to understand. Distinguish observed behavior from a hypothetical demonstration.
 
 #### C2 — Quote inspected source with its scope
 
@@ -379,7 +442,9 @@ Give every source excerpt two location cues:
 - **Immediately above:** a verified clickable file-and-line link.
 - **Inside the fence:** the exact source-relative path on the first line as a comment.
 
-Keep enough enclosing syntax to show where the quoted code runs. Mark omitted spans with the language's comment syntax.
+Keep enough enclosing syntax to show where the quoted code runs.
+
+Apply these **language-specific quotation rules**, using the language's own comment syntax for omitted spans:
 
 - **Python:** include the actual `def` and, for a method, its enclosing `class`. Mark omissions `# ...`.
 - **Markdown:** include the surrounding heading. Mark omissions `<!-- ... -->` when quoting literal Markdown.
@@ -397,7 +462,7 @@ For proposed or completed code edits, show the same enclosing scope and relevant
 - **BEFORE:** the original code and its verified source location.
 - **AFTER:** the modified code, labeled as *proposed* when not yet applied.
 
-In a larger annotated AFTER excerpt:
+In a larger annotated AFTER excerpt, follow these **change-annotation rules**:
 
 - Mark added lines `# NEW`.
 - Mark replaced lines `# CHANGED`.
@@ -407,6 +472,8 @@ In a larger annotated AFTER excerpt:
 Use the target language's comment syntax. These review annotations explain a change; they are not automatically part of production code.
 
 #### C4 — Distinguish quotations from commands
+
+Apply these **presentation rules by content type**:
 
 - **Markdown wording:** when discussing what quoted text says, use a blockquote or concise paraphrase with a link. Use a `markdown` fence with the enclosing heading when the syntax itself matters.
 - **Runnable commands:** show the actual command in a `sh` or `bash` fence with representative arguments. A command being introduced for execution is not a source quotation and needs no invented file path or enclosing function.
@@ -420,17 +487,22 @@ Apply the following three **reference rules** to mentions of inspectable sources
 
 When the draft names a file, symbol, or other inspectable artifact, locate its real target before adding a link. Verify that the path and line exist in the relevant revision or worktree.
 
-- Use the symbol or filename as the visible link label.
-- Put the location and line anchor in the href, not in an unnecessarily long visible label.
-- Keep link labels as plain text; use inline backticks separately for exact code spelling.
-- Preserve the real identifier even when its name is long.
-- If a leading `_` or `*` breaks a renderer's link label, omit that character **only in the displayed label**, keeping the complete identifier at the destination or in adjacent inline code.
-- For unresolved targets, show the exact known locator in backticks and state what could not be verified.
+Apply these **source-link rules**:
 
-**Link-label example**
+- **Link label:** Use the symbol or filename as the visible label.
+- **Location:** Put the file path and line anchor in the destination rather than an unnecessarily long displayed phrase.
+- **Literal identifiers:** Keep link labels plain text and use adjacent inline code for exact symbol spelling when needed.
+- **Identifier fidelity:** Preserve the real identifier even when its name is long.
+- **Renderer quirks:** If a leading `_` or `*` breaks a link label, omit that character **only in the displayed label**, keeping the complete identifier at the destination or in adjacent inline code.
+- **Unresolved targets:** Show the exact known locator in backticks and state what could not be verified.
 
-- **Bad:** `[here](src/loader.py#L90)` or `[line 90](src/loader.py#L90)`
-- **Good:** `[loader.py:90](src/loader.py#L90)`
+#### Comparison example — source-link labels
+
+The two cases below compare labels for the same illustrative link destination:
+
+| Negative example — vague label | Positive example — precise label |
+| --- | --- |
+| `[here](src/loader.py#L90)` or `[line 90](src/loader.py#L90)` | `[loader.py:90](src/loader.py#L90)`
 
 ### L2 — Resolve links for the destination
 
