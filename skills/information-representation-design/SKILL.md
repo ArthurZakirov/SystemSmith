@@ -154,17 +154,37 @@ The following rules apply:
 
 ## Exact Code Descriptions
 
-When explaining existing code, use its actual identifiers, expressions, inputs, and outputs. Do not describe code with invented spatial, structural, or possessive metaphors such as `left edge`, `both halves`, `prefix`, `tail`, `envelope`, `owns`, `carries`, and `is responsible for` unless they are literal names visible in the code.
+Apply to **every discussion involving repository code**, including where it is implemented, which file defines something, what or why it does something, what caused a bug, how to test it, and how to change it. The user's question need not contain "explain the code." Treat the examples in this section as illustrative rather than verified claims about the current repository.
 
-Avoid generic words such as `partition`, `disjoint`, `invariant`, `idempotent`, `boundary`, and `semantics` in explanations of specific code behavior. Replace them with the variable, column, function, expression, or value being discussed. Retain an abstract term only when quoting an actual identifier or when an external specification requires the term.
-
-For transformations, show observed input → output using concrete values. For bugs, give the failing input, the incorrect output, and the expected output. Label fabricated teaching examples as hypothetical.
-
-| Do not write | Write instead |
+| When | Rule with its own bad → good example |
 | --- | --- |
-| Days before the rebuild start now have an owner. | Rows with `state_date < rebuild_start` are now written by `_keep_intervals_before_rebuild`. |
-| The kept prefix carries `is_current=False`. | Those rows get `is_current=False`, so no row has `is_current=True` unless the rebuild writes one. |
-| The old left edge is wrong. | The explode starts at `valid_from`; it must start at `rebuild_start`. |
+| Naming an inspected symbol, identifier, expression, argument, column, or literal. | Copy the **exact code spelling**: capitalization, underscores, quotes, punctuation, operators, and full symbol name. Use inline backticks unless a verified link to the real symbol is available (use plain text in link labels). **Bad:** "the underscore keep intervals before rebuild function." **Good:** `_keep_intervals_before_rebuild`. Do not spell punctuation aloud or invent shorter names. |
+| Using vague spatial, possessive, or conceptual language in place of an operation. | Identify the real expression, call, and values. Metaphors (`left edge`, `tail`, `envelope`, `owns`, `carries`) and abstract jargon (`partition`, `disjoint`, `boundary`, `idempotent`, `semantics`) are examples of the **same problem**. **Bad:** "The left-edge partition owns the earlier days." **Good:** "Rows where `state_date < rebuild_start` are passed to `_keep_intervals_before_rebuild`." Retain genuine domain terminology when it helps after the concrete mechanism is established. |
+| Describing a condition, interval, branch, or subset. | Quote the predicate and identify its actual effect, as confirmed by source. **Bad:** "The old days are kept." **Good:** "Rows where `state_date < rebuild_start` are kept; rows where `state_date >= rebuild_start` are rebuilt." |
+| Describing a bug whose data is known. | Show input, **actual** incorrect outcome, and expected outcome. **Bad:** "The old left edge is wrong." **Good (hypothetical):** "For `valid_from='2026-10-01'` and `rebuild_start='2026-10-10'`, output begins at `2026-10-01` rather than `2026-10-10`." Mark fabricated teaching examples as hypothetical. |
+
+Do not require a made-up input/output demonstration for every function. Use concrete values when needed for comprehension or evidence; avoid speculative, repetitive examples.
+
+## Source Snippets and Links
+
+When **describing inspected code**, show the relevant source excerpt, not just "the handler does X." Let code establish **what** exists and the accompanying prose explain **why** it matters.
+
+- **Two locations:** a verified clickable file-and-line link immediately above each source fence, and the source-relative path as a comment on the first line inside it.
+- **Visible enclosing scope:** for Python, quote the real `def` line and enclosing `class` line for a method; mark every omitted span with `# ...`. For other languages, show the equivalent surrounding declaration. For Markdown show the heading, for YAML/JSON the enclosing keys, for SQL the `SELECT` or CTE. Do not invent a `def` when quoting module-level code. Use the source language's comment syntax for paths and omissions; for annotated JSON, use a `jsonc` fence and `// path`, not a strict `json` fence containing comments.
+- **Before and after:** for proposed edits show two distinct `BEFORE` / `AFTER` excerpts of the same lines and scope; identify AFTER as proposed. In a larger annotated AFTER snippet, flag new lines `# NEW` and altered lines `# CHANGED`, putting the commented-out old line directly above each replacement. Do not confuse annotated review snippets with runnable code.
+- **Quoting Markdown:** prefer a blockquote or paraphrase with a source link when discussing its wording. Use a `markdown` code fence only when the syntax matters; then preserve its heading.
+- **Runnable commands:** show real commands in the appropriate fence; do not add artificial source-file links or function declarations to a command that is not a quotation.
+
+Make every resolvable mention of a file or symbol clickable, not only the first mention. The link label names the object in plain text; the href holds its path and verified line anchor. Avoid generic `[here](...)` or `[line 90](...)` labels, visible deep paths, malformed labels with backticks, and shortened or invented names. If a leading `_` or `*` breaks the Markdown link renderer, omit it **from the visible label only**, retain the full symbol at its destination, and show exact backticked spelling separately if needed. Use backticks rather than invented links for unresolved targets.
+
+Choose the link base according to destination:
+
+| Destination | Link base |
+| --- | --- |
+| Local repository chat | Relative to session working directory, with a verified line anchor. |
+| Same-repository Markdown file | Relative to the Markdown file's own directory; verify the referenced file exists. |
+| Cross-repository Markdown | Git-host URL to the other repository, preferably a stable landing context rather than a fragile source-line target if repositories evolve independently. |
+| PR, external ticket, documentation app, or messaging app | Absolute URL, since readers do not share the author's checkout. |
 
 **Stable references:** If a fact, rule, question, or example will be mentioned later, assign a bold tag at its first definition (for example **F1**, **R1**, **Q1**). Use that exact bold tag in later references; never use phrases such as `the first fact` or `the previous rule` instead. Do not add tags to one-off statements that are never referenced again.
 
