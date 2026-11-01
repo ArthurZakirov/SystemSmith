@@ -28,6 +28,7 @@ Create or edit the Markdown artifact so it remains valid, readable, navigable, a
 - Preserve literal `$` syntax when it is semantically part of the source.
 - Keep YAML/frontmatter valid when the target artifact expects it.
 - Use valid heading levels and do not skip levels merely for visual size.
+- In Markdown documents where emoji suit the audience and renderer, prefix major section headings (typically the document title and its highest-level sections) with **one semantically meaningful emoji** to help readers recognize and scan them. Use emojis for lower-level headings selectively when they distinguish meaningful subsection categories; leave fine-grained headings plain when additional icons would create noise. Keep the text label, follow established document conventions, and omit emoji where the document's accessibility, audience, or style requirements make them unsuitable.
 - Use inline code for repositories, folders, files, commands, functions, variables, configuration keys, and other literal technical identifiers when appropriate.
 - In maintained Markdown artifacts, make concrete file references clickable with correct relative links when a real target exists.
 - When an overview names sections later in the same Markdown document, link each navigable item to its actual section anchor instead of repeating a heading as unlinked text. Verify the fragment against the target renderer; where supported, use an explicit stable anchor if automatic heading slugs could be brittle.

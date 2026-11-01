@@ -3,7 +3,7 @@ name: information-representation-design
 description: "Organize or review human-readable text (chat replies, code explanations, documentation, Markdown, PRs, tickets, emails, websites, articles, agent skills) for clear lists, readable paragraphs, navigation, and exact technical wording. Use for dense comma-separated inventories, walls of prose, vague descriptions of code, or headings and bullets that mix unrelated facts and rules."
 ---
 
-# Information Representation Design
+# 🧩 Information Representation Design
 
 Use these **four stages in order** when composing or restructuring information for a reader. Each numbered section below is a stage of the workflow, not a standalone principle:
 
@@ -17,7 +17,7 @@ Return to an earlier stage if a later choice reveals a grouping or labeling prob
 This skill organizes information already selected for the reader. Use [relevance-first-information-design](../relevance-first-information-design/SKILL.md) to decide which information belongs on the current surface and which should remain behind deeper navigation.
 
 <a id="stage-1"></a>
-## Stage 1 — Structure the reader's route
+## 🧭 Stage 1 — Structure the reader's route
 
 Follow these **four steps in order** to establish the reader's navigation and the meaning of every section.
 
@@ -122,7 +122,7 @@ Compare each container with its immediate children before moving to Stage 2:
 Correct mismatches while structuring the draft, before choosing formats for its content.
 
 <a id="stage-2"></a>
-## Stage 2 — Choose a representation inside each section
+## 🗂️ Stage 2 — Choose a representation inside each section
 
 After a section has a clear purpose, select a format for each part of its content. A section can contain multiple formats: a short explanation followed by a table, a diagram, or a code excerpt.
 
@@ -151,11 +151,11 @@ In a section titled **Configure environment variables**, first tell the reader w
 These are illustrative settings, not values inspected from a project. The section establishes the purpose; the table lets readers compare fields without rereading repeated prose.
 
 <a id="stage-3"></a>
-## Stage 3 — Apply rules to the chosen format
+## 🎛️ Stage 3 — Apply rules to the chosen format
 
 The four subsections below are **representation categories**, not ordered steps. Apply only the rules for formats used in the current document.
 
-### Prose and lists
+### 📝 Prose and lists
 
 Apply the following three **text rules** to prose and lists:
 
@@ -231,7 +231,7 @@ Keep explanatory prose inside the statement, rule, or question it develops.
 
 Keep genuinely connected causal reasoning in prose. A new sentence does not automatically require a separate paragraph.
 
-### Tables
+### 📋 Tables
 
 Use a table when the reader compares records with the same columns or conditions with the same fields.
 
@@ -241,13 +241,13 @@ Use a table when the reader compares records with the same columns or conditions
 - Split unrelated rules or multi-paragraph explanations out of cells and place them under their owning section.
 - Prefer a numbered list for a simple sequence instead of a table with one row per step.
 
-### Diagrams and charts
+### 📊 Diagrams and charts
 
 Use a diagram when the relationship, flow, topology, or spatial arrangement is easier to perceive visually. Use an appropriate chart or table when quantitative patterns or comparisons matter.
 
 Introduce what the visualization shows and explain its relevant implication nearby. Keep the surrounding section responsible for the question the visualization answers.
 
-### Code and commands
+### 💻 Code and commands
 
 Apply the following four **code rules** when presenting inspected source or executable commands.
 
@@ -323,7 +323,7 @@ Use the target language's comment syntax. These review annotations explain a cha
 - **Runnable commands:** show the actual command in a `sh` or `bash` fence with representative arguments. A command being introduced for execution is not a source quotation and needs no invented file path or enclosing function.
 
 <a id="stage-4"></a>
-## Stage 4 — Anchor sources and recurring references
+## 🔗 Stage 4 — Anchor sources and recurring references
 
 Apply the following three **reference rules** to mentions of inspectable sources and to recurring labels. These are complementary requirements, not ordered actions.
 
