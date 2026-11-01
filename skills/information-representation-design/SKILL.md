@@ -7,19 +7,28 @@ description: "Organize or review human-readable text (chat replies, code explana
 
 Use these **four stages in order** when composing or restructuring information for a reader. Each numbered section below is a stage of the workflow, not a standalone principle:
 
-1. **Structure the route.** Define what questions the sections answer and how their children are organized.
-2. **Choose representations.** Select prose, lists, tables, code, or visuals for the content inside each section.
-3. **Apply format rules.** Use the applicable rules for each representation actually selected.
-4. **Anchor references.** Resolve source links and repeated references before handoff.
+1. **[Structure the route](#stage-1).** Define what questions the sections answer and how their children are organized.
+2. **[Choose representations](#stage-2).** Select prose, lists, tables, code, or visuals for the content inside each section.
+3. **[Apply format rules](#stage-3).** Use the applicable rules for each representation actually selected.
+4. **[Anchor references](#stage-4).** Resolve source links and repeated references before handoff.
 
 Return to an earlier stage if a later choice reveals a grouping or labeling problem.
 
 This skill organizes information already selected for the reader. Use [relevance-first-information-design](../relevance-first-information-design/SKILL.md) to decide which information belongs on the current surface and which should remain behind deeper navigation.
 
+<a id="stage-1"></a>
 ## Stage 1 — Structure the reader's route
 
 Follow these **four steps in order** to establish the reader's navigation and the meaning of every section.
 
+**Steps in this stage:**
+
+1. [Step 1.1 — Define the answer containers](#step-1-1)
+2. [Step 1.2 — Choose the internal pattern](#step-1-2)
+3. [Step 1.3 — Label each answer and attach its detail](#step-1-3)
+4. [Step 1.4 — Adapt navigation to the medium](#step-1-4)
+
+<a id="step-1-1"></a>
 ### Step 1.1 — Define the answer containers
 
 Identify the questions the reader needs answered and group the corresponding material. For each parent heading or list lead-in, decide what type of children it promises:
@@ -68,6 +77,7 @@ Explain the principle and its implications.
 
 Here, the numbered items are procedure steps, P1/P2 are principles, and the final bullets are reasons. Each parent explicitly defines its children.
 
+<a id="step-1-2"></a>
 ### Step 1.2 — Choose the internal pattern
 
 Select a relationship that matches the questions answered inside each container. These are **alternative patterns**, not stages to perform in sequence:
@@ -81,6 +91,7 @@ Select a relationship that matches the questions answered inside each container.
 
 Use a pattern only when the information actually follows that relationship; do not turn illustrative patterns into mandatory heading templates.
 
+<a id="step-1-3"></a>
 ### Step 1.3 — Label each answer and attach its detail
 
 For each meaningful block of text, identify the reader question it answers. Assign a **short, skimmable semantic label** that tells the reader what follows, then keep its explanation, example, evidence, and qualifications directly beneath it.
@@ -96,6 +107,7 @@ For each meaningful block of text, identify the reader question it answers. Assi
 
 A longer testing guide may give this principle a heading; a concise list may use the bold lead-in shown above.
 
+<a id="step-1-4"></a>
 ### Step 1.4 — Adapt navigation to the medium
 
 In documents and articles, headings usually make the route visible. In shorter chat replies, emails, or ticket comments, a brief lead-in or bold label may give sufficient navigation without formal headings.
@@ -109,6 +121,7 @@ Compare each container with its immediate children before moving to Stage 2:
 
 Correct mismatches while structuring the draft, before choosing formats for its content.
 
+<a id="stage-2"></a>
 ## Stage 2 — Choose a representation inside each section
 
 After a section has a clear purpose, select a format for each part of its content. A section can contain multiple formats: a short explanation followed by a table, a diagram, or a code excerpt.
@@ -137,6 +150,7 @@ In a section titled **Configure environment variables**, first tell the reader w
 
 These are illustrative settings, not values inspected from a project. The section establishes the purpose; the table lets readers compare fields without rereading repeated prose.
 
+<a id="stage-3"></a>
 ## Stage 3 — Apply rules to the chosen format
 
 The four subsections below are **representation categories**, not ordered steps. Apply only the rules for formats used in the current document.
@@ -308,6 +322,7 @@ Use the target language's comment syntax. These review annotations explain a cha
 - **Markdown wording:** when discussing what quoted text says, use a blockquote or concise paraphrase with a link. Use a `markdown` fence with the enclosing heading when the syntax itself matters.
 - **Runnable commands:** show the actual command in a `sh` or `bash` fence with representative arguments. A command being introduced for execution is not a source quotation and needs no invented file path or enclosing function.
 
+<a id="stage-4"></a>
 ## Stage 4 — Anchor sources and recurring references
 
 Apply the following three **reference rules** to mentions of inspectable sources and to recurring labels. These are complementary requirements, not ordered actions.
