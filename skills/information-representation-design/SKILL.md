@@ -62,8 +62,6 @@ A semantic container can organize more than a list of similar items. Select the 
 - **State → elaborate → exemplify** — name an idea, explain what it means, then provide a concrete example or evidence.
 - **Before → after → how** — show the initial problem, the resulting state, and the work that produced the change.
 - **What → why → how** — establish the deliverable, its purpose, and the implementation approach.
-- **Planned steps → current status** — distinguish the ordered work ahead from observations already confirmed.
-- **Interpretation → next action** — explain how feedback changes the intended work, then separate the next concrete step.
 - **Completed → remaining** — distinguish finished work from outstanding work in a status report.
 - **Claim → meaning → evidence → impact** — establish an assertion, interpret it, substantiate it, then explain why it matters.
 
@@ -83,45 +81,11 @@ A longer document can give the same principle its own heading. A short message m
 
 ### Match navigation to the medium
 
-Headings provide the main structure in documents and articles. In a short chat reply, email, or ticket comment, a lead-in and grouped paragraphs can provide the same navigation without unnecessary headings.
+For each meaningful block of text, identify the reader question it answers. Give the answer a **short semantic label**, then place its explanation and supporting evidence directly beneath that label. The label should make the content's role clear on a quick scan; it can be a heading, a bold lead-in, or a framing clause, rather than a literal question.
 
-For multi-step work updates, separate **what will happen** from **what has already been verified**. Use numbered steps for the plan and a separate status section for observations. Keep simple one-step updates concise rather than adding unnecessary headings.
+When adjacent blocks answer different questions, separate them into distinct labeled containers instead of allowing the text to flow together without signposts. Choose labels from **what the content actually communicates**. Do not turn incidental examples of headings into fixed templates.
 
-**Example — a plan followed by current status**
-
-```markdown
-### What I'll do
-
-I'll refactor the skill in these steps:
-
-1. Locate the current repository and read its skill.
-2. Restructure the content from section navigation through representation choice.
-3. Validate the resulting Markdown and commit the changes.
-
-### Mac status
-
-- **Connection:** Connected.
-- **Skills:** Relevant guidance loaded.
-- **Changes:** Not yet committed.
-```
-
-The two sections answer different reader questions: the first describes the planned sequence; the second reports only verified current state.
-
-**Example — interpretation followed by the next action**
-
-```markdown
-### How I'll act on your example
-
-I'll treat your proposed formatting as an example for the skill, not
-as a request to reformat this conversation. The skill will teach
-agents to separate different kinds of information when needed.
-
-### What I'll do next
-
-I'll finish checking the revised skill and commit the validated change.
-```
-
-The first section explains what the feedback means for the work; the second names the next operation. These labels are examples, not required headings for every message.
+In documents and articles, headings usually provide the main navigation. In a short chat reply, email, or ticket comment, a compact lead-in or bold label may provide sufficient structure without introducing unnecessary headings.
 
 Name instances by meaning rather than arbitrary labels such as "Principle 1". Keep the outer document title aligned with the questions its sections actually answer.
 
