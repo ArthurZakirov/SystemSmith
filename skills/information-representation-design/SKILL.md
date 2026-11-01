@@ -5,46 +5,60 @@ description: "Organize or review human-readable text (chat replies, code explana
 
 # Information Representation Design
 
-When composing or restructuring human-readable information, establish **what each section communicates**, then choose **how its contents are represented**. Work from the outer document structure toward the individual sentence, table, snippet, or link.
+Use these **four stages in order** when composing or restructuring information for a reader. Each numbered section below is a stage of the workflow, not a standalone principle:
 
-This skill organizes information already selected for the reader. Use [relevance-first-information-design](../relevance-first-information-design/SKILL.md) to decide which information belongs on the current surface and which should be available through deeper navigation.
+1. **Structure the route.** Define what questions the sections answer and how their children are organized.
+2. **Choose representations.** Select prose, lists, tables, code, or visuals for the content inside each section.
+3. **Apply format rules.** Use the applicable rules for each representation actually selected.
+4. **Anchor references.** Resolve source links and repeated references before handoff.
 
-## 1. Structure the reader's route
+Return to an earlier stage if a later choice reveals a grouping or labeling problem.
 
-### Establish semantic sections
+This skill organizes information already selected for the reader. Use [relevance-first-information-design](../relevance-first-information-design/SKILL.md) to decide which information belongs on the current surface and which should remain behind deeper navigation.
 
-Before choosing tables, lists, or prose, organize the material around the questions readers need answered.
+## Stage 1 — Structure the reader's route
 
-1. **Identify questions.** Determine what a reader comes to find, understand, decide, or do.
-2. **Group answers.** Give related material a shared section, heading, or short lead-in.
-3. **Name containers.** Make each label identify what follows, rather than using placeholders such as "Details" or "Miscellaneous".
-4. **Place details.** Put examples, evidence, qualifications, and exceptions inside the item they explain.
-5. **Keep peers comparable.** Children under the same parent should fulfill the same semantic role and sit at a comparable level.
+Follow these **four steps in order** to establish the reader's navigation and the meaning of every section.
 
-Apply this from the document title through its headings and nested items. For example:
+### Step 1.1 — Define the answer containers
 
-- **Principles:** each child states a principle, followed by its explanation and example.
-- **Reasons:** each child gives a separate reason.
-- **Procedure:** each child describes an action or stage in the required order.
+Identify the questions the reader needs answered and group the corresponding material. For each parent heading or list lead-in, decide what type of children it promises:
 
-A section called "Release principles" should contain actual principles, not a deployment checklist presented as another principle.
+- **Steps:** actions or stages to carry out in a specified order.
+- **Principles:** independent guidelines, each with supporting explanation.
+- **Reasons:** separate answers to why something matters or was chosen.
+- **Alternatives:** comparable options for a choice.
+- **Examples:** concrete illustrations of a rule already introduced.
+- **Information categories:** different content types collected under a clearly named purpose.
 
-**Example — separate semantic roles**
+Before introducing sibling headings, **state their shared type and whether order matters** in the parent section's lead-in. Give steps numbers when sequence is required. Give principles labels such as P1, P2, and P3 when those labels help track independent principles; the numbers do not imply execution order.
+
+If existing siblings have different roles, regroup them beneath suitable parents. An example belongs within the rule it illustrates, not beside that rule as if both were rules.
+
+**Example — identify the meaning of the children**
+
+**Ambiguous:** A heading called "Release guidance" is followed by "Validate a release", "Preserve rollback paths", and "Why staged rollout matters", without explaining whether these are steps, principles, or reasons.
+
+**Clear:** Separate their semantic roles:
 
 ```markdown
-## Release principles
+## Release procedure
 
-### Make failures visible
-Explain the principle and its implications.
-
-### Preserve rollback paths
-Explain the principle and its implications.
-
-## Deployment procedure
+Perform these steps in order:
 
 1. Validate the candidate release.
 2. Roll out gradually.
-3. Verify the results.
+3. Verify the result.
+
+## Release principles
+
+Apply these principles during the procedure:
+
+### P1 — Make failures visible
+Explain the principle and its implications.
+
+### P2 — Preserve rollback paths
+Explain the principle and its implications.
 
 ## Reasons for staged rollout
 
@@ -52,44 +66,50 @@ Explain the principle and its implications.
 - Detect failures before wider deployment.
 ```
 
-The principles, procedure, and reasons are separate sections because their immediate children perform different jobs.
+Here, the numbered items are procedure steps, P1/P2 are principles, and the final bullets are reasons. Each parent explicitly defines its children.
 
-### Choose the section's internal pattern
+### Step 1.2 — Choose the internal pattern
 
-A semantic container can organize more than a list of similar items. Select the pattern that answers the reader's current question:
+Select a relationship that matches the questions answered inside each container. These are **alternative patterns**, not stages to perform in sequence:
 
-- **Peer items** — a collection such as five test-writing principles, with each principle explained under its own label.
-- **State → elaborate → exemplify** — name an idea, explain what it means, then provide a concrete example or evidence.
-- **Before → after → how** — show the initial problem, the resulting state, and the work that produced the change.
-- **What → why → how** — establish the deliverable, its purpose, and the implementation approach.
-- **Completed → remaining** — distinguish finished work from outstanding work in a status report.
-- **Claim → meaning → evidence → impact** — establish an assertion, interpret it, substantiate it, then explain why it matters.
+- **Peer items** — distinct principles or reasons, each explained under its own label.
+- **State → elaborate → exemplify** — identify a claim, explain its meaning, then provide evidence or an example.
+- **Before → after → how** — explain the initial situation, resulting state, and what produced the change.
+- **What → why → how** — identify a deliverable, its purpose, and the means of producing it.
+- **Completed → remaining** — separate finished work from outstanding work.
+- **Claim → meaning → evidence → impact** — introduce a statement, interpret it, substantiate it, and explain its consequences.
 
-These are possible structures, not mandatory document templates. Select them based on the reader's question and the relationships between the information.
+Use a pattern only when the information actually follows that relationship; do not turn illustrative patterns into mandatory heading templates.
 
-### Elaborate beneath short labels
+### Step 1.3 — Label each answer and attach its detail
 
-When listing principles or similar concepts, use a short meaningful name as the heading or bold item label. Aim for **one to three words** when that still names the concept accurately; preserve longer names when needed for meaning or exact identification.
+For each meaningful block of text, identify the reader question it answers. Assign a **short, skimmable semantic label** that tells the reader what follows, then keep its explanation, example, evidence, and qualifications directly beneath it.
 
-Follow a short abstract label with an explanation and, where it helps, a concrete example.
+- Prefer a meaningful one-to-three-word label when it remains accurate. Use a longer label when needed to preserve meaning.
+- Use a heading or bold lead-in depending on the surrounding hierarchy.
+- Keep the label and its elaboration in the same container.
+- When the reader's question changes, introduce the next labeled block rather than continuing unframed prose.
 
 **Example — one principle in a testing guide**
 
-- **Assert outcomes.** Check the database state after an operation, rather than asserting that an internal helper was called. For example, `assert row["status"] == "ready"` checks an observable result; `mock_writer.assert_called_once()` couples the test to an implementation detail.
+- **Assert outcomes.** Check the database state after an operation rather than asserting that an internal helper was called. For example, `assert row["status"] == "ready"` checks an observable result; `mock_writer.assert_called_once()` ties the test to an implementation detail.
 
-A longer document can give the same principle its own heading. A short message may use a bold lead-in without formal headings. In either case, the reader sees what the following explanation belongs to.
+A longer testing guide may give this principle a heading; a concise list may use the bold lead-in shown above.
 
-### Match navigation to the medium
+### Step 1.4 — Adapt navigation to the medium
 
-For each meaningful block of text, identify the reader question it answers. Give the answer a **short semantic label**, then place its explanation and supporting evidence directly beneath that label. The label should make the content's role clear on a quick scan; it can be a heading, a bold lead-in, or a framing clause, rather than a literal question.
+In documents and articles, headings usually make the route visible. In shorter chat replies, emails, or ticket comments, a brief lead-in or bold label may give sufficient navigation without formal headings.
 
-When adjacent blocks answer different questions, separate them into distinct labeled containers instead of allowing the text to flow together without signposts. Choose labels from **what the content actually communicates**. Do not turn incidental examples of headings into fixed templates.
+Compare each container with its immediate children before moving to Stage 2:
 
-In documents and articles, headings usually provide the main navigation. In a short chat reply, email, or ticket comment, a compact lead-in or bold label may provide sufficient structure without introducing unnecessary headings.
+- **Parent contract:** can you say "every immediate child of this section is a [step/principle/reason/etc.]"?
+- **Sibling role:** are children comparable, rather than an example or exception promoted to the rank of a rule?
+- **Ordering:** is any sequence clear from the lead-in and numbering?
+- **Reader questions:** can the reader identify the answer from its label without first reading unframed paragraphs?
 
-Name instances by meaning rather than arbitrary labels such as "Principle 1". Keep the outer document title aligned with the questions its sections actually answer.
+Correct mismatches while structuring the draft, before choosing formats for its content.
 
-## 2. Choose a representation inside each section
+## Stage 2 — Choose a representation inside each section
 
 After a section has a clear purpose, select a format for each part of its content. A section can contain multiple formats: a short explanation followed by a table, a diagram, or a code excerpt.
 
@@ -106,7 +126,7 @@ After a section has a clear purpose, select a format for each part of its conten
 
 Choose the format that makes the relevant relationship visible. Use labeled `When` / `Then` prose for one simple condition and action; use a table when several conditions share the same fields.
 
-### Example — environment variables
+**Example — environment variables**
 
 In a section titled **Configure environment variables**, first tell the reader what to configure and where the settings belong. Then show the individual variables as a table.
 
@@ -117,11 +137,15 @@ In a section titled **Configure environment variables**, first tell the reader w
 
 These are illustrative settings, not values inspected from a project. The section establishes the purpose; the table lets readers compare fields without rereading repeated prose.
 
-## 3. Apply rules to the chosen format
+## Stage 3 — Apply rules to the chosen format
+
+The four subsections below are **representation categories**, not ordered steps. Apply only the rules for formats used in the current document.
 
 ### Prose and lists
 
-#### Frame each list
+Apply the following three **text rules** to prose and lists:
+
+#### T1 — Frame each list
 
 Use a short label or lead-in to say what its children represent and why the reader needs them.
 
@@ -155,7 +179,7 @@ Review these in priority order; read the description before each diff:
 3. **PR C** — Simplify the deployment path.
 ```
 
-#### Separate scannable items and distinct rules
+#### T2 — Separate scannable items and distinct rules
 
 When one sentence contains three or more independently scannable items, replace the enumeration with a lead-in and one bullet per item. Keep inseparable pairs, such as "staged versus unstaged changes", together.
 
@@ -182,7 +206,7 @@ The following rules apply:
 - Interrupted-operation metadata is saved as evidence.
 - Archived operations are not automatically resumed in recovery copies.
 
-#### Make paragraphs purposeful
+#### T3 — Make paragraphs purposeful
 
 Keep explanatory prose inside the statement, rule, or question it develops.
 
@@ -211,9 +235,11 @@ Introduce what the visualization shows and explain its relevant implication near
 
 ### Code and commands
 
+Apply the following four **code rules** when presenting inspected source or executable commands.
+
 When an answer locates, explains, or proposes changing repository code, inspect the relevant source before drafting its description. Compare the final explanation against the actual symbols, expressions, and observed behavior.
 
-#### Use exact identifiers and concrete operations
+#### C1 — Use exact identifiers and concrete operations
 
 Copy the original spelling of any inspected identifier: every character, including punctuation and underscores. Use inline backticks for literal code; use verified links when referring to a located symbol.
 
@@ -241,7 +267,7 @@ Explain concrete source operations rather than replacing them with metaphors or 
 
 Use representative inputs and resulting values when they make an operation easier to understand. Distinguish observed behavior from a hypothetical demonstration.
 
-#### Quote inspected source with its scope
+#### C2 — Quote inspected source with its scope
 
 When describing existing code, quote its decisive lines. The excerpt establishes **what** is implemented; accompanying prose explains the consequence.
 
@@ -261,7 +287,7 @@ Keep enough enclosing syntax to show where the quoted code runs. Mark omitted sp
 
 Use a language-tagged fence. Verify copied lines against the correct repository revision before linking them.
 
-#### Show both sides of changes
+#### C3 — Show both sides of changes
 
 For proposed or completed code edits, show the same enclosing scope and relevant lines in two separately labeled excerpts:
 
@@ -277,14 +303,16 @@ In a larger annotated AFTER excerpt:
 
 Use the target language's comment syntax. These review annotations explain a change; they are not automatically part of production code.
 
-#### Distinguish quotations from commands
+#### C4 — Distinguish quotations from commands
 
 - **Markdown wording:** when discussing what quoted text says, use a blockquote or concise paraphrase with a link. Use a `markdown` fence with the enclosing heading when the syntax itself matters.
 - **Runnable commands:** show the actual command in a `sh` or `bash` fence with representative arguments. A command being introduced for execution is not a source quotation and needs no invented file path or enclosing function.
 
-## 4. Link sources and recurring references
+## Stage 4 — Anchor sources and recurring references
 
-### Make source mentions navigable
+Apply the following three **reference rules** to mentions of inspectable sources and to recurring labels. These are complementary requirements, not ordered actions.
+
+### L1 — Make source mentions navigable
 
 When the draft names a file, symbol, or other inspectable artifact, locate its real target before adding a link. Verify that the path and line exist in the relevant revision or worktree.
 
@@ -300,7 +328,7 @@ When the draft names a file, symbol, or other inspectable artifact, locate its r
 - **Bad:** `[here](src/loader.py#L90)` or `[line 90](src/loader.py#L90)`
 - **Good:** `[loader.py:90](src/loader.py#L90)`
 
-### Resolve links for the destination
+### L2 — Resolve links for the destination
 
 | Where readers open the text | Link target |
 | --- | --- |
@@ -311,7 +339,7 @@ When the draft names a file, symbol, or other inspectable artifact, locate its r
 
 A remote Git-host link must refer to a revision that exists there. For an uncommitted change, use a local source locator rather than pretending it is already available remotely.
 
-### Keep repeated references stable
+### L3 — Keep repeated references stable
 
 When a fact, rule, question, or example is cited again later in the same explanation, give it a short bold identifier at first mention, such as **F1**, **R1**, or **Q1**. Use the same bold identifier at every subsequent reference.
 
