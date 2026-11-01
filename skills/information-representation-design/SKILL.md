@@ -5,50 +5,67 @@ description: "Organize or review human-readable text (chat replies, code explana
 
 # 🧩 Information Representation Design
 
-Use these **four stages in order** when composing or restructuring information for a reader. Each numbered section below is a stage of the workflow, not a standalone principle:
+Use these **four stages as an initial writing pass**. They describe activities in the writing workflow, **not a fixed hierarchy of information**. Revisit any stage at any nesting level: a section can contain a table, a table cell can contain a list or smaller semantic pattern, and any resulting item may need its own label or explanation.
 
-1. **[Structure the route](#stage-1).** Define what questions the sections answer and how their children are organized.
-2. **[Choose representations](#stage-2).** Select prose, lists, tables, code, or visuals for the content inside each section.
-3. **[Apply format rules](#stage-3).** Use the applicable rules for each representation actually selected.
-4. **[Anchor references](#stage-4).** Resolve source links and repeated references before handoff.
+1. **[🧭 Stage 1 — Structure the reader's route](#stage-1).** Define what questions the sections answer and how their children are organized.
+2. **[🗂️ Stage 2 — Choose a representation inside each section](#stage-2).** Select prose, lists, tables, code, or visuals for the content inside each section.
+3. **[🎛️ Stage 3 — Apply rules to the chosen format](#stage-3).** Use the applicable rules for each representation actually selected.
+4. **[🔗 Stage 4 — Anchor sources and recurring references](#stage-4).** Resolve source links and repeated references before handoff.
 
-Return to an earlier stage if a later choice reveals a grouping or labeling problem.
+Repeat structural decisions when a later representation creates another container. Do not assume that a particular semantic pattern must always be inside another pattern.
 
 This skill organizes information already selected for the reader. Use [relevance-first-information-design](../relevance-first-information-design/SKILL.md) to decide which information belongs on the current surface and which should remain behind deeper navigation.
 
 <a id="stage-1"></a>
 ## 🧭 Stage 1 — Structure the reader's route
 
-Follow these **four steps in order** to establish the reader's navigation and the meaning of every section.
+Use these **four structural decisions recursively**. They are complementary ways to organize information, **not a sequence** and not a hierarchy in which one pattern must contain another.
 
-**Steps in this stage:**
+**Structural decisions in this stage:**
 
-1. [Step 1.1 — Define the answer containers](#step-1-1)
-2. [Step 1.2 — Choose the internal pattern](#step-1-2)
-3. [Step 1.3 — Label each answer and attach its detail](#step-1-3)
-4. [Step 1.4 — Adapt navigation to the medium](#step-1-4)
+- [S1 — Define the parent contract](#structure-1)
+- [S2 — Compose semantic patterns](#structure-2)
+- [S3 — Label answers and attach detail](#structure-3)
+- [S4 — Adapt to the medium](#structure-4)
 
-<a id="step-1-1"></a>
-### Step 1.1 — Define the answer containers
+<a id="structure-1"></a>
+### S1 — Define the parent contract
 
-Identify the questions the reader needs answered and group the corresponding material. For each parent heading or list lead-in, decide what type of children it promises:
+Identify the questions a reader needs answered and group the corresponding material. For every parent heading or list lead-in, identify the type of its immediate children:
 
-- **Steps:** actions or stages to carry out in a specified order.
-- **Principles:** independent guidelines, each with supporting explanation.
-- **Reasons:** separate answers to why something matters or was chosen.
-- **Alternatives:** comparable options for a choice.
-- **Examples:** concrete illustrations of a rule already introduced.
-- **Information categories:** different content types collected under a clearly named purpose.
+- **Steps:** actions or stages in a specified order.
+- **Principles:** independent guidelines, each with supporting detail.
+- **Reasons:** separate explanations of why something matters.
+- **Alternatives:** comparable choices.
+- **Examples:** concrete illustrations of an introduced rule.
+- **Information categories:** different content types grouped by a clear purpose.
 
-Before introducing sibling headings, **state their shared type and whether order matters** in the parent section's lead-in. Give steps numbers when sequence is required. Give principles labels such as P1, P2, and P3 when those labels help track independent principles; the numbers do not imply execution order.
+Before introducing sibling headings, state their shared type and whether their order matters. Number actual sequences. Use identifiers such as P1/P2 for principles only when later references benefit; numbers do not automatically imply order.
 
-If existing siblings have different roles, regroup them beneath suitable parents. An example belongs within the rule it illustrates, not beside that rule as if both were rules.
+A parent example and its contrasting cases must have **visibly different heading levels**. Likewise, a principle's example belongs beneath that principle, not beside it.
 
-**Example — identify the meaning of the children**
+#### Comparison example — parent contracts
 
-**Ambiguous:** A heading called "Release guidance" is followed by "Validate a release", "Preserve rollback paths", and "Why staged rollout matters", without explaining whether these are steps, principles, or reasons.
+The following are **two versions of the same Markdown structure**. Both are shown as Markdown fences, and their labels appear at the same heading level beneath this example.
 
-**Clear:** Separate their semantic roles:
+##### Negative example — Ambiguous
+
+```markdown
+## Release guidance
+
+### Validate a release
+Validate the candidate and verify the result.
+
+### Preserve rollback paths
+Keep an option to undo deployment.
+
+### Why staged rollout matters
+A gradual rollout limits the impact of regressions.
+```
+
+All three subsections are presented as peers, although they respectively describe a procedure, a principle, and a reason.
+
+##### Positive example — Clear
 
 ```markdown
 ## Release procedure
@@ -61,7 +78,7 @@ Perform these steps in order:
 
 ## Release principles
 
-Apply these principles during the procedure:
+Apply these principles throughout the procedure:
 
 ### P1 — Make failures visible
 Explain the principle and its implications.
@@ -75,80 +92,100 @@ Explain the principle and its implications.
 - Detect failures before wider deployment.
 ```
 
-Here, the numbered items are procedure steps, P1/P2 are principles, and the final bullets are reasons. Each parent explicitly defines its children.
+The parent labels now identify steps, principles, and reasons; their children satisfy those contracts.
 
-<a id="step-1-2"></a>
-### Step 1.2 — Choose the internal pattern
+<a id="structure-2"></a>
+### S2 — Compose semantic patterns
 
-Select a relationship that matches the questions answered inside each container. These are **alternative patterns**, not stages to perform in sequence:
+Use the following **alternative semantic patterns** at any level of the information hierarchy. They are neither mandatory templates nor subordinate to S1's categories:
 
-- **Peer items** — distinct principles or reasons, each explained under its own label.
-- **State → elaborate → exemplify** — identify a claim, explain its meaning, then provide evidence or an example.
-- **Before → after → how** — explain the initial situation, resulting state, and what produced the change.
-- **What → why → how** — identify a deliverable, its purpose, and the means of producing it.
-- **Completed → remaining** — separate finished work from outstanding work.
-- **Claim → meaning → evidence → impact** — introduce a statement, interpret it, substantiate it, and explain its consequences.
+- **Peer items** — independent principles, reasons, changes, or decisions.
+- **State → elaborate → exemplify** — claim, explanation, then example or evidence.
+- **Before → after → how** — initial state, resulting state, and mechanism of change.
+- **What → why → how** — outcome, rationale, and implementation.
+- **Completed → remaining** — finished and outstanding work.
+- **Claim → meaning → evidence → impact** — assertion, interpretation, proof, and consequence.
+- **When → then** — condition and the action or outcome when it holds.
+- **Situation → complication → question → answer** — context, disruption, resulting question, and resolution.
 
-Use a pattern only when the information actually follows that relationship; do not turn illustrative patterns into mandatory heading templates.
+**Patterns can contain each other in either direction.** For example, a PR description may have top-level `What`, `Why`, and `How` sections, with individual changes under `What`, reasons under `Why`, and decisions under `How`. Conversely, a section for one change may itself contain `Before`, `After`, and `How` subsections. Use whichever ordering answers the reader's questions.
 
-<a id="step-1-3"></a>
-### Step 1.3 — Label each answer and attach its detail
+Reapply a pattern inside a list item, a table cell, or another component when its content warrants further structure and the medium supports it. A table is not the end of semantic organization.
 
-For each meaningful block of text, identify the reader question it answers. Assign a **short, skimmable semantic label** that tells the reader what follows, then keep its explanation, example, evidence, and qualifications directly beneath it.
+<a id="structure-3"></a>
+### S3 — Label answers and attach detail
 
-- Prefer a meaningful one-to-three-word label when it remains accurate. Use a longer label when needed to preserve meaning.
-- Use a heading or bold lead-in depending on the surrounding hierarchy.
-- Keep the label and its elaboration in the same container.
-- When the reader's question changes, introduce the next labeled block rather than continuing unframed prose.
+For each meaningful block, identify the reader question it answers. Give it a **short, skimmable semantic label**, then keep its explanation, evidence, examples, and qualifications directly below.
+
+- Aim for one to three words when that remains accurate; use a longer name where needed.
+- Choose a heading, bold lead-in, list label, or another appropriate level.
+- Keep details underneath the item they explain rather than promoting them to sibling items.
+- Give comparable siblings consistent labels and layouts.
 
 **Example — one principle in a testing guide**
 
-- **Assert outcomes.** Check the database state after an operation rather than asserting that an internal helper was called. For example, `assert row["status"] == "ready"` checks an observable result; `mock_writer.assert_called_once()` ties the test to an implementation detail.
+- **Assert outcomes.** Check database state after an operation rather than an internal helper call. For example, `assert row["status"] == "ready"` checks an observable outcome; `mock_writer.assert_called_once()` ties the test to an implementation detail.
 
-A longer testing guide may give this principle a heading; a concise list may use the bold lead-in shown above.
+A longer guide could give the principle a heading; a concise list can use the bold lead-in above.
 
-<a id="step-1-4"></a>
-### Step 1.4 — Adapt navigation to the medium
+<a id="structure-4"></a>
+### S4 — Adapt to the medium
 
-In documents and articles, headings usually make the route visible. In shorter chat replies, emails, or ticket comments, a brief lead-in or bold label may give sufficient navigation without formal headings.
+Use headings for document and article navigation. In a brief message, an opening clause or bold label may be enough. Choose the smallest hierarchy that exposes meaningful relationships.
 
-Compare each container with its immediate children before moving to Stage 2:
+At each nesting level, compare the actual draft with its parent's contract:
 
-- **Parent contract:** can you say "every immediate child of this section is a [step/principle/reason/etc.]"?
-- **Sibling role:** are children comparable, rather than an example or exception promoted to the rank of a rule?
-- **Ordering:** is any sequence clear from the lead-in and numbering?
-- **Reader questions:** can the reader identify the answer from its label without first reading unframed paragraphs?
+- **Role:** do all immediate children have the promised type?
+- **Presentation:** are comparable peers shown at the same visual level and with the same representation?
+- **Composability:** can an item contain an additional pattern or layout without being mistaken for a peer?
+- **Order:** are actual sequences distinguished from unordered alternatives?
+- **Navigation:** can a reader find the right answer without reading unrelated prose?
 
-Correct mismatches while structuring the draft, before choosing formats for its content.
+Correct mismatches wherever they occur, including inside tables, list items, and examples.
 
 <a id="stage-2"></a>
 ## 🗂️ Stage 2 — Choose a representation inside each section
 
-After a section has a clear purpose, select a format for each part of its content. A section can contain multiple formats: a short explanation followed by a table, a diagram, or a code excerpt.
+After identifying semantic relationships, choose how they appear in the target medium. **Organizing structures** and **content representations** are different choices: headings, lists, and tables organize other information; prose, code excerpts, and visualizations communicate content inside those structures.
 
-| Information within the section | Representation |
+### Organizing structures
+
+These forms can contain further semantic patterns and other representations:
+
+| Relationship to express | Organizing structure |
 | --- | --- |
-| Explanation or causal reasoning | Prose |
-| Independent items of the same kind | Bulleted list |
-| Actions in a required order | Numbered list |
-| Repeated records with shared fields | Table |
-| A command, expression, or source implementation | Inline code or code fence |
-| Relationships, dependencies, or spatial structure | Diagram |
-| Quantitative comparison or trend | Chart or table |
-| Parent/child navigation | Nested headings or hierarchy |
+| Topic and subtopic navigation | Headings and nested sections |
+| Independent peer items | Bulleted list |
+| Steps in required order | Numbered list |
+| Multiple records with comparable fields | Table |
 
-Choose the format that makes the relevant relationship visible. Use labeled `When` / `Then` prose for one simple condition and action; use a table when several conditions share the same fields.
+Choose these based on the relationship, not on the presence of a specific content type. Repeated Bad/Good examples, for instance, share two fields and therefore are strong candidates for a two-column comparison table.
+
+**Continue structuring inside a container:** A table cell can contain multiple labeled points or a nested list when the renderer supports them. Apply the same reader-question and sibling-consistency rules to those entries. If the table renderer cannot handle multi-item cells or the content becomes difficult to scan, keep cells concise and provide labeled details immediately below the table.
+
+### Content representations
+
+These convey the substance within the chosen layout. They are **not competing alternatives** to headings, lists, or tables:
+
+| Information to communicate | Content representation |
+| --- | --- |
+| Reasoning, explanation, consequences | Prose |
+| Exact expression, identifier, command, or implementation | Inline code or code fence |
+| Relationships, dependencies, topology, or process flow | Diagram |
+| Quantitative comparison or trend | Chart |
+
+A table can contain inline code in its cells; a section can include a diagram with explanatory paragraphs; a list item can contain both a short statement and a code example. Code fences usually function as content elements rather than Markdown containers that hold other rendered tables.
 
 **Example — environment variables**
 
-In a section titled **Configure environment variables**, first tell the reader what to configure and where the settings belong. Then show the individual variables as a table.
+In a section titled **Configure environment variables**, explain where to configure the settings, then use a table to compare the variables. Here, the table organizes records while the identifiers and values are represented as inline code.
 
 | Variable | Effect | Example value |
 | --- | --- | --- |
 | `REPOS_DIR` | Root directory for cloned repositories | `~/Repos` |
 | `LOG_LEVEL` | Application log verbosity | `debug` |
 
-These are illustrative settings, not values inspected from a project. The section establishes the purpose; the table lets readers compare fields without rereading repeated prose.
+These are illustrative settings, not values inspected from a project.
 
 <a id="stage-3"></a>
 ## 🎛️ Stage 3 — Apply rules to the chosen format
@@ -157,7 +194,7 @@ The four subsections below are **representation categories**, not ordered steps.
 
 ### 📝 Prose and lists
 
-Apply the following three **text rules** to prose and lists:
+Apply the following four **text and example rules** to prose, lists, and comparable example groups:
 
 #### T1 — Frame each list
 
@@ -169,9 +206,11 @@ Use a short label or lead-in to say what its children represent and why the read
 
 Give list items meaningful names when useful. For a short message, one sentence can serve as both the label and lead-in.
 
-**Example — a priority list**
+##### Comparison example — PR-review list
 
-**Unframed:**
+The following examples show two versions of the same PR-review list.
+
+###### Negative example — Unframed
 
 ```markdown
 ## Review
@@ -181,7 +220,7 @@ Give list items meaningful names when useful. For a short message, one sentence 
 - PR C
 ```
 
-**Framed:**
+###### Positive example — Framed
 
 ```markdown
 ## Pull requests to review
@@ -199,12 +238,23 @@ When one sentence contains three or more independently scannable items, replace 
 
 When the text changes from describing contents to stating rules, exceptions, or consequences, start a second explicitly named group.
 
-**Hard to scan:**
+##### Comparison example — updater behavior
 
-> The updater preserves staged versus unstaged changes, untracked and ignored files, symlinks, executable modes, conflicted indexes, and previous commits. Submodule copies receive independent Git metadata. Interrupted-operation metadata is saved as evidence; archived operations are not automatically resumed in recovery copies.
+The following examples show the same updater behavior with different information structures.
 
-**Easier to scan:**
+###### Negative example — Hard to scan
 
+```markdown
+The updater preserves staged versus unstaged changes, untracked and
+ignored files, symlinks, executable modes, conflicted indexes, and
+previous commits. Submodule copies receive independent Git metadata.
+Interrupted-operation metadata is saved as evidence; archived
+operations are not automatically resumed in recovery copies.
+```
+
+###### Positive example — Easier to scan
+
+```markdown
 The updater preserves:
 
 - staged versus unstaged changes
@@ -219,6 +269,7 @@ The following rules apply:
 - Submodule copies receive independent Git metadata.
 - Interrupted-operation metadata is saved as evidence.
 - Archived operations are not automatically resumed in recovery copies.
+```
 
 #### T3 — Make paragraphs purposeful
 
@@ -231,6 +282,19 @@ Keep explanatory prose inside the statement, rule, or question it develops.
 
 Keep genuinely connected causal reasoning in prose. A new sentence does not automatically require a separate paragraph.
 
+#### T4 — Keep peer examples comparable
+
+When two or more examples are siblings of one parent, use **the same kind of representation, labeling, and visual level** for each. Name the shared parent **Comparison example — [topic]** (or an equivalent clearly typed label). Name contrasting children **Negative example — [specific defect]** and **Positive example — [specific improvement]** so that the reader can identify the role of each case from the outline, not only the adjective. For example, do not compare an "Ambiguous" Markdown snippet written in prose with a "Clear" snippet rendered in a code fence.
+
+- **Compare like with like.** If one case is a Markdown example, render the other as Markdown too. If each case has the same fields, align them as rows or columns of a comparison table.
+- **Expose hierarchy and role.** Give the shared comparison its own parent label; make the positive and negative cases visibly subordinate and identically leveled. Use headings or table headers that explicitly identify **Negative example** and **Positive example**, not only adjectives such as "Unframed" or "Clear". The specific adjectives may follow the semantic role.
+- **Use a suitable layout.** A side-by-side Bad/Good table works for short comparisons. For longer code or Markdown blocks, use parallel labeled subsections with matching language-tagged fences.
+- **Preserve content.** Keep comparable context and sufficient detail for both cases; do not shorten one side so far that the comparison changes meaning.
+
+Apply this to alternatives, before/after states, examples, reasons, rules, and other peer items—not only to code snippets.
+
+**Before presenting a comparison**, inspect each case in the actual draft. Verify that every label declares the **type** of case (positive/negative example) before the specific condition, and that parallel cases use matching containers (fence versus fence, quote versus quote, or table row versus table row), matching syntax highlighting when they demonstrate the same language, and equally subordinate labels. If one side is prose and the other is a fenced excerpt, make both comparable excerpts or change the whole comparison format. Recheck the rendered hierarchy, not just the Markdown source.
+
 ### 📋 Tables
 
 Use a table when the reader compares records with the same columns or conditions with the same fields.
@@ -240,12 +304,48 @@ Use a table when the reader compares records with the same columns or conditions
 - Put repeated labels in column headers rather than repeating them inside every cell.
 - Split unrelated rules or multi-paragraph explanations out of cells and place them under their owning section.
 - Prefer a numbered list for a simple sequence instead of a table with one row per step.
+- For recurring examples with the same two fields, prefer a compact comparison table when the cells remain readable.
+- For a cell that itself contains multiple items, use renderer-supported lists, line breaks, or short labels. Reapply semantic grouping inside that cell; if the resulting cell becomes unwieldy or its renderer does not support nested formatting, put the elaboration in a clearly labeled section beneath the table.
 
 ### 📊 Diagrams and charts
 
-Use a diagram when the relationship, flow, topology, or spatial arrangement is easier to perceive visually. Use an appropriate chart or table when quantitative patterns or comparisons matter.
+Use a diagram when a relationship, process, topology, or spatial structure is easier to understand visually. Use a chart for quantitative comparisons or trends. **Make the figure and its surrounding explanation two views of the same information**, not disconnected pieces.
 
-Introduce what the visualization shows and explain its relevant implication nearby. Keep the surrounding section responsible for the question the visualization answers.
+#### Match referential labels exactly
+
+For every visual label that names an existing code element, document section, category, series, or other identifiable source concept:
+
+- **Locate the target.** Find the actual symbol, heading, data field, or named concept in the current code or document.
+- **Copy its exact name.** Match spelling, case, underscores, punctuation, and word order. Do not paraphrase a referential label merely to make the diagram shorter.
+- **Use the same name nearby.** Place the exact label in the associated heading, bold lead-in, list item, or table row where its meaning and relationship are explained.
+- **Verify both directions.** For each labeled diagram node or chart series, locate its corresponding explanation; for each source concept the figure claims to depict, find the matching visual element. Test literal text searches where the source and rendering permit them.
+
+Generic relationship verbs, axis units, and explanatory annotations do not need a matching source identifier unless they themselves refer to a named source element. Do not invent a code symbol or heading to justify a generic label.
+
+#### Connect the figure to its explanation
+
+Structure the nearby prose with **the same named concepts** the visual presents. The reader should be able to select a diagram node or chart series, find the identically labeled explanation, learn what it does or measures, and return to the visual to inspect its relationships with other named elements.
+
+Do not insert a figure into text whose headings and item labels use unrelated terminology and rely on a single generic caption to connect them. Explain significant relationships alongside the related elements; place an orienting caption above or below as appropriate for the medium.
+
+**Example — shared labels across text and diagram**
+
+The following illustrative Markdown headings and Mermaid node labels match exactly:
+
+```markdown
+### Before state
+Requests require manual database updates.
+
+### After state
+Requests are processed through a validated workflow.
+```
+
+```mermaid
+flowchart LR
+    B["Before state"] --> A["After state"]
+```
+
+In a code architecture diagram, use actual identifiers (for example, `_keep_intervals_before_rebuild`) rather than approximate names. In a data chart, align series or category names with the names in the adjacent explanatory headings, legend, data source, or supporting table; preserve explicit units for axes.
 
 ### 💻 Code and commands
 
@@ -257,27 +357,16 @@ When an answer locates, explains, or proposes changing repository code, inspect 
 
 Copy the original spelling of any inspected identifier: every character, including punctuation and underscores. Use inline backticks for literal code; use verified links when referring to a located symbol.
 
-**Identifier example**
+Use the same **Bad / Good** columns for these comparable examples. All values and expressions below are illustrative, not claims about the current repository. The identifier and source expression shown in the good examples must be verified when applied to actual code.
 
-- **Bad:** "the underscore keep intervals before rebuild function"
-- **Good:** `_keep_intervals_before_rebuild`
+| Negative example (Bad) | Positive example (Good) |
+| --- | --- |
+| "the underscore keep intervals before rebuild function" | `_keep_intervals_before_rebuild` |
+| "The left-edge partition owns the earlier days." | "Rows where `state_date < rebuild_start` are passed to `_keep_intervals_before_rebuild`." |
+| "The older dates are kept." | "Rows where `state_date < rebuild_start` are kept; rows where `state_date >= rebuild_start` are rebuilt." |
+| "The old left edge is wrong." | "With `valid_from='2026-10-01'` and `rebuild_start='2026-10-10'`, the output starts at `2026-10-01`; the expected start is `2026-10-10`." |
 
-Explain concrete source operations rather than replacing them with metaphors or abstract jargon. "Left edge", "tail", "owns", "partition", and "idempotent" describe different words but the same failure when they hide the relevant expression. Use technical terminology when it adds meaning after the executable operation is identified.
-
-**Rows processed — illustrative**
-
-- **Bad:** "The left-edge partition owns the earlier days."
-- **Good:** "Rows where `state_date < rebuild_start` are passed to `_keep_intervals_before_rebuild`."
-
-**Condition's effect — illustrative**
-
-- **Bad:** "The older dates are kept."
-- **Good:** "Rows where `state_date < rebuild_start` are kept; rows where `state_date >= rebuild_start` are rebuilt."
-
-**Incorrect output — hypothetical**
-
-- **Bad:** "The old left edge is wrong."
-- **Good:** "With `valid_from='2026-10-01'` and `rebuild_start='2026-10-10'`, the output starts at `2026-10-01`; the expected start is `2026-10-10`."
+Avoid invented spatial descriptions ("left edge", "tail"), possessive metaphors ("owns", "carries"), or abstract jargon ("partition", "idempotent") **when they replace** the executable operation. Technical concepts remain useful after the actual expression and its observable effect have been identified.
 
 Use representative inputs and resulting values when they make an operation easier to understand. Distinguish observed behavior from a hypothetical demonstration.
 

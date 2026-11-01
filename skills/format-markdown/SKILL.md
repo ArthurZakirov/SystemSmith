@@ -31,7 +31,7 @@ Create or edit the Markdown artifact so it remains valid, readable, navigable, a
 - In Markdown documents where emoji suit the audience and renderer, prefix major section headings (typically the document title and its highest-level sections) with **one semantically meaningful emoji** to help readers recognize and scan them. Use emojis for lower-level headings selectively when they distinguish meaningful subsection categories; leave fine-grained headings plain when additional icons would create noise. Keep the text label, follow established document conventions, and omit emoji where the document's accessibility, audience, or style requirements make them unsuitable.
 - Use inline code for repositories, folders, files, commands, functions, variables, configuration keys, and other literal technical identifiers when appropriate.
 - In maintained Markdown artifacts, make concrete file references clickable with correct relative links when a real target exists.
-- When an overview names sections later in the same Markdown document, link each navigable item to its actual section anchor instead of repeating a heading as unlinked text. Verify the fragment against the target renderer; where supported, use an explicit stable anchor if automatic heading slugs could be brittle.
+- When an overview names sections later in the same Markdown document, link each navigable item to its actual section anchor instead of repeating a heading as unlinked text. **Keep the link label aligned with its target heading, including the same emoji (when present), spelling, casing, and distinguishing terminology.** Verify the fragment against the target renderer; where supported, use an explicit stable anchor if automatic heading slugs could be brittle. Shorten the label only when the shorter wording remains unambiguous and preserves the emoji.
 - When a long section contains several subsections readers may need to jump between, add a local linked contents list directly beneath that section's introduction. Keep it within the parent section rather than introducing an unrelated sibling heading. Use this only when the target surface supports in-document navigation and the links materially improve it; ordinary chat messages and short sections may need no contents list.
 - Keep code fences syntactically valid and preserve the intended language identifier when known.
 - Escape or restructure Markdown syntax when literal characters would otherwise be interpreted incorrectly.
@@ -43,7 +43,7 @@ Create or edit the Markdown artifact so it remains valid, readable, navigable, a
 - Markdown parses as intended.
 - Frontmatter and code fences remain valid.
 - Every referenced file or path with a resolvable target is a meaningful clickable Markdown link; unresolved targets are identified rather than presented as if linked.
-- Every in-document contents link points to an existing heading anchor and resolves in the intended Markdown renderer.
+- Every in-document contents link points to an existing heading anchor and resolves in the intended Markdown renderer; its displayed emoji and identifying wording match the destination heading.
 - Machine-consumed Markdown remains easy for a human reviewer to navigate and inspect.
 - Representation and relevance/disclosure rules come from their dedicated skills rather than being redefined here.
 - When transforming raw thoughts, examples and nuance are preserved according to `thoughts-to-artifact`.
