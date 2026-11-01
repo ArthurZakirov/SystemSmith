@@ -154,7 +154,7 @@ The following rules apply:
 
 ## Exact Code Descriptions
 
-Apply these rules to any question or explanation involving repository code, from locating an implementation through diagnosing or modifying it. The user's wording does not limit their applicability.
+When a task requires locating, explaining, or modifying repository code, locate and inspect the relevant source first. Before presenting a conclusion, compare the identifiers and described operations with the actual file contents.
 
 The examples below are hypothetical illustrations, not claims about the current repository.
 
@@ -188,7 +188,7 @@ Verify descriptions of real behavior against inspected source or observed output
 
 ## Source Snippets
 
-When describing inspected code, show the relevant source. The excerpt establishes **what** exists; nearby prose explains **why** it matters or **what follows**.
+When describing inspected code, copy the relevant source lines into a language-tagged excerpt. Verify the copied lines against the current checkout, then explain the consequence in nearby prose.
 
 ### Identify the Source Twice
 
@@ -224,7 +224,7 @@ Keep the relevant lines and their real enclosing structure; mark every omitted s
 
 ## Linking Located Sources
 
-Make **every resolvable mention** of a file or symbol clickable. Use its actual name as plain-text link label, with the path and verified line number in the href.
+For each mentioned file or symbol, verify its location in the current checkout and link it when the target exists. Use its actual name as plain-text link label, with the path and verified line number in the href.
 
 **Link-label example**
 
