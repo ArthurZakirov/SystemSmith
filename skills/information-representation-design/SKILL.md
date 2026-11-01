@@ -5,67 +5,31 @@ description: "Organize or review human-readable text (chat replies, code explana
 
 # Information Representation Design
 
-## Core Principle
+When composing or restructuring human-readable information, establish **what each section communicates**, then choose **how its contents are represented**. Work from the outer document structure toward the individual sentence, table, snippet, or link.
 
-Choose the representation that makes important information and relationships easiest for the reader to locate and understand, with the least repeated scaffolding.
+This skill organizes information already selected for the reader. Use [relevance-first-information-design](../relevance-first-information-design/SKILL.md) to decide which information belongs on the current surface and which should be available through deeper navigation.
 
-A reader may want only one answer, not a linear tour of everything the author knows. Organize text so the reader can identify relevant content from its labels and follow the appropriate path without reconstructing the author's intent.
+## 1. Structure the reader's route
 
-This skill decides **how information already in scope is organized and represented**. Deciding which information belongs on the current surface is the responsibility of [`relevance-first-information-design`](../relevance-first-information-design/SKILL.md).
+### Establish semantic sections
 
-## Representation Mapping
+Before choosing tables, lists, or prose, organize the material around the questions readers need answered.
 
-| Information shape | Preferred representation |
-| --- | --- |
-| Repeated items with the same fields or dimensions | Table |
-| Ordered or procedural sequence | Numbered list |
-| Unordered independent points of one kind | Bulleted list |
-| Parent/child concepts at different abstraction levels | Hierarchy, headings, or nested navigation |
-| Narrative reasoning where sequence and causal flow matter | Prose |
-| Relationships, flow, topology, or spatial structure | Diagram when it materially improves comprehension |
-| Quantitative comparison or trend | Appropriate chart or table |
-| One compact condition and one action | Explicit `When` / `Then` labels may be clearer than a table |
+1. **Identify questions.** Determine what a reader comes to find, understand, decide, or do.
+2. **Group answers.** Give related material a shared section, heading, or short lead-in.
+3. **Name containers.** Make each label identify what follows, rather than using placeholders such as "Details" or "Miscellaneous".
+4. **Place details.** Put examples, evidence, qualifications, and exceptions inside the item they explain.
+5. **Keep peers comparable.** Children under the same parent should fulfill the same semantic role and sit at a comparable level.
 
-## Reader Navigation
+Apply this from the document title through its headings and nested items. For example:
 
-When drafting or restructuring text for a reader:
+- **Principles:** each child states a principle, followed by its explanation and example.
+- **Reasons:** each child gives a separate reason.
+- **Procedure:** each child describes an action or stage in the required order.
 
-1. **Identify the reader's questions.** What might they come here to find, decide, or do?
-2. **Group information by answer.** Put each answer where its reader would expect it, rather than following the order in which the author happened to think of it.
-3. **Name the groups.** Use titles, headings, labels, or lead-ins that tell the reader what information follows before they read the details.
-4. **Guide the drill-down.** Keep explanations and evidence under the relevant group so the reader can skip unrelated material without losing context.
+A section called "Release principles" should contain actual principles, not a deployment checklist presented as another principle.
 
-A label can name a category (`Reasons to migrate`), describe a task (`How to migrate safely`), or state the question answered (`Why the migration matters`). Question-word headings do not need a question mark. Prefer specific labels over generic labels such as `Details` or `Miscellaneous`.
-
-Do not require formal headings in every medium: a short chat message, email, or social post can use a clear opening sentence and a few grouped lines. The **navigation function** matters, not a particular Markdown syntax.
-
-## Semantic Containers
-
-A **container** tells the reader what kind of information its immediate children contain. This applies recursively:
-
-| Container | Immediate children should represent |
-| --- | --- |
-| Document title or descriptive filename | Sections that collectively fulfill the document's stated purpose |
-| Section such as `Principles of X` | Individual principles of X, each with its own explanation |
-| Section such as `Reasons to choose X` | Individual reasons to choose X |
-| Section such as `How to perform X` | Actions or stages of that procedure |
-| Lead-in such as `Follow these rules when X occurs` | Rules applicable when X occurs |
-
-Apply these rules at **every level**, including document titles, section headings, nested headings, and list items:
-
-- **Define the children's type.** The parent communicates the category, question, or purpose that unites its immediate children. Each child must satisfy that contract. For example, each subsection under `Principles` must actually be a principle, not a workflow or summary checklist.
-- **Keep siblings at the same semantic level.** Do not mix a rule, a reason, a procedure, and an exception as if they were instances of one type. Split distinct types into separate named groups, or place supporting detail under the item it qualifies.
-- **Keep explanation inside its owner.** A principle can contain prose, examples, evidence, and exceptions that explain or qualify that principle; those details need not become siblings of the principle itself.
-- **Name instances by meaning.** Under `Principles`, use names such as `Preserve rollback paths`, not `Principle 1`. Under `Tips`, name the actual tip, not merely `Tip 2`.
-- **Align the outermost label with the contents.** When the filename or title promises a particular subject or class of information, its sections must collectively deliver that promise. Rename or regroup when they do not.
-
-A quick test for any group: **"Every item immediately below this heading is a ___."** If no single truthful completion exists, the group needs a clearer parent or different boundaries.
-
-### Example: Separate principles from procedures
-
-**Incoherent hierarchy:** A section called `Release principles` contains `Make failures visible`, `Deployment checklist`, and `Why staged rollout matters` as peer subsections. Only the first is a principle.
-
-**Coherent hierarchy:** Give different semantic roles different containers:
+**Example — separate semantic roles**
 
 ```markdown
 ## Release principles
@@ -85,18 +49,125 @@ Explain the principle and its implications.
 ## Reasons for staged rollout
 
 - Limit the impact of regressions.
-- Create opportunities to detect failures early.
+- Detect failures before wider deployment.
 ```
 
-The principle explanations can contain local examples or qualifications; the deployment procedure and reasons are not additional principles.
+The principles, procedure, and reasons are separate sections because their immediate children perform different jobs.
 
-## Framing Lists
+### Choose the section's internal pattern
 
-When introducing a multi-item list, make its **shared meaning and purpose** clear *before* the items:
+A semantic container can organize more than a list of similar items. Select the pattern that answers the reader's current question:
 
-1. **Name the container.** A heading, label, or compact opening clause tells the reader what kind of items follow.
-2. **Provide a lead-in.** A short sentence explains what the items are for, when they apply, or how to use them, including order when order matters. Do not repeat the heading without adding context.
-3. **Make items self-identifying.** Use meaningful short labels when helpful, then expand them with supporting detail. Use numbered items for a required sequence and bullets for unordered peers.
+- **Peer items** — a collection such as five test-writing principles, with each principle explained under its own label.
+- **State → elaborate → exemplify** — name an idea, explain what it means, then provide a concrete example or evidence.
+- **Before → after → how** — show the initial problem, the resulting state, and the work that produced the change.
+- **What → why → how** — establish the deliverable, its purpose, and the implementation approach.
+- **Planned steps → current status** — distinguish the ordered work ahead from observations already confirmed.
+- **Interpretation → next action** — explain how feedback changes the intended work, then separate the next concrete step.
+- **Completed → remaining** — distinguish finished work from outstanding work in a status report.
+- **Claim → meaning → evidence → impact** — establish an assertion, interpret it, substantiate it, then explain why it matters.
+
+These are possible structures, not mandatory document templates. Select them based on the reader's question and the relationships between the information.
+
+### Elaborate beneath short labels
+
+When listing principles or similar concepts, use a short meaningful name as the heading or bold item label. Aim for **one to three words** when that still names the concept accurately; preserve longer names when needed for meaning or exact identification.
+
+Follow a short abstract label with an explanation and, where it helps, a concrete example.
+
+**Example — one principle in a testing guide**
+
+- **Assert outcomes.** Check the database state after an operation, rather than asserting that an internal helper was called. For example, `assert row["status"] == "ready"` checks an observable result; `mock_writer.assert_called_once()` couples the test to an implementation detail.
+
+A longer document can give the same principle its own heading. A short message may use a bold lead-in without formal headings. In either case, the reader sees what the following explanation belongs to.
+
+### Match navigation to the medium
+
+Headings provide the main structure in documents and articles. In a short chat reply, email, or ticket comment, a lead-in and grouped paragraphs can provide the same navigation without unnecessary headings.
+
+For multi-step work updates, separate **what will happen** from **what has already been verified**. Use numbered steps for the plan and a separate status section for observations. Keep simple one-step updates concise rather than adding unnecessary headings.
+
+**Example — a plan followed by current status**
+
+```markdown
+### What I'll do
+
+I'll refactor the skill in these steps:
+
+1. Locate the current repository and read its skill.
+2. Restructure the content from section navigation through representation choice.
+3. Validate the resulting Markdown and commit the changes.
+
+### Mac status
+
+- **Connection:** Connected.
+- **Skills:** Relevant guidance loaded.
+- **Changes:** Not yet committed.
+```
+
+The two sections answer different reader questions: the first describes the planned sequence; the second reports only verified current state.
+
+**Example — interpretation followed by the next action**
+
+```markdown
+### How I'll act on your example
+
+I'll treat your proposed formatting as an example for the skill, not
+as a request to reformat this conversation. The skill will teach
+agents to separate different kinds of information when needed.
+
+### What I'll do next
+
+I'll finish checking the revised skill and commit the validated change.
+```
+
+The first section explains what the feedback means for the work; the second names the next operation. These labels are examples, not required headings for every message.
+
+Name instances by meaning rather than arbitrary labels such as "Principle 1". Keep the outer document title aligned with the questions its sections actually answer.
+
+## 2. Choose a representation inside each section
+
+After a section has a clear purpose, select a format for each part of its content. A section can contain multiple formats: a short explanation followed by a table, a diagram, or a code excerpt.
+
+| Information within the section | Representation |
+| --- | --- |
+| Explanation or causal reasoning | Prose |
+| Independent items of the same kind | Bulleted list |
+| Actions in a required order | Numbered list |
+| Repeated records with shared fields | Table |
+| A command, expression, or source implementation | Inline code or code fence |
+| Relationships, dependencies, or spatial structure | Diagram |
+| Quantitative comparison or trend | Chart or table |
+| Parent/child navigation | Nested headings or hierarchy |
+
+Choose the format that makes the relevant relationship visible. Use labeled `When` / `Then` prose for one simple condition and action; use a table when several conditions share the same fields.
+
+### Example — environment variables
+
+In a section titled **Configure environment variables**, first tell the reader what to configure and where the settings belong. Then show the individual variables as a table.
+
+| Variable | Effect | Example value |
+| --- | --- | --- |
+| `REPOS_DIR` | Root directory for cloned repositories | `~/Repos` |
+| `LOG_LEVEL` | Application log verbosity | `debug` |
+
+These are illustrative settings, not values inspected from a project. The section establishes the purpose; the table lets readers compare fields without rereading repeated prose.
+
+## 3. Apply rules to the chosen format
+
+### Prose and lists
+
+#### Frame each list
+
+Use a short label or lead-in to say what its children represent and why the reader needs them.
+
+- **Bullets:** unordered items of the same kind.
+- **Numbers:** steps whose order matters.
+- **Short prose:** connected explanation where causal flow matters more than scanning separate entries.
+
+Give list items meaningful names when useful. For a short message, one sentence can serve as both the label and lead-in.
+
+**Example — a priority list**
 
 **Unframed:**
 
@@ -113,29 +184,25 @@ When introducing a multi-item list, make its **shared meaning and purpose** clea
 ```markdown
 ## Pull requests to review
 
-Review these three PRs in the listed priority order. Read each description
-before inspecting its diff:
+Review these in priority order; read the description before each diff:
 
 1. **PR A** — Fix the data-loss scenario.
 2. **PR B** — Remove duplicate processing.
 3. **PR C** — Simplify the deployment path.
 ```
 
-In a short message, a single sentence can serve as both the container label and lead-in; avoid adding headings merely to satisfy a template.
+#### Separate scannable items and distinct rules
 
-## Scannable Inventories and Separate Rules
+When one sentence contains three or more independently scannable items, replace the enumeration with a lead-in and one bullet per item. Keep inseparable pairs, such as "staged versus unstaged changes", together.
 
-- When a sentence lists three or more distinct things readers might want to scan, use a short lead-in ending with `:` followed by bullets instead of chaining the items with commas. Short, natural pairs can remain inline.
-- Start a new paragraph or list item when the subject, rule, consequence, or reason changes. Keep genuinely connected causal reasoning as prose; line breaks should expose meaningful changes, not occur after every sentence by default.
-- Separate what an item contains or a command preserves from independent rules about that item. Give each group a clear lead-in; do not append unrelated rules after a comma-separated list.
+When the text changes from describing contents to stating rules, exceptions, or consequences, start a second explicitly named group.
 
 **Hard to scan:**
 
 > The updater preserves staged versus unstaged changes, untracked and ignored files, symlinks, executable modes, conflicted indexes, and previous commits. Submodule copies receive independent Git metadata. Interrupted-operation metadata is saved as evidence; archived operations are not automatically resumed in recovery copies.
 
-**Preferred:**
+**Easier to scan:**
 
-```markdown
 The updater preserves:
 
 - staged versus unstaged changes
@@ -150,124 +217,138 @@ The following rules apply:
 - Submodule copies receive independent Git metadata.
 - Interrupted-operation metadata is saved as evidence.
 - Archived operations are not automatically resumed in recovery copies.
-```
 
-## Exact Code Descriptions
+#### Make paragraphs purposeful
 
-When a task requires locating, explaining, or modifying repository code, locate and inspect the relevant source first. Before presenting a conclusion, compare the identifiers and described operations with the actual file contents.
+Keep explanatory prose inside the statement, rule, or question it develops.
 
-The examples below are hypothetical illustrations, not claims about the current repository.
+- Begin with the claim or an identifying lead-in.
+- Elaborate when a short label is too abstract.
+- Show an example or evidence when the reader needs to see what the claim means.
+- Start a new paragraph or list item when the subject, action, or reason changes.
 
-### Preserve Exact Source Identifiers
+Keep genuinely connected causal reasoning in prose. A new sentence does not automatically require a separate paragraph.
 
-When naming inspected code, reproduce **every character exactly as it appears in the source**. Use inline code backticks; when a verified symbol link is available, use a plain-text link label with the exact symbol retained at the destination.
+### Tables
 
-- **Bad:** "the underscore keep intervals before rebuild function."
-- **Good:** `_keep_intervals_before_rebuild`.
+Use a table when the reader compares records with the same columns or conditions with the same fields.
 
-### Describe the Actual Operation and Values
+- State the table's purpose in a heading or preceding sentence.
+- Use each row for one comparable record.
+- Put repeated labels in column headers rather than repeating them inside every cell.
+- Split unrelated rules or multi-paragraph explanations out of cells and place them under their owning section.
+- Prefer a numbered list for a simple sequence instead of a table with one row per step.
 
-Identify the real source expression and its observable effect. Invented spatial descriptions ("left edge", "tail"), possessive metaphors ("owns", "carries"), and abstract jargon ("partition", "idempotent") cause the same problem when used instead of the executable operation. Technical concepts remain useful once the underlying code is identified.
+### Diagrams and charts
 
-**Example — which rows are processed**
+Use a diagram when the relationship, flow, topology, or spatial arrangement is easier to perceive visually. Use an appropriate chart or table when quantitative patterns or comparisons matter.
+
+Introduce what the visualization shows and explain its relevant implication nearby. Keep the surrounding section responsible for the question the visualization answers.
+
+### Code and commands
+
+When an answer locates, explains, or proposes changing repository code, inspect the relevant source before drafting its description. Compare the final explanation against the actual symbols, expressions, and observed behavior.
+
+#### Use exact identifiers and concrete operations
+
+Copy the original spelling of any inspected identifier: every character, including punctuation and underscores. Use inline backticks for literal code; use verified links when referring to a located symbol.
+
+**Identifier example**
+
+- **Bad:** "the underscore keep intervals before rebuild function"
+- **Good:** `_keep_intervals_before_rebuild`
+
+Explain concrete source operations rather than replacing them with metaphors or abstract jargon. "Left edge", "tail", "owns", "partition", and "idempotent" describe different words but the same failure when they hide the relevant expression. Use technical terminology when it adds meaning after the executable operation is identified.
+
+**Rows processed — illustrative**
 
 - **Bad:** "The left-edge partition owns the earlier days."
-- **Good:** "Rows satisfying `state_date < rebuild_start` are passed to `_keep_intervals_before_rebuild`."
+- **Good:** "Rows where `state_date < rebuild_start` are passed to `_keep_intervals_before_rebuild`."
 
-**Example — what a condition changes**
+**Condition's effect — illustrative**
 
 - **Bad:** "The older dates are kept."
-- **Good:** "For `state_date < rebuild_start` the existing rows are kept; rows with `state_date >= rebuild_start` are rebuilt."
+- **Good:** "Rows where `state_date < rebuild_start` are kept; rows where `state_date >= rebuild_start` are rebuilt."
 
-**Example — why an output is incorrect**
+**Incorrect output — hypothetical**
 
 - **Bad:** "The old left edge is wrong."
-- **Good (hypothetical):** "With `valid_from='2026-10-01'` and `rebuild_start='2026-10-10'`, the output starts at `2026-10-01`; the expected start is `2026-10-10`."
+- **Good:** "With `valid_from='2026-10-01'` and `rebuild_start='2026-10-10'`, the output starts at `2026-10-01`; the expected start is `2026-10-10`."
 
-Verify descriptions of real behavior against inspected source or observed output. When examples of inputs, values, or results make an abstraction easier to understand, provide representative values and label constructed examples as hypothetical.
+Use representative inputs and resulting values when they make an operation easier to understand. Distinguish observed behavior from a hypothetical demonstration.
 
-## Source Snippets
+#### Quote inspected source with its scope
 
-When describing inspected code, copy the relevant source lines into a language-tagged excerpt. Verify the copied lines against the current checkout, then explain the consequence in nearby prose.
+When describing existing code, quote its decisive lines. The excerpt establishes **what** is implemented; accompanying prose explains the consequence.
 
-### Identify the Source Twice
+Give every source excerpt two location cues:
 
-For every source-code fence:
+- **Immediately above:** a verified clickable file-and-line link.
+- **Inside the fence:** the exact source-relative path on the first line as a comment.
 
-- **Above the fence:** a verified, clickable link to the file and relevant line numbers.
-- **Inside the fence:** the exact source-relative file path as a comment on the first line so the location survives copying.
+Keep enough enclosing syntax to show where the quoted code runs. Mark omitted spans with the language's comment syntax.
 
-Keep the actual language tag. If a link cannot be verified, give the known locator and say the source link is unresolved.
+- **Python:** include the actual `def` and, for a method, its enclosing `class`. Mark omissions `# ...`.
+- **Markdown:** include the surrounding heading. Mark omissions `<!-- ... -->` when quoting literal Markdown.
+- **YAML:** include the parent keys. Mark omissions `# ...`.
+- **JSON:** include the enclosing keys. Use a `jsonc` fence for annotated excerpts containing `//` comments.
+- **SQL:** include the `SELECT` or CTE name. Mark omissions `-- ...`.
+- **Other languages:** include the nearest meaningful declaration and use the language's comment syntax.
 
-### Preserve the Enclosing Structure
+Use a language-tagged fence. Verify copied lines against the correct repository revision before linking them.
 
-Keep the relevant lines and their real enclosing structure; mark every omitted span with the appropriate comment syntax.
+#### Show both sides of changes
 
-- **Python:** include the exact `def` line and, for methods, the enclosing `class` line. Mark omitted spans `# ...`.
-- **Markdown:** include the heading associated with the quoted passage. Mark omitted spans `<!-- ... -->` when showing literal Markdown.
-- **YAML:** include enclosing parent keys. Mark omissions `# ...`.
-- **JSON:** include enclosing object keys. Annotated excerpts containing `//` comments use a `jsonc` fence.
-- **SQL:** include the `SELECT` statement or CTE name. Mark omitted spans `-- ...`.
-- **Other languages:** retain the nearest meaningful enclosing declaration and use the language's comment syntax.
+For proposed or completed code edits, show the same enclosing scope and relevant lines in two separately labeled excerpts:
 
-### Show Both Sides of a Change
+- **BEFORE:** the original code and its verified source location.
+- **AFTER:** the modified code, labeled as *proposed* when not yet applied.
 
-- **BEFORE:** quote the original lines in their enclosing scope, with the source locations.
-- **AFTER:** quote the same lines and scope with the proposed or applied modification; identify a proposal as proposed.
-- **Within a longer AFTER excerpt:** mark new lines `# NEW` and replacements `# CHANGED` (or equivalents). Put the commented old line immediately above each replacement; keep untouched context unmarked. These are review annotations, not production edits.
+In a larger annotated AFTER excerpt:
 
-### Use the Right Form for the Content
+- Mark added lines `# NEW`.
+- Mark replaced lines `# CHANGED`.
+- Put each commented-out old line directly above its replacement.
+- Leave unchanged lines unmarked.
 
-- **Existing implementation:** quote inspected lines rather than replacing evidence with an abstract description.
-- **Markdown wording:** use a blockquote or paraphrase with a source link when the meaning matters; use a `markdown` fence and its heading when syntax matters.
-- **Runnable commands:** use a `sh` or `bash` fence with real arguments; these are commands, not copied source excerpts.
+Use the target language's comment syntax. These review annotations explain a change; they are not automatically part of production code.
 
-## Linking Located Sources
+#### Distinguish quotations from commands
 
-For each mentioned file or symbol, verify its location in the current checkout and link it when the target exists. Use its actual name as plain-text link label, with the path and verified line number in the href.
+- **Markdown wording:** when discussing what quoted text says, use a blockquote or concise paraphrase with a link. Use a `markdown` fence with the enclosing heading when the syntax itself matters.
+- **Runnable commands:** show the actual command in a `sh` or `bash` fence with representative arguments. A command being introduced for execution is not a source quotation and needs no invented file path or enclosing function.
+
+## 4. Link sources and recurring references
+
+### Make source mentions navigable
+
+When the draft names a file, symbol, or other inspectable artifact, locate its real target before adding a link. Verify that the path and line exist in the relevant revision or worktree.
+
+- Use the symbol or filename as the visible link label.
+- Put the location and line anchor in the href, not in an unnecessarily long visible label.
+- Keep link labels as plain text; use inline backticks separately for exact code spelling.
+- Preserve the real identifier even when its name is long.
+- If a leading `_` or `*` breaks a renderer's link label, omit that character **only in the displayed label**, keeping the complete identifier at the destination or in adjacent inline code.
+- For unresolved targets, show the exact known locator in backticks and state what could not be verified.
 
 **Link-label example**
 
-- **Bad:** `[here](src/loader.py#L90)` or `[line 90](src/loader.py#L90)`.
-- **Good:** `[loader.py:90](src/loader.py#L90)`.
+- **Bad:** `[here](src/loader.py#L90)` or `[line 90](src/loader.py#L90)`
+- **Good:** `[loader.py:90](src/loader.py#L90)`
 
-Preserve real names rather than inventing abbreviations. Keep backticks **outside** link labels. If a leading `_` or `*` breaks the renderer, omit that character only in the visible link label and show the exact full identifier as inline code when relevant.
+### Resolve links for the destination
 
-Choose the link base by where the reader opens the text:
-
-| Destination | Link base |
+| Where readers open the text | Link target |
 | --- | --- |
-| Local repository chat | Relative to session working directory, with a verified line anchor. |
-| Same-repository Markdown file | Relative to the Markdown file's directory; check that the target exists. |
-| Cross-repository Markdown | Git-host URL to the other repository, preferably a stable landing page when files and lines may drift independently. |
-| PR, external ticket, documentation app, or messaging app | Absolute URL, since the reader need not have a local checkout. |
+| Chat using a local repository workspace | Relative to the session working directory, with a verified line anchor |
+| Markdown inside the same repository | Relative to the containing Markdown file's directory; verify the target path |
+| Markdown referring to another repository | Git-host URL to that repository; prefer a stable repository-level destination when file and line links may drift |
+| PR, external ticket, documentation app, or messaging app | Absolute URL usable without a local checkout |
 
-Use inline backticks when a source location cannot be resolved; verify links against the correct checkout and revision.
+A remote Git-host link must refer to a revision that exists there. For an uncommitted change, use a local source locator rather than pretending it is already available remotely.
 
-**Stable references:** If a fact, rule, question, or example will be mentioned later, assign a bold tag at its first definition (for example **F1**, **R1**, **Q1**). Use that exact bold tag at every subsequent reference instead of "the first fact" or "the previous rule". Apply tags to recurring items, not one-off claims.
+### Keep repeated references stable
 
-## Structural Rules
+When a fact, rule, question, or example is cited again later in the same explanation, give it a short bold identifier at first mention, such as **F1**, **R1**, or **Q1**. Use the same bold identifier at every subsequent reference.
 
-- When several records repeat the same labels, encode those labels once as table columns instead of repeating headings or `When`/`Then` blocks.
-- Do not use a table for a simple linear flow solely because multiple steps exist.
-- Group related material by concept rather than preserving an arbitrary source order.
-- Use headings to expose real hierarchy, not merely to add visual decoration.
-- Prefer a representation that supports scanning when the reader is likely to compare or navigate rather than read linearly.
-- Avoid duplicating content just to fit a representation; use references or links when one canonical source should serve several views.
-- Do not force a fixed document template on unrelated artifacts. The relevant reader questions determine the sections, and medium constraints determine whether sections are expressed as headings, labels, paragraphs, or another structure.
-
-## Cross-Medium Interpretation
-
-The representation primitive depends on the medium. A table in Markdown may correspond to columns or cards in a UI, grouped fields in a form, a matrix in a dashboard, or typed records in code.
-
-The same container and navigation rules apply when drafting a PR description, ticket, documentation page, agent instruction, website, article, resume, chat reply, Slack message, email, or social post. For example, a PR reader may look for motivation, changes, and blockers; a ticket reader may look for user requirements, constraints, and acceptance criteria. **Those are examples of reader questions, not mandatory heading templates.**
-
-## Self-Check
-
-1. What answer or relationship is the reader looking for, and can they locate it from the visible structure?
-2. For each heading, title, or list lead-in, what kind of children does it promise? Does **every immediate child** fulfill that promise?
-3. Are reasons, rules, steps, examples, and exceptions correctly grouped or nested rather than mixed as peers?
-4. Does each list have enough framing for the reader to understand what the items are and how to use them?
-5. Do names of sections and individual items communicate their actual meaning, rather than generic numbers or labels?
-6. Does the representation expose order, comparison, hierarchy, causality, or grouping without unnecessary repeated scaffolding?
-7. Does the structure fit the medium and expected interaction, without inventing headings or hiding necessary detail?
+Use labels only where later references benefit from them; one-off statements need no numbered tag.
