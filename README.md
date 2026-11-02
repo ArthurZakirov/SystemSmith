@@ -80,6 +80,7 @@ Existing non-symlink paths are left untouched unless `--force` is used.
 
 | Skill | Description |
 | --- | --- |
+| `agents-freshness` | On demand only, verify whether this Codex conversation's last recorded global AGENTS.md matches the current global instructions. Return current, outdated, or unverifiable; never guess which session is active. |
 | `change-consistency` | Use when implementing or revising behavior, terminology, interfaces, or usage patterns, or reviewing a branch for changes that were not carried through consistently. |
 | `engineer-agentic-ai` | Translate natural-language requests about AI-agent behavior, skills, MCP tools/servers, prompts, routing, context loading, memory, hooks, plugins, permissions, delegation, portability, or other agentic-system behavior into the concrete runtime mechanism and change surface. Use when a request is phrased as what the AI should understand/do rather than how the target harness actually observes, triggers, routes, persists, or enforces that behavior. |
 | `format-markdown` | Create, edit, review, refactor, or rewrite Markdown artifacts while preserving meaning, valid syntax, navigability, and human reviewability. Use whenever work directly changes or reviews a Markdown file, including README.md, AGENTS.md, SKILL.md, reference docs, design docs, or Markdown produced from notes, transcripts, scratch text, or rough drafts. |
@@ -139,6 +140,7 @@ Existing non-symlink paths are left untouched unless `--force` is used.
 │   ├── setup-local-links.sh
 │   └── update-readme.sh
 ├── skills/
+│   ├── agents-freshness/
 │   ├── change-consistency/
 │   ├── engineer-agentic-ai/
 │   ├── format-markdown/
