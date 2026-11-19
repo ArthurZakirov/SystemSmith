@@ -5,49 +5,43 @@ description: Use before translating a change request into code, tests, documenta
 
 # 🧭 Artifact Information Ownership
 
-A request describes work from the requester's perspective. Before choosing files or drafting names, ask what a reader, operator, or reviewer must be able to do once the work is complete. A single sentence can imply several actions and produce no durable prose.
+Use this skill when turning a request into Git changes, verification work, or communication. Account for each requirement, including context that guides a decision without needing another written record.
 
-## 🎯 Choose the action before writing
+## 🧭 Workflow for handling a request
 
-For each part of the request, identify its purpose and the observable result that would satisfy it. Use these questions for unfamiliar requests as well.
+Follow these steps from intake through review.
 
-| What does the requester need? | What fulfills that need? |
-| --- | --- |
-| The system must do something. | Implement the behavior in the component that controls it. A deadline or expiry requires a mechanism or an assigned operational action. A sentence describing it cannot enforce it. |
-| Someone must establish that a claim holds. | Choose an observation that could disprove the claim. Run the check where its result matters and retain evidence at the necessary revisions or environments. |
-| A reader must understand, use, or maintain something. | Identify the reader's decision and what they would lose by omitting the text. Describe the current contract, including any continuing constraint or rationale needed for correctness. Leave an adequate document alone. |
-| Someone must coordinate, review, or reconstruct a change. | Put the delta, attribution, status, or remaining action in the authorized work record that serves that reader, such as a ticket, commit, PR, experiment plan, or ADR. |
+1. **Identify the obligations.** For each part of the request, determine who needs to do, know, or verify what. One sentence can describe a new capability, impose a deadline, and require evidence about existing behavior.
+2. **Choose an action and an owner.** Use the routing table below. For unfamiliar cases, ask what decision or action would be lost if the information were omitted, who can maintain its accuracy, and when it stops being relevant. An existing authoritative record can already meet the need.
+3. **Implement and collect evidence.** Group commits so reviewers can inspect each meaningful change and reproduce any comparison the request requires. Use the authorized destination and audience for coordination. Choosing a communication channel does not authorize sending a message.
+4. **Review the actual diff and results.** Read names, tests, comments, examples, configuration, and generated docs from a single checkout without the ticket. Verify that each changed document helps its reader act and that each claim is supported by the observations recorded. Remove incidental narration before committing. For time-sensitive information, check placement before applying [Living Artifacts](../living-artifacts/SKILL.md).
 
-For each proposed statement, ask who owns its accuracy and what event could retire it. Completing a release can retire a rollout checklist. It cannot retire a compatibility promise to callers. Even permanently true provenance earns space only when it serves the artifact's purpose. Link independently maintained definitions and state the dependency contract locally.
+## 🗂️ Routing table by information type
 
-## 🧪 Establish preserved behavior
+Use each applicable row independently. The same request can require several destinations.
 
-When a request combines a change with a requirement to preserve behavior, identify the specific existing inputs and observable outcomes that must remain valid. Name tests for those conditions and outcomes. A reader should understand each assertion from a single checkout.
+| Information type | Owning surface | What belongs there |
+| --- | --- | --- |
+| Project coordination | Existing Jira story, Slack discussion, or experiment plan | Deadline, decision owner, trial duration, success criteria, and rollback arrangements. If expiry must occur, schedule it or assign the action. |
+| Stakeholder or customer context | Decision record for attribution or handoff. Domain model, configuration, or legal notice for an ongoing obligation. | Capture who requested a decision only where that matters. Describe a recurring upload by role and destination. Use a customer identifier where it selects a tenant, permission, or route. Preserve required attribution. |
+| Migration or reference implementation | Target repository for its operating contract. Existing story for the agreed reference. | Describe actual invocation, settings, and dependencies. Reuse the agreed pattern without restating its provenance. Record a transition in a migration guide or ADR when readers need its history or steps. |
+| Changed behavior | Production code, behavior tests, and any affected public contract. Commit message and PR description for the delta. | Express the current inputs, outputs, and failure conditions in the repository. Update operating docs only where a reader needs different instructions. Explain what changed to reviewers in the change record. |
+| Preserved behavior | Characterization tests for the contract. Test runs on both revisions for comparative evidence. | Name tests for the condition and observable result. Establish the baseline before changing production code, then repeat the same checks. Scope the claim to the cases exercised. |
+| Remaining implementation work | Private, uncommitted work record available to the user and agent | Track outstanding components, tests, deployments, and release pins. The user chooses what to share at standup, planning, or handover. Put a reusable deployment procedure in the runbook. |
+| Cross-repository dependency | Consumer's contract and a link to the authoritative provider | State required arguments, formats, guarantees, and error behavior. Keep independently maintained file paths and implementation details with their owner. A shared company architecture page can describe the system-wide flow. |
 
-When the reviewer needs evidence across revisions, use this sequence:
+## 🧩 Examples of decomposing a request
 
-1. On the production baseline, run the relevant tests. Where coverage is missing, add characterization tests in a **test-only commit**. Verify that they pass against the original implementation. Existing adequate tests can supply this baseline without a new commit.
-2. Make the production change in a **separate commit**. Add checks for newly supported behavior on the revision where that behavior is expected.
-3. Run the same preservation tests with the same assertions and relevant conditions. Give the reviewer the revisions, command, and observed results in the PR or work record. Limit the claim to the cases exercised. If the baseline was unavailable or failed, report that gap.
+Each example follows one request across the surfaces needed to fulfill it.
 
-For example, a request to extend a model while preserving omitted-field handling might warrant a test called `test_omitted_timeout_uses_default` if that is what it asserts. The assertion defines the contract. The two runs establish whether both revisions satisfy it. A failure on the baseline can be appropriate for a bug-reproduction test when the requested outcome is a fix.
+### Extend a model and preserve a default
 
-## 📋 Place information by purpose
+“Add two optional fields by Friday. Omitting the timeout must still use the default.” The deadline belongs in the existing story. The compatibility claim determines the order of work:
 
-Use these examples to check the intended reader and lifetime of a statement.
+1. On the original implementation, run the omitted-timeout test. If coverage is missing, add a test such as `test_omitted_timeout_uses_default` in a test-only commit and verify that it passes.
+2. In a separate commit, implement the fields and test their supported inputs. Update the API reference if callers need the field names, meanings, or omission rules.
+3. Rerun the same baseline assertions under equivalent conditions. Record revisions, command, and observed outcomes in the PR. Report a failed or unavailable baseline as a gap in the comparison. A test intended to reproduce a bug instead has a different expected baseline result: it should expose the defect.
 
-| Situation | Placement decision |
-| --- | --- |
-| A model gains two optional fields. | If callers need the fields to use the API, document their names, meanings, and omission behavior in its authoritative reference. If existing docs already serve their readers, leave them untouched. Record the extension in the change history. |
-| A script moves between repositories or adopts a shared settings class. | Describe current invocation, dependencies, environment prefix, and loading behavior where needed. Keep incidental origin or resemblance in the work record. |
-| A reviewer requests validation or a customer commissions storage. | Name the validation rule or storage capability. Include identity where it determines routing, authorization, legal attribution, or another continuing obligation. |
-| Generation runs locally and CI consumes the result. | Explain that division if it guides an operator. The workflow stands on its own without a comparison to another project. |
-| A behavior is being tried for one day. | Put behavior on the instruction surface and duration, review, and rollback in the experiment plan. Arrange the expiry action when automatic or scheduled removal is required. |
-| A release has deployments or dependent PRs outstanding. | Track remaining work in the release record. Put repeatable deployment instructions in the runbook. A dated migration guide can legitimately describe a transition. |
-| An example needs a client identifier. | Use an obvious placeholder. Add clarification only if it prevents a plausible operational mistake. |
+### Trial a configuration supplied by another repository
 
-## 🔎 Review the actual diff
-
-Read names, assertions, docstrings, comments, examples, configuration, and generated documentation as someone who has never seen the ticket. Can that reader understand what the system does and why a continuing constraint matters? For every changed document, identify the decision its reader can now make. Remove edits whose only purpose is to narrate the work.
-
-Then inspect the evidence for each verification claim. A test title, comment, or freshness caveat cannot establish a comparison between revisions. Preserve required attribution and intentionally historical records. Once placement is settled, apply [Living Artifacts](../living-artifacts/SKILL.md) to information whose accuracy depends on time.
+“Use the provider's retry settings for one day, then decide whether to keep them.” The consumer validates the agreed settings and links to their authoritative definition. The experiment plan owns the cutoff, decision owner, and rollback action. If the policy must expire automatically, configure that expiry and verify behavior at the boundary. Track unfinished deployment steps in the private work record. Each destination gives its reader enough information to act independently.
