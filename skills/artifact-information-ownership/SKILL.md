@@ -10,6 +10,7 @@ description: Use when reviewing a diff or turning a ticket or conversation into 
 - [🛠️ How to work from a ticket](#workflow)
 - [🔎 How to review a diff](#review)
 - [🗂️ Where each part goes](#routing)
+- [📋 What belongs in each medium](#media)
 - [🧩 Example: one Jira story, two commits](#example)
 
 <a id="workflow"></a>
@@ -30,7 +31,7 @@ description: Use when reviewing a diff or turning a ticket or conversation into 
 
 3. **Decide who does it.**
 
-   - **Agent.** Copy `read_header` into the destination repo’s `reader.py` and run `python3 -m unittest -v test_reader`. If the team needs a deadline update, give the user a draft privately.
+   - **Agent.** Copy `read_header` into the destination repo’s `reader.py` and run the tests in `test_reader.py`. If the team needs a deadline update, give the user a draft privately.
    - **User.** Decide whether to post the draft in Slack or Jira. The agent sends it only on explicit request.
 
 4. **Carry out the agreed work.** Make the code and test changes assigned to the agent. If the user needs to update the team, give them the proposed Slack message in private chat.
@@ -67,9 +68,31 @@ Name the actual file, page, message, or tool when choosing where something belon
 | Reference Code Context · Migration | *“Copy `read_header` from the reports repo’s `reader.py`.”* | <ul><li>**Committed code:** Adapt `read_header` in the destination repo’s `reader.py`.</li><li>**Committed `README.md`:** Show a call such as `read_header("name,city")` if users need an example.</li><li>**Jira story:** Keep the link to the reports repo’s `reader.py` in the ticket.</li><li>**Confluence page for the move (e.g., *Move report files*):** List any file moves operators must perform.</li></ul> | Start the docstring for `read_header` with *“Copied from the reports repo for this story.”* |
 | Reference Code Context · Reference | *“Use the same validation pattern as the reports repo.”* | <ul><li>**Committed request-validation code:** Check for the required header (e.g., `X-Request-ID`) and reject requests that omit it.</li><li>**Committed API documentation (e.g., `docs/api.md`):** Name the required header and show the error returned when it is missing.</li><li>**Jira story:** Link to the function that checks the header in the reports repo.</li></ul> | Write *“Validate like the reports repo”* in `docs/api.md` and leave callers guessing which headers they must send. |
 | Code Behavior Change | *“The endpoint now accepts a timeout.”* | <ul><li>**Committed request handler and unit test:** Accept `timeout_seconds`. Send `timeout_seconds=5` in the test and assert that the operation uses five seconds.</li><li>**Committed API documentation (e.g., `docs/api.md`):** Show how to send `timeout_seconds`.</li><li>**Git commit message or PR description:** Describe the change as *“Add an optional timeout to the endpoint.”*</li></ul> | Add *“We extended the model in this sprint”* to the request model’s docstring. |
-| Code Behavior Preservation | *“Requests without a timeout must still work.”* | <ul><li>**Committed test:** Omit the timeout and assert 30 seconds.</li><li>**Terminal in the repo:** Run that test on both commits.</li><li>**PR description:** Record the command, revisions, and results as in [🧩 Example: one Jira story, two commits](#example).</li></ul> | Name a test `test_still_works_after_adding_timeout` and claim the old behavior was verified after running it only on the new code. |
+| Code Behavior Preservation | *“Requests without a timeout must still work.”* | <ul><li>**Committed test:** Omit the timeout and assert 30 seconds.</li><li>**Terminal in the repo:** Run that test on both commits.</li><li>**PR checks:** Review the automated run for the revision it actually tested. See [🧩 Example: one Jira story, two commits](#example) for the order of the code changes.</li></ul> | Name a test `test_still_works_after_adding_timeout` and claim the old behavior was verified after running it only on the new code. |
 | Remaining Tasks / TODOs | *“We still need to deploy and pin the release.”* | <ul><li>**Private `todo.md` outside Git:** List the pending deployment and release pin.</li><li>**Spoken standup update or Slack handover message:** The user chooses which tasks to share.</li><li>**Confluence page (e.g., *Deploy a release*):** Document the pinning command if it applies to every release.</li></ul> | Add `# TODO: deploy and pin this release` above a function in committed Python code, or copy this week’s deployment checklist into `README.md`. |
 | Cross-Repo Context | *“The config repo supplies the settings this service reads.”* | <ul><li>**Committed Markdown file in the service repo (e.g., `docs/configuration.md`):** List the keys the service reads (e.g., `bucket`, `region`, and `timeout_seconds`) and link to the repo that supplies them.</li><li>**Shared Confluence page (e.g., *Which services use these settings?*):** If several teams use these settings, show which repo publishes them and which services read them.</li></ul> | Copy an internal path such as `deploy/write_settings.py` from the config repo into the service README. Renaming that script would make the path in the README wrong. |
+
+<a id="media"></a>
+
+## 📋 What belongs in each medium
+
+Use [🗂️ Where each part goes](#routing) when starting from a sentence in a ticket. Use this table when you already know what you’re writing (e.g., a PR description) and need to decide what goes in it.
+
+| Medium | Include | Leave out |
+| --- | --- | --- |
+| Git branch name | Jira ID and short topic, e.g., `feat/DATA-123-csv-delimiter`. | Deadline, requester’s name, and rollout checklist. |
+| Git commit message | Jira ID and what this commit does, e.g., `DATA-123 Accept a delimiter when reading CSV headers`. | Work planned for a later commit. |
+| PR title | Jira ID and the change being reviewed, e.g., `DATA-123: Support custom CSV delimiters`. | Test results and requests for approval. |
+| PR description | What changed for callers and any choice the reviewer should examine (e.g., the optional delimiter defaults to a comma). | The Jira ID repeated from the title, routine test commands, passing-test summaries, and pasted pipeline logs. |
+| Committed production code | The behavior the program must perform (e.g., pass `delimiter` to `csv.reader`). | Jira IDs, due dates, and who requested the change. |
+| Committed test code | An input and expected result (e.g., omitting the delimiter splits `name,city` into two columns). | Test names that narrate the ticket or announce a previous run passed. |
+| Docstring or source comment | What the function accepts, returns, or requires when the signature alone leaves that unclear. | Where the code was copied from or what changed in this sprint. |
+| Committed Markdown file (e.g., `README.md`) | Instructions a caller needs, such as how to pass a delimiter. | Ticket history, pending release tasks, and a recipe or status report for tests already run by CI. |
+| PR’s automated checks (e.g., a GitHub Actions run or Bitbucket pipeline) | Let the pipeline run the repository’s tests and display the tested commit, executed steps, logs, and status. | Handwritten copies of that information in the PR, docs, Slack, or Jira. A run on the latest commit establishes only what ran on that commit. |
+| Slack message announcing the PR for review | Draft a PR link and the specific review request (e.g., *“Please review how the delimiter is passed to the CSV parser.”*). Send when asked. | A copy of the PR description or a reminder that automated tests are green. |
+| Comment on the Jira ticket | A decision or question the team needs to act on (e.g., *“Which file format should we support next?”*). Draft it for the user unless asked to post. | The ticket ID repeated in its own comment, routine test results, and the private task list. |
+| Private local Markdown file outside Git (e.g., `todo.md`) | Unfinished tasks for the user and agent, such as pinning the release after deployment. | A running copy of CI results or instructions intended for every user of the repository. |
+| Shared Confluence page | Instructions several people use (e.g., the Drive folder for spreadsheet uploads and how to request access). | One person’s unfinished tasks and details already visible in a PR’s checks. |
 
 <a id="example"></a>
 
@@ -121,7 +144,6 @@ class HeaderTests(TestCase):
 Run the test and save it in its own commit:
 
 ```sh
-python3 -m unittest -v test_reader
 git add test_reader.py
 git commit -m "DATA-123 Test CSV header with no delimiter setting"
 ```
@@ -152,12 +174,11 @@ Add this method to `HeaderTests` in `test_reader.py`:
 Run both tests and commit the change:
 
 ```sh
-python3 -m unittest -v test_reader
 git add reader.py test_reader.py
 git commit -m "DATA-123 Accept a delimiter when reading CSV headers"
 ```
 
-**PR description.** Record the command and the results from the two commits. In this example, the first run passed the comma test. The second run passed that same test and the pipe test. If callers need a usage example, put this call in the repo’s `README.md`:
+**PR description.** Explain the change to the caller: *“Callers can supply a delimiter. Omitting it uses a comma.”* The reviewer can inspect the automated run in the PR’s checks. If callers need a usage example, put this call in the repo’s `README.md`:
 
 ```python
 read_header("name|city", delimiter="|")
