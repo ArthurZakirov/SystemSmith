@@ -1,6 +1,6 @@
 ---
 name: artifact-information-ownership
-description: Use when turning a ticket or conversation into code, tests, docs, commits, or a PR. Decide what to change, what to test, and which details can stay in the ticket.
+description: Use when reviewing a diff or turning a ticket or conversation into code, tests, docs, commits, or a PR. Decide what to change, what to test, and which details can stay in the ticket.
 ---
 
 # 🧭 Artifact Information Ownership
@@ -8,10 +8,11 @@ description: Use when turning a ticket or conversation into code, tests, docs, c
 **Contents**
 
 - [🛠️ How to work from a ticket](#workflow)
+- [🔎 How to review a diff](#review)
 - [🗂️ Where each part goes](#routing)
 - [🧩 Example: one Jira story, two commits](#example)
 
-The workflow shows how to split a ticket into instructions, the table shows where each piece goes, and the CSV example follows one ticket through two commits and a PR.
+Start with the ticket when implementing a request. Start with the changed lines when reviewing a diff. Both workflows use the same routing table. The CSV example follows one ticket through two commits and a PR.
 
 <a id="workflow"></a>
 
@@ -34,11 +35,15 @@ The workflow shows how to split a ticket into instructions, the table shows wher
    - **Agent.** Copy the reader and run its tests. If the team needs a deadline update, give the user a draft privately.
    - **User.** Decide whether to post the draft in Slack or Jira. The agent sends it only on explicit request.
 
-4. **Read the diff before committing.** Check the test names, comments, examples, and generated docs:
+4. **Carry out the agreed work.** Complete the agent’s tasks and hand the user any draft or decision assigned to them in step 3.
 
-   - **Keep useful instructions.** *“A missing header raises an error”* tells someone how to prepare a CSV.
-   - **Remove project narration.** *“Copied for Friday’s release”* only repeats the release plan.
-   - **Verify PR claims.** Compare each reported result with the actual test output before posting.
+<a id="review"></a>
+
+## 🔎 How to review a diff
+
+1. **Open the diff.** Inspect the changed lines, including test names, comments, examples, and generated docs.
+2. **Check each piece against the table.** Find the matching row in [🗂️ Where each part goes](#routing). Compare the file where the text appears with the place that row identifies.
+3. **Report each mismatch.** Point to the line and suggest the edit. If the user asked for fixes, apply the edit and check the resulting diff.
 
 <a id="routing"></a>
 
