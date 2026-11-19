@@ -70,27 +70,94 @@ Use the same question for requests you haven't seen before: who will use this de
 
 > *“For DATA-123, copy the CSV reader from the reports repo by the end of today. Let callers supply a delimiter. Files with no delimiter setting must still read as comma-separated.”*
 
-Here is how to carry out that example:
+The story contains five pieces. Read the two code requirements below in commit order: first test the comma case, then add the delimiter option. In this example the target repo already has a comma-only reader.
 
-1. **Before changing the reader**, establish how it handles a missing delimiter setting.
+### Jira ticket · Project Management Context
 
-   - **Input and result.** Read `name,city` with no delimiter setting. Expect two columns, `name` and `city`.
-   - **If the test exists**, run it and record the commit ID and result.
-   - **If coverage is missing**, add the test in a test-only commit named *“Test comma-separated headers with no delimiter setting.”* Verify that it passes.
+> *“For DATA-123”*
 
-2. **In the implementation commit**, add the optional delimiter and check both cases.
+The agent opens DATA-123 to read the request. When preparing the PR, link it to DATA-123 so the reviewer can open the story. The reader function needs no ticket ID.
 
-   - **Explicit delimiter.** Read `name|city` with `|` as the delimiter. Expect the same two columns.
-   - **Omitted delimiter.** Rerun the original comma test with the same input and assertions.
+### Source reader · Reference Code Context
 
-3. **In the PR**, show what you ran.
+> *“copy the CSV reader from the reports repo”*
 
-   - **Both runs available.** Give the two commit IDs, command, and results. If both passed, say that the comma case passed on both commits.
-   - **Only the later run available.** State which commit you tested and that the earlier result is unknown.
+The agent opens the reader in the reports repo and checks how it passes a delimiter to Python’s CSV parser. The code to edit is the target repo’s `reader.py`. Before either commit, it reads:
 
-4. **Place the remaining details.**
+```python
+import csv
 
-   - **Caller instructions.** Document how to pass a delimiter if the existing instructions leave that question open.
-   - **Jira story.** The deadline and source repo are already recorded there.
+
+def read_header(line):
+    return next(csv.reader([line]))
+```
+
+### Deadline · Project Management Context
+
+> *“by the end of today.”*
+
+Today is the due date on DATA-123. Leave it there. If the tests are still failing at the end of the day, tell the user privately which test failed. The user decides whether to update the team.
+
+### Comma-separated files · Code Behavior Preservation
+
+> *“Files with no delimiter setting must still read as comma-separated.”*
+
+**Commit 1.** Leave `reader.py` alone. In this example the comma case has no test yet. Create `test_reader.py` with a call that omits the delimiter:
+
+```python
+from unittest import TestCase
+
+from reader import read_header
+
+
+class HeaderTests(TestCase):
+    def test_missing_delimiter_reads_comma_separated_columns(self):
+        self.assertEqual(read_header("name,city"), ["name", "city"])
+```
+
+Run the test and save it in its own commit:
+
+```sh
+python3 -m unittest -v test_reader
+git add test_reader.py
+git commit -m "Test CSV header with no delimiter setting"
+```
+
+The test passes if the reader returns two strings. Returning one string containing the comma would fail the assertion.
+
+### Caller-supplied delimiter · Code Behavior Change
+
+> *“Let callers supply a delimiter.”*
+
+**Commit 2.** In `reader.py`, pass the caller’s delimiter to the parser. Give the parameter a comma as its default:
+
+```python
+import csv
+
+
+def read_header(line, delimiter=","):
+    return next(csv.reader([line], delimiter=delimiter))
+```
+
+Add this method to `HeaderTests` in `test_reader.py`:
+
+```python
+    def test_pipe_delimiter_reads_pipe_separated_columns(self):
+        self.assertEqual(read_header("name|city", delimiter="|"), ["name", "city"])
+```
+
+Run both tests and commit the change:
+
+```sh
+python3 -m unittest -v test_reader
+git add reader.py test_reader.py
+git commit -m "Accept a delimiter when reading CSV headers"
+```
+
+**PR description.** Record the command and the results from the two commits. In this example, the first run passed the comma test. The second run passed that same test and the pipe test. If callers need a usage example, show the call directly:
+
+```python
+read_header("name|city", delimiter="|")
+```
 
 For documentation that can go stale (e.g., a copied list of supported settings), see [Living Artifacts](../living-artifacts/SKILL.md).
