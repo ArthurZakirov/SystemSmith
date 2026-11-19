@@ -22,7 +22,11 @@ The workflow shows how to split a ticket into instructions, the table shows wher
    > *“Copy the CSV reader from the reports repo by Friday.”*
 
    The first part tells you where to find the code. The last two words tell you when the work is due.
-2. **Decide what to do with each piece.** Use the table in [🗂️ Where each part goes](#routing). *“Copy the CSV reader”* is Reference Code Context. *“By Friday”* is Project Management Context. If Friday is already in Jira, that part needs no new text.
+2. **Decide what to do with each piece.** Use the table in [🗂️ Where each part goes](#routing).
+
+   - *“Copy the CSV reader”* — Reference Code Context.
+   - *“By Friday”* — Project Management Context. If Friday is already in Jira, that part needs no new text.
+
 3. **Decide who does it.** The agent can copy the reader and run the tests as part of the coding task. If the team needs a deadline update, tell the user privately and give them a sentence they can send. The user decides whether to post it in Slack or Jira. Post on their behalf only when they explicitly ask you to.
 4. **Read the diff before committing.** Look at the actual test names, comments, examples, and generated docs. Ask what someone opening each file needs to know. *“A missing header raises an error”* helps someone prepare a CSV. *“Copied for Friday’s release”* can come out. Check any claim in the PR against the test output before posting it.
 
