@@ -12,8 +12,6 @@ description: Use when reviewing a diff or turning a ticket or conversation into 
 - [🗂️ Where each part goes](#routing)
 - [🧩 Example: one Jira story, two commits](#example)
 
-Start with the ticket when implementing a request. Start with the changed lines when reviewing a diff. Both workflows use the same routing table. The CSV example follows one ticket through two commits and a PR.
-
 <a id="workflow"></a>
 
 ## 🛠️ How to work from a ticket
