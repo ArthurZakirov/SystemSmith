@@ -41,7 +41,13 @@ description: Use when reviewing a diff or turning a ticket or conversation into 
 
 1. **Open the diff.** Inspect the changed lines, including test names, comments, examples, and generated docs.
 2. **Check each piece against the table.** Find the matching row in [🗂️ Where each part goes](#routing). Check where the text was added (e.g., a comment in `reader.py`) against the location named in that row (e.g., the due-date field in Jira).
-3. **Report each mismatch.** Name the file and line, quote the wording, and say what to remove, move, or rewrite. If the user asked for fixes, apply the edit and check the resulting diff.
+3. **Report each mismatch.** Name the file and line, quote the wording, and say what to remove, move, or rewrite.
+
+4. **Fix the affected commit.** For a review-only request, stop after reporting the findings in step 3. When fixing the branch:
+
+   - **Edit the file.** For example, delete `# Must ship by Friday` from `reader.py`. If Friday is already recorded in Jira, the deletion completes the fix.
+   - **Fold the edit into the commit that added the line.** On a feature branch you can rewrite, amend that commit if it is the latest one. For an earlier commit, create a fixup commit and autosquash it into that specific commit. Keep unrelated commits separate.
+   - **Verify the history.** Inspect the rewritten commit’s patch and the branch diff. The deadline comment should appear in neither. If the commit is already merged or the branch is shared and rewriting it has not been agreed, make a separate correction commit.
 
 <a id="routing"></a>
 
