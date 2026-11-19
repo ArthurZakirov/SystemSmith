@@ -1,47 +1,43 @@
 ---
 name: artifact-information-ownership
-description: Use before translating a change request into code, tests, documentation, configuration, or agent instructions, and when reviewing their diffs. Decide what to implement, what to verify, and which artifact owns any text about the work.
+description: Use when turning a ticket or conversation into code, tests, docs, commits, or a PR. Decide what to change, what to test, and which details can stay in the ticket.
 ---
 
 # 🧭 Artifact Information Ownership
 
-Use this skill when turning a request into Git changes, verification work, or communication. Account for each requirement, including context that guides a decision without needing another written record.
+Imagine opening a repository six months after a ticket closed. A test named `test_missing_timeout_uses_30_seconds` tells you what to expect from the code. The ticket and the PR can tell you who asked for the change and when it shipped.
 
-## 🧭 Workflow for handling a request
+## 🛠️ How to work from a ticket
 
-Follow these steps from intake through review.
+1. **Read the request one piece at a time.** In “Copy the CSV reader from the reports repo by Friday,” the first part tells you where to find the code. The last two words tell you when the work is due.
+2. **Decide what to do with each piece.** Copy the reader, run it on a sample CSV, and use Friday to plan the work. If Friday is already in Jira, that part needs no new text.
+3. **Read the diff before committing.** Look at the actual test names, comments, examples, and generated docs. Ask what someone opening each file needs to know. “A missing header raises an error” helps someone prepare a CSV. “Copied for Friday’s release” can come out. Check any claim in the PR against the test output before posting it.
 
-1. **Identify the obligations.** For each part of the request, determine who needs to do, know, or verify what. One sentence can describe a new capability, impose a deadline, and require evidence about existing behavior.
-2. **Choose an action and an owner.** Use the routing table below. For unfamiliar cases, ask what decision or action would be lost if the information were omitted, who can maintain its accuracy, and when it stops being relevant. An existing authoritative record can already meet the need.
-3. **Implement and collect evidence.** Group commits so reviewers can inspect each meaningful change and reproduce any comparison the request requires. Use the authorized destination and audience for coordination. Choosing a communication channel does not authorize sending a message.
-4. **Review the actual diff and results.** Read names, tests, comments, examples, configuration, and generated docs from a single checkout without the ticket. Verify that each changed document helps its reader act and that each claim is supported by the observations recorded. Remove incidental narration before committing. For time-sensitive information, check placement before applying [Living Artifacts](../living-artifacts/SKILL.md).
+## 🗂️ Where each part goes
 
-## 🗂️ Routing table by information type
+Use the same question for requests you haven't seen before: who will use this detail, and what will they do with it (e.g., a caller needs the timeout default to decide whether to send a value)?
 
-Use each applicable row independently. The same request can require several destinations.
+| Words you might hear | What to do with them |
+| --- | --- |
+| “Finish by Friday.” | Keep Friday in the Jira story. Use the team's Slack thread if someone needs a scheduling update and the user asks you to send it. |
+| “Try three retries for one day. Tomorrow we'll decide whether to keep them.” | Set the retry count to three. Put tomorrow's review in the experiment plan. If the user asks for automatic expiry, schedule the switch back and check the retry count after it runs. |
+| “Max asked for uploads. Peter puts the spreadsheet in Drive.” | Name the feature for its job (e.g., spreadsheet upload). If operators need upload instructions, tell them which folder to use. Include Peter's name in a handover if he is the person to contact for access. |
+| “Customer ABC needs a separate upload folder.” | Use ABC in configuration if the application looks up ABC's folder by customer ID. If ABC simply suggested a feature for everyone, use the feature's name in code. Keep names where readers are required to see them (e.g., an author's copyright notice in a license). |
+| “Copy the reader from the reports repo.” | Use that reader as the starting point. Describe how to call the reader in its new home. If the source repo is already linked in the story, that link is enough. If operators must move files during a migration, give them the steps in the migration guide. |
+| “The endpoint now accepts a timeout.” | Implement and test the field. If callers need instructions, write “Send `timeout_seconds` to set the timeout.” A commit message or PR can say “Add an optional timeout to the endpoint.” |
+| “Requests without a timeout must still work.” | Pick an input and expected result (e.g., omit the timeout and expect 30 seconds). Run that test before and after editing production code. The example below shows where the two runs belong. |
+| “We still need to deploy and pin the release.” | Keep those unchecked tasks in the private list shared by the user and agent, outside Git. The user chooses what to share at standup or handover. If every release uses the same pinning command, the release runbook can document that command. |
+| “The config repo supplies the settings this service reads.” | Document the settings this service expects (e.g., `bucket`, `region`, and `timeout_seconds`) and link to the config repo. The provider can rename its Python files without changing those settings. If several teams need the whole flow, draw it once on their shared architecture page. |
 
-| Information type | Owning surface | What belongs there |
-| --- | --- | --- |
-| Project coordination | Existing Jira story, Slack discussion, or experiment plan | Deadline, decision owner, trial duration, success criteria, and rollback arrangements. If expiry must occur, schedule it or assign the action. |
-| Stakeholder or customer context | Decision record for attribution or handoff. Domain model, configuration, or legal notice for an ongoing obligation. | Capture who requested a decision only where that matters. Describe a recurring upload by role and destination. Use a customer identifier where it selects a tenant, permission, or route. Preserve required attribution. |
-| Migration or reference implementation | Target repository for its operating contract. Existing story for the agreed reference. | Describe actual invocation, settings, and dependencies. Reuse the agreed pattern without restating its provenance. Record a transition in a migration guide or ADR when readers need its history or steps. |
-| Changed behavior | Production code, behavior tests, and any affected public contract. Commit message and PR description for the delta. | Express the current inputs, outputs, and failure conditions in the repository. Update operating docs only where a reader needs different instructions. Explain what changed to reviewers in the change record. |
-| Preserved behavior | Characterization tests for the contract. Test runs on both revisions for comparative evidence. | Name tests for the condition and observable result. Establish the baseline before changing production code, then repeat the same checks. Scope the claim to the cases exercised. |
-| Remaining implementation work | Private, uncommitted work record available to the user and agent | Track outstanding components, tests, deployments, and release pins. The user chooses what to share at standup, planning, or handover. Put a reusable deployment procedure in the runbook. |
-| Cross-repository dependency | Consumer's contract and a link to the authoritative provider | State required arguments, formats, guarantees, and error behavior. Keep independently maintained file paths and implementation details with their owner. A shared company architecture page can describe the system-wide flow. |
+## 🧩 Example: one Jira story, two commits
 
-## 🧩 Examples of decomposing a request
+> For DATA-123, copy the CSV reader from the reports repo by the end of today. Let callers supply a delimiter. Files with no delimiter setting must still read as comma-separated.
 
-Each example follows one request across the surfaces needed to fulfill it.
+Here is how to carry out that example:
 
-### Extend a model and preserve a default
+1. **Before changing the reader**, run a test that reads `name,city` with no delimiter setting and expects two columns, `name` and `city`. If that test is missing, add it in a test-only commit named “Test comma-separated headers with no delimiter setting.” Verify that it passes. If a suitable test already exists, run it and record the commit you ran it on.
+2. **In the implementation commit**, accept the optional delimiter. Add a test that reads `name|city` with `|` as the delimiter and expects the same two columns. Rerun the original comma test with the same input and assertions.
+3. **In the PR**, give the two commit IDs, the test command, and the actual results. Two passing runs show that the comma case worked on both commits. If you could only run it after the edit, say so.
+4. **For callers**, document how to pass a delimiter if the existing instructions leave that question open. The Jira story already records today's deadline and where to copy the reader from.
 
-“Add two optional fields by Friday. Omitting the timeout must still use the default.” The deadline belongs in the existing story. The compatibility claim determines the order of work:
-
-1. On the original implementation, run the omitted-timeout test. If coverage is missing, add a test such as `test_omitted_timeout_uses_default` in a test-only commit and verify that it passes.
-2. In a separate commit, implement the fields and test their supported inputs. Update the API reference if callers need the field names, meanings, or omission rules.
-3. Rerun the same baseline assertions under equivalent conditions. Record revisions, command, and observed outcomes in the PR. Report a failed or unavailable baseline as a gap in the comparison. A test intended to reproduce a bug instead has a different expected baseline result: it should expose the defect.
-
-### Trial a configuration supplied by another repository
-
-“Use the provider's retry settings for one day, then decide whether to keep them.” The consumer validates the agreed settings and links to their authoritative definition. The experiment plan owns the cutoff, decision owner, and rollback action. If the policy must expire automatically, configure that expiry and verify behavior at the boundary. Track unfinished deployment steps in the private work record. Each destination gives its reader enough information to act independently.
+For documentation that can go stale (e.g., a copied list of supported settings), see [Living Artifacts](../living-artifacts/SKILL.md).
