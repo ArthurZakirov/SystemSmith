@@ -68,19 +68,21 @@ Use the same question for requests you haven't seen before: who will use this de
 
 > *“For DATA-123, copy the CSV reader from the reports repo by the end of today. Let callers supply a delimiter. Files with no delimiter setting must still read as comma-separated.”*
 
-The story contains five pieces. Read the two code requirements below in commit order: first test the comma case, then add the delimiter option. In this example the target repo already has a comma-only reader.
+Read the rows in ticket order. Run the comma test in commit 1 before adding the delimiter option in commit 2.
 
-### Jira ticket · Project Management Context
+| Words from the story | Category | Steps |
+| --- | --- | --- |
+| *“For DATA-123”* | Project Management Context | Open DATA-123. Link the story in the PR so the reviewer can read the request. |
+| *“copy the CSV reader from the reports repo”* | Reference Code Context · Migration | Open the reports reader and check how it passes a delimiter to Python’s parser. Compare it with the [target reader before either commit](#csv-baseline). |
+| *“by the end of today.”* | Project Management Context | Keep the due date in DATA-123. If tests are still failing at the deadline, tell the user privately which test failed. The user decides whether to update the team. |
+| *“Let callers supply a delimiter.”* | Code Behavior Change | In [commit 2](#csv-change), add the optional parameter in `reader.py`, test a caller-supplied delimiter, and rerun the comma test. |
+| *“Files with no delimiter setting must still read as comma-separated.”* | Code Behavior Preservation | In [commit 1](#csv-test), add a test in `test_reader.py` that omits the delimiter. Run it against the existing reader and commit the passing test. |
 
-> *“For DATA-123”*
+<a id="csv-baseline"></a>
 
-The agent opens DATA-123 to read the request. When preparing the PR, link it to DATA-123 so the reviewer can open the story. The reader function needs no ticket ID.
+### Target reader before either commit
 
-### Source reader · Reference Code Context
-
-> *“copy the CSV reader from the reports repo”*
-
-The agent opens the reader in the reports repo and checks how it passes a delimiter to Python’s CSV parser. The code to edit is the target repo’s `reader.py`. Before either commit, it reads:
+In this example, the target repo’s `reader.py` already reads comma-separated headers:
 
 ```python
 import csv
@@ -90,17 +92,11 @@ def read_header(line):
     return next(csv.reader([line]))
 ```
 
-### Deadline · Project Management Context
+<a id="csv-test"></a>
 
-> *“by the end of today.”*
+### Commit 1 · Test the comma default
 
-Today is the due date on DATA-123. Leave it there. If the tests are still failing at the end of the day, tell the user privately which test failed. The user decides whether to update the team.
-
-### Comma-separated files · Code Behavior Preservation
-
-> *“Files with no delimiter setting must still read as comma-separated.”*
-
-**Commit 1.** Leave `reader.py` alone. In this example the comma case has no test yet. Create `test_reader.py` with a call that omits the delimiter:
+Leave `reader.py` alone. In this example the comma case has no test yet. Create `test_reader.py` with a call that omits the delimiter:
 
 ```python
 from unittest import TestCase
@@ -123,11 +119,11 @@ git commit -m "Test CSV header with no delimiter setting"
 
 The test passes if the reader returns two strings. Returning one string containing the comma would fail the assertion.
 
-### Caller-supplied delimiter · Code Behavior Change
+<a id="csv-change"></a>
 
-> *“Let callers supply a delimiter.”*
+### Commit 2 · Accept the caller’s delimiter
 
-**Commit 2.** In `reader.py`, pass the caller’s delimiter to the parser. Give the parameter a comma as its default:
+In `reader.py`, pass the caller’s delimiter to the parser. Give the parameter a comma as its default:
 
 ```python
 import csv
