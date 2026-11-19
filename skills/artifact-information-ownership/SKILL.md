@@ -59,6 +59,7 @@ Name the actual file, page, message, or tool when choosing where something belon
 
 | Category | Words you might hear | What to do with them | What not to do with them |
 | --- | --- | --- | --- |
+| Project Management Context | *“For DATA-123”* | Use the Jira ID in these three places only:<ul><li>**Git branch name:** `feat/DATA-123-csv-delimiter`</li><li>**Git commit message:** `DATA-123 Accept a delimiter when reading CSV headers`</li><li>**PR title:** `DATA-123: Support custom CSV delimiters`</li></ul> | Put `DATA-123` in the docstring for `read_header`, a source comment, a test name, or `README.md`. |
 | Project Management Context | *“Finish by Friday.”* | <ul><li>**Jira story:** Keep the due date there.</li><li>**Private chat with the user:** Draft a scheduling update if needed. Send it to the team’s Slack thread only on explicit request.</li></ul> | Write `# Must ship by Friday` above `def read_header` in `reader.py`. |
 | Project Management Context | *“Try three retries for one day. Tomorrow we'll decide whether to keep them.”* | <ul><li>**Committed Python settings file (e.g., `settings.py`):** Set the value the service reads (e.g., `max_retries = 3`).</li><li>**Private `todo.md` outside Git:** Add *“Tomorrow: review retry failures and decide whether to keep three retries.”*</li><li>**One-time job in the deployment tool (e.g., an AWS EventBridge Scheduler schedule):** If automatic expiry is requested, schedule a job to restore the previous retry count, then check the value of `max_retries` on the running service.</li></ul> | Write *“Try three retries tomorrow”* in the README while the service still uses its old retry count. Or put tomorrow’s review reminder in a source comment. |
 | Stakeholder / Customer Context | *“Max asked for uploads. Peter puts the spreadsheet in Drive.”* | <ul><li>**Committed code:** Name the function `upload_spreadsheet`.</li><li>**Confluence page (e.g., *Spreadsheet uploads*):** Give the Drive folder operators should use.</li><li>**Slack handover message drafted in private chat for the user:** Name Peter if the next operator needs to ask him for access.</li></ul> | Name the function `upload_for_max` because Max requested it, or copy Peter’s daily routine into the docstring for `upload_spreadsheet`. |
@@ -80,7 +81,7 @@ Read the rows in ticket order. Run the comma test in commit 1 before adding the 
 
 | Words from the story | Category | Steps |
 | --- | --- | --- |
-| *“For DATA-123”* | Project Management Context | Open DATA-123. Link the story in the PR so the reviewer can read the request. |
+| *“For DATA-123”* | Project Management Context | Use branch `feat/DATA-123-csv-delimiter`, prefix both commit messages with `DATA-123`, and title the PR `DATA-123: Support custom CSV delimiters`. |
 | *“copy the `read_header` function from the reports repo’s `reader.py`”* | Reference Code Context · Migration | Open `read_header` in the reports repo’s `reader.py` and check how it calls `csv.reader`. Compare the function with [read_header in the destination repo before either commit](#csv-baseline). |
 | *“by the end of today.”* | Project Management Context | Keep the due date in DATA-123. If tests are still failing at the deadline, tell the user privately which test failed. The user decides whether to update the team. |
 | *“Let callers supply a delimiter.”* | Code Behavior Change | In [commit 2](#csv-change), add the optional parameter in `reader.py`, test a caller-supplied delimiter, and rerun the comma test. |
@@ -122,7 +123,7 @@ Run the test and save it in its own commit:
 ```sh
 python3 -m unittest -v test_reader
 git add test_reader.py
-git commit -m "Test CSV header with no delimiter setting"
+git commit -m "DATA-123 Test CSV header with no delimiter setting"
 ```
 
 The test expects `read_header("name,city")` to return `["name", "city"]`. Returning `["name,city"]` would fail the assertion.
@@ -153,7 +154,7 @@ Run both tests and commit the change:
 ```sh
 python3 -m unittest -v test_reader
 git add reader.py test_reader.py
-git commit -m "Accept a delimiter when reading CSV headers"
+git commit -m "DATA-123 Accept a delimiter when reading CSV headers"
 ```
 
 **PR description.** Record the command and the results from the two commits. In this example, the first run passed the comma test. The second run passed that same test and the pipe test. If callers need a usage example, put this call in the repo’s `README.md`:
