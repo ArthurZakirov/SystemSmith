@@ -5,8 +5,6 @@ description: Use when turning a ticket or conversation into code, tests, docs, c
 
 # 🧭 Artifact Information Ownership
 
-Imagine opening a repository six months after a ticket closed. A test named `test_missing_timeout_uses_30_seconds` tells you what to expect from the code. The ticket and the PR can tell you who asked for the change and when it shipped.
-
 **Contents**
 
 - [🛠️ How to work from a ticket](#workflow)
